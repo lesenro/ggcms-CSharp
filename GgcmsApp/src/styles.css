@@ -1,0 +1,123 @@
+/* You can add global styles to this file, and also import other style files */
+
+html {
+    min-height: 100%;
+    font-size: 14px;
+}
+
+body {
+    background-color: #3d3d3d;
+    min-height: 100%;
+}
+
+.dropdown.dropdown-user {
+    transform: translateY(-3px);
+}
+
+.mg-t-10 {
+    margin-top: 10px;
+}
+
+.block {
+    display: block !important;
+}
+
+.full-width {
+    width: 100%;
+}
+
+.toolbar {
+    padding-bottom: 5px;
+    border-bottom: 1px solid #ddd;
+}
+
+.datalist,
+.dataform {
+    padding: 15px 0;
+}
+
+.form-body {
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+.page-content-white .page-bar {
+    margin: 0 -20px;
+    border-bottom: none !important;
+}
+
+.page-content-white .page-title {
+    margin: 15px 0;
+}
+
+.col-form-label {
+    text-align: right;
+}
+
+.ui-dialog {
+    top: 30% !important;
+}
+
+.ui-tree {
+    position: absolute;
+    z-index: 5;
+    box-shadow: 2px 2px rgba(48, 48, 48, 0.2);
+}
+
+.fr-emoticon {
+    display: inline-block;
+    font-size: 1em;
+    width: 1em;
+    padding: 5px;
+    line-height: 1;
+    cursor: default;
+    font-weight: 400;
+    font-family: "Apple Color Emoji", "Segoe UI Emoji", NotoColorEmoji, "Segoe UI Symbol", "Android Emoji", EmojiSymbols;
+    box-sizing: content-box;
+}
+
+.node-wrapper {
+    margin: 2px 0;
+    line-height: 1.5;
+    padding: 5px 10px;
+    border: 1px solid #ccc;
+    background-color: #fafafa;
+    border-radius: 5px;
+}
+
+.node-content-wrapper {
+    display: block;
+    width: 100%;
+}
+
+.dataTables_info {
+    font-size: 15px;
+    line-height: 1.8;
+    vertical-align: middle;
+}
+
+.form-control::-webkit-input-placeholder {
+    /* WebKit browsers */
+    color: #aaa;
+}
+
+.form-control:-moz-placeholder {
+    /* Mozilla Firefox 4 to 18 */
+    color: #aaa;
+    opacity: 1
+}
+
+.form-control::-moz-placeholder {
+    /* Mozilla Firefox 19+ */
+    color: #aaa;
+    opacity: 1
+}
+
+.form-control:-ms-input-placeholder {
+    /* Internet Explorer 10+ */
+    color: #aaa;
+}
+
+.table .btn-group .btn {
+    margin-right: 0;
+}

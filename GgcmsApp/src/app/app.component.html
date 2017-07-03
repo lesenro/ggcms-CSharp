@@ -1,0 +1,12 @@
+<router-outlet></router-outlet>
+
+<p-growl [(value)]="msgs" [style]="{top:'55px'}" [life]="toasterLife"></p-growl>
+<p-confirmDialog [width]="dialogOption.width" modal="modal" header="Confirmation" icon="fa fa-question-circle" #cd>
+    <p-footer>
+        <button type="button" class="btn btn-danger" *ngIf="dialogOption.btns.indexOf('cancel')!=-1" (click)="cd.reject()"> <i class="fa fa-close"></i> 取消</button>
+        <button type="button" class="btn btn-success" *ngIf="dialogOption.btns.indexOf('ok')!=-1" (click)="cd.accept()"> <i class="fa fa-check"></i> 确定</button>
+        <button type="button" class="btn btn-danger" *ngIf="dialogOption.btns.indexOf('no')!=-1" (click)="cd.reject()"> <i class="fa fa-close"></i> 否</button>
+        <button type="button" class="btn btn-success" *ngIf="dialogOption.btns.indexOf('yes')!=-1" (click)="cd.accept()"> <i class="fa fa-check"></i> 是</button>
+        <button type="button" [class]="dialogOption.curbtn.css" *ngIf="dialogOption.curbtn" (click)="cd.accept()" [innerHTML]="dialogOption.curbtn.html"></button>
+    </p-footer>
+</p-confirmDialog>

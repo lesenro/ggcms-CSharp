@@ -1,0 +1,23 @@
+<h1 class="page-title"> <i class="icon-list font-green-sharp"></i> {{appServ.pageTitle}} </h1>
+<div class="toolbar">
+    <div class="page-bar">
+        <ul class="page-breadcrumb float-right">
+            <li>
+                <i class="fa fa-home"></i>
+                <a [routerLink]="['/index/home']">管理中心</a>
+                <i class="fa fa-angle-right"></i>
+            </li>
+            <li>
+                <a [routerLink]="['/index/styles']">风格模板管理</a>
+                <i class="fa fa-angle-right"></i>
+            </li>
+            <li>
+                <a href="javascript:;">{{appServ.pageTitle}}</a>
+            </li>
+        </ul>
+        <a [routerLink]="['/index/templateEdit']" [queryParams]="{path:dataInfo.path,id:dataInfo.id}" class="btn blue"> <i class="fa fa-plus"></i> 添加</a>
+        <file-upload class="btn green" (fileSelect)="fileUpload($event)"><i class="fa fa-upload"></i> 上传</file-upload>
+        <button (click)="itemDelete($event)" class="btn btn-danger"> <i class="fa fa-trash-o"></i> 删除</button>
+    </div>
+</div>
+<file-list #fileList [id]="dataInfo.id" [path]="dataInfo.path" [title]="dataInfo.title" [stype]="dataInfo.stype"></file-list>

@@ -1,0 +1,45 @@
+<!-- BEGIN: ACCORDION DEMO -->
+
+
+<div class="dataform">
+    <form class="form-horizontal" name="editForm" #editForm="ngForm" role="form" novalidate>
+        <input type="hidden" ng-model="data.Id">
+        <div class="form-body">
+            <div class="form-group row" *ngIf="!filename">
+                <label for="filename" class="col-2 col-form-label">文件名:</label>
+                <div class="col-4">
+                    <input type="text" pattern="^([a-zA-Z0-9_-])+$" [(ngModel)]="dataInfo.filename" name="filename" minlength="2" maxlength="100" class="form-control" placeholder="文件名" required>
+                </div>
+                <label for="ftype" *ngIf="types.length>0" class="col-2 col-form-label">文件类型:</label>
+                <div class="col-4" *ngIf="types.length>0">
+                    <select (ngModelChange)="onTypeChange($event)" name="ftype" class="form-control input-inline" required id="ftype" [(ngModel)]="dataInfo.ftype">
+                        <option value="" selected>---请选择---</option> 
+                        <option [value]="item" *ngFor="let item of types" >{{item}}</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group row" *ngIf="filename">
+                <label for="filename" class="col-2 col-form-label">文件名:</label>
+                <div class="col-4">
+                    <div class="form-control">{{dataInfo.filename}}</div>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-2 col-form-label">文件内容:</label>
+                <div class="col-10">
+                    <codemirror required="true" #content="ngModel" name="content" [(ngModel)]="dataInfo.content" [config]="config"></codemirror>
+                </div>
+            </div>
+
+        </div>
+        <div class="form-actions">
+            <hr/>
+            <div class="row">
+                <div class="col-md-12 text-center">
+                    <button class="btn green" (click)="dataSave()" [disabled]="!editForm.form.valid"> <span class="fa fa-save"></span> 保存</button>
+                </div>
+            </div>
+        </div>
+    </form>
+
+</div>

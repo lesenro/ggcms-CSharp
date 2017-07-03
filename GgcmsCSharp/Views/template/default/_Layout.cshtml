@@ -1,0 +1,21 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <title> @ViewBag.Title | @ViewBag.sysConfig["cfg_webname"]</title>
+	@RenderPage("_Header.cshtml")
+</head><!--/head-->
+
+<body>
+    @RenderPage("_Page_Header.cshtml")
+    @RenderBody()
+    <!--/#footer-->
+    @RenderPage("_Page_Footer.cshtml")
+    <script type="text/javascript">
+        var pageInfo = {
+            topId:@ViewBag.topId,
+        };
+    </script>
+    @RenderPage("_Footer.cshtml")
+</body>
+</html>
+

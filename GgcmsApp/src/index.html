@@ -1,0 +1,61 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>GgcmsApp</title>
+    <base href="/" />
+    <link href="http://cdn.bootcss.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="http://cdn.bootcss.com/animate.css/3.5.2/animate.min.css" rel="stylesheet" />
+    <link href="http://cdn.bootcss.com/froala-editor/2.6.0/css/froala_editor.pkgd.min.css" rel="stylesheet" />
+    <link href="http://cdn.bootcss.com/simple-line-icons/2.4.1/css/simple-line-icons.min.css" rel="stylesheet" />
+    <link href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://npmcdn.com/codemirror@latest/lib/codemirror.css" />
+    <link href="assets/css/components-md.css" rel="stylesheet" />
+    <link href="assets/css/layout.css" rel="stylesheet" />
+    <link href="assets/css/default.css" rel="stylesheet" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/x-icon" href="favicon.ico" />
+    <style>
+        body {
+            background-color: #1E3C44;
+        }
+        
+        .loader {
+            color: #fff;
+            width: 100%;
+            text-align: center;
+            position: fixed;
+            top: 50%;
+            transform: translateY(-50%);
+            -webkit-transform: translateY(-50%);
+            -ms-transform: translateY(-50%);
+        }
+        
+        .loader p {
+            margin-top: 15px;
+        }
+    </style>
+</head>
+
+<body>
+    <app-root>
+        <div class="loader">
+            <i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i>
+            <br/>
+            <p>Loading</p>
+        </div>
+    </app-root>
+    <script type="text/javascript">
+        // window.GgcmsServerConfig = {
+        //     serviceUrl: "http://www.ggcms.com/",
+        //     apiPath: "api/",
+        // };
+        window.GgcmsServerConfig = {
+            serviceUrl: "http://localhost:54926/",
+            apiPath: "api/",
+        };
+    </script>
+</body>
+
+</html>
