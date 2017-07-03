@@ -41,7 +41,7 @@ export class StylesComponent implements OnInit {
         file: ev.Data,
       }).then(data => {
         if (data.Code == 0) {
-          
+
         }
       });
     } else {
@@ -75,7 +75,7 @@ export class StylesComponent implements OnInit {
         this.pdata.pagenum = +params['page'] || 1;
         this.dataLoad();
       });
-    this.exportUrl = this.adminServ.ServerUrl + "api/GgcmsStyles/StyleExport/";
+    this.exportUrl = window["GgcmsServerConfig"].serviceUrl + window["GgcmsServerConfig"].apiPath + "GgcmsStyles/StyleExport/";
   }
 
 }

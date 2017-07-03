@@ -379,6 +379,11 @@ namespace GgcmsCSharp.ApiCtrls
             {
                 Directory.CreateDirectory(tmplPath);
             }
+            else
+            {
+                Directory.Delete(tmplPath, true);
+                Directory.CreateDirectory(tmplPath);
+            }
 
             string[] tmplFiles = Directory.GetFiles(viewDir);
             foreach (string f in tmplFiles)
@@ -394,7 +399,11 @@ namespace GgcmsCSharp.ApiCtrls
                 zipFilePath = staticDir + "/" + uploadDir + "/temp/" + Path.GetFileName(Path.GetTempFileName()) + ".zip";
                 zipFile = HttpContext.Current.Server.MapPath("~/" + zipFilePath);
             }
-
+            string extDir = Path.GetDirectoryName(zipFile);
+            if (!Directory.Exists(extDir))
+            {
+                Directory.CreateDirectory(extDir);
+            }
             ZipFile.CreateFromDirectory(sDir, zipFile);
             Directory.Delete(tmplPath, true);
             HttpResponse Response = HttpContext.Current.Response;
@@ -447,11 +456,12 @@ namespace GgcmsCSharp.ApiCtrls
             {
                 ZipFile.ExtractToDirectory(zipfile, sDir);
                 string tmplDir = HttpContext.Current.Server.MapPath("~/" + stylePath + "/template");
-
+                //风格解压文件 中包含模板目录
                 if (Directory.Exists(tmplDir))
                 {
                     Directory.Move(tmplDir, viewDir);
                 }
+                //创建模板目录
                 else
                 {
                     Directory.CreateDirectory(viewDir);
