@@ -37,7 +37,7 @@ export class LoginComponent implements OnInit {
     this.CaptchaUrl = this.adminServ.ServerUrl + "getCaptcha?" + this.appServ.randCode();
   }
   constructor(public adminServ: AdminService, private appServ: AppService, private localServ: LocalStorageService) {
-    this.CaptchaUrl = this.adminServ.ServerUrl + "getCaptcha";
+    this.getCaptchaUrl();
   }
   tstart(ev) {
     console.log(ev);

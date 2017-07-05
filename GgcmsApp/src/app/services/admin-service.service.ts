@@ -45,7 +45,7 @@ export class AdminService {
   private handleError(error: any): Promise<any> {
     //this.appServ.showToaster("访问服务器失败!", "系统错误", "error");
     console.error('An error occurred', error); // for demo purposes only
-    if (error.status == 401) {
+    if (error.status === 401) {
       this.appServ.goRouter("/login");
     }
     return Promise.reject(error.message || error);
@@ -585,7 +585,7 @@ export class AdminService {
   }
   //删除静态文件
   StaticFileDelete(data: any): Promise<any> {
-    var url = ServerUrl + "GgcmsStyles/StaticFileDelete";
+    var url = ServerUrl + 'GgcmsStyles/StaticFileDelete';
     return this.http.post(url, data, this.options)
       .toPromise()
       .then(response => response.json())
@@ -593,7 +593,7 @@ export class AdminService {
   }
   //上传
   StaticFileUpload(data: any): Promise<any> {
-    var url = ServerUrl + "GgcmsStyles/StaticFileUpload";
+    var url = ServerUrl + 'GgcmsStyles/StaticFileUpload';
     let formData: FormData = new FormData();
     formData.append('file', data.file);
     formData.append('id', data.id);
@@ -605,8 +605,7 @@ export class AdminService {
   }
   //新建文件夹
   StaticFileNewDir(data: any): Promise<any> {
-    var url = ServerUrl + "GgcmsStyles/StaticFileNewDir";
-    let formData: FormData = new FormData();
+    var url = ServerUrl + 'GgcmsStyles/StaticFileNewDir';
     return this.http.post(url, data, this.options)
       .toPromise()
       .then(response => response.json())
@@ -614,8 +613,15 @@ export class AdminService {
   }
   //重命名
   StaticFileReName(data: any): Promise<any> {
-    var url = ServerUrl + "GgcmsStyles/StyleImport";
-    let formData: FormData = new FormData();
+    var url = ServerUrl + 'GgcmsStyles/StyleImport';
+    return this.http.post(url, data, this.options)
+      .toPromise()
+      .then(response => response.json())
+      .catch(err => this.handleError(err));
+  }
+  //修改密码
+  ModifyPassword(data: any): Promise<any> {
+    var url = ServerUrl + 'GgcmsMembers/ModifyPassword';
     return this.http.post(url, data, this.options)
       .toPromise()
       .then(response => response.json())
@@ -623,7 +629,7 @@ export class AdminService {
   }
   //上传
   StyleImport(data: any): Promise<any> {
-    var url = ServerUrl + "GgcmsStyles/StyleImport";
+    var url = ServerUrl + 'GgcmsStyles/StyleImport';
     let formData: FormData = new FormData();
     formData.append('file', data.file);
     return this.http.post(url, formData)

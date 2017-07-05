@@ -33,7 +33,9 @@ import { StaticFileComponent } from './admin/static-file/static-file.component';
 import { StaticFileEditComponent } from './admin/static-file-edit/static-file-edit.component';
 import { TemplateComponent } from './admin/template/template.component';
 import { TemplateEditComponent } from './admin/template-edit/template-edit.component';
+import { ModifyPasswordComponent } from './admin/modify-password/modify-password.component';
 // import { NgArrayPipesModule, NgStringPipesModule } from 'angular-pipes';
+import { EqualValidator } from './services/equal-validator.directive';
 
 @NgModule({
   declarations: [
@@ -62,7 +64,9 @@ import { TemplateEditComponent } from './admin/template-edit/template-edit.compo
     StaticFileComponent,
     StaticFileEditComponent,
     TemplateComponent,
-    TemplateEditComponent
+    TemplateEditComponent,
+    ModifyPasswordComponent,
+    EqualValidator,
   ],
   imports: [
     BrowserModule,

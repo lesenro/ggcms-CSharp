@@ -1,4 +1,5 @@
 ﻿using GgcmsCSharp.Models;
+using System.Web;
 using System.Web.Http;
 using System.Web.Http.Controllers;
 using System.Web.Http.Description;
@@ -70,6 +71,45 @@ namespace GgcmsCSharp.ApiCtrls
         public ResultData MultDelete()
         {
             return dbtool.MultDelete();
+        }
+        public ResultData ModifyPassword(dynamic passData)
+        {
+            string oldPassword = passData.oldPassword.ToString();
+            string newPassword = passData.newPassword.ToString();
+            string rePassword = passData.rePassword.ToString();
+            var session = HttpContext.Current.Session;
+            ResultData result = new ResultData
+            {
+                Code = 1,
+                Msg = ""
+            };
+            if (session != null)
+            {
+                if (session["ggcms_loginUser"] != null)
+                {
+                    GgcmsMember m = session["ggcms_loginUser"] as GgcmsMember;
+                    GgcmsMember info = dbtool.db.GgcmsMembers.Find(m.Id);
+                    if (info.PassWord != oldPassword)
+                    {
+                        result.Msg = "原密码不正确";
+                    }
+                    else if (newPassword != rePassword)
+                    {
+                        result.Msg = "新密码和确认密码不同";
+                    }
+                    else
+                    {
+                        info.PassWord = newPassword;
+                        var ent = dbtool.db.Entry(info);
+                        ent.Property("PassWord").IsModified = true;
+                        dbtool.db.SaveChanges();
+                        result.Code = 0;
+                        session.RemoveAll();
+                    }
+                }
+            }
+
+            return result;
         }
         protected override void Dispose(bool disposing)
         {
