@@ -163,6 +163,7 @@
   <ItemGroup>
     <Content Include="Global.asax" />
     <None Include="Properties\PublishProfiles\todir.pubxml" />
+    <Content Include="sqldb\20170709-01.sql" />
     <Content Include="sqldb\20170705-01.sql" />
     <Content Include="sqldb\ggcmsdb.sql" />
     <Content Include="Web.config" />

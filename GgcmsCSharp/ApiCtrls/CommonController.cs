@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 using System.Web;
 using System.IO;
 using System.Web.Http;
+using System.Reflection;
+using System.Collections;
 
 namespace GgcmsCSharp.ApiCtrls
 {
@@ -83,6 +85,56 @@ namespace GgcmsCSharp.ApiCtrls
                 link = link,
             };
         }
+        [HttpGet]
+        public ResultData ClearCache()
+        {
+            try
+            {
+                List<string> pages = CacheHelper.GetPages();
+                foreach (string key in pages)
+                {
+                    HttpResponse.RemoveOutputCacheItem(key);
+                }
+                //必须放后面
+                CacheHelper.RemoveAllCache();
 
+                return new ResultData
+                {
+                    Code = 0,
+                    Msg = "ok"
+                };
+            }
+            catch (Exception ex)
+            {
+                return new ResultData
+                {
+                    Code = 1,
+                    Msg = ex.Message,
+
+                };
+            }
+        }
+        [HttpGet]
+        public ResultData AppRestart()
+        {
+            try
+            {
+                HttpRuntime.UnloadAppDomain();
+                return new ResultData
+                {
+                    Code = 0,
+                    Msg = "ok"
+                };
+            }
+            catch (Exception ex)
+            {
+                return new ResultData
+                {
+                    Code = 1,
+                    Msg = ex.Message,
+
+                };
+            }
+        }
     }
 }

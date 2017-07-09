@@ -97,7 +97,7 @@ export class AdminService {
       .toPromise()
       .then(response => {
         let jsonData = response.json();
-        if (jsonData.Code == 0) {
+        if (jsonData.Code === 0) {
           this.localServ.remove(cacheDict.CategoryList);
         }
         return jsonData;
@@ -641,6 +641,24 @@ export class AdminService {
         }
         return jsonData;
       })
+      .catch(err => this.handleError(err));
+  }
+  ClearCache(){
+    var url = ServerUrl + 'Common/ClearCache';
+    sessionStorage.clear();
+    localStorage.clear();
+    return this.http.get(url)
+      .toPromise()
+      .then(response => response.json())
+      .catch(err => this.handleError(err));
+  }
+  AppRestart(){
+    var url = ServerUrl + 'Common/AppRestart';
+    sessionStorage.clear();
+    localStorage.clear();
+    return this.http.get(url)
+      .toPromise()
+      .then(response => response.json())
       .catch(err => this.handleError(err));
   }
 }

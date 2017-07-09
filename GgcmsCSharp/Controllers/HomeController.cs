@@ -34,16 +34,20 @@ namespace GgcmsCSharp.Controllers
             ViewBag.categories = dataHelper.Categories();
             ViewBag.sysConfig = sysConfigs;
             ViewBag.dataHelper = dataHelper;
-            ViewBag.topId = -1; 
+            ViewBag.topId = -1;
+            CacheHelper.SetPages(Request.Url.AbsolutePath);
         }
+        [OutputCache(CacheProfile = "IndexCache")]
         public ActionResult Index()
         {
-            ViewBag.Title= sysConfigs["cfg_indexname"]; 
+            ViewBag.Title = sysConfigs["cfg_indexname"];
             var pt = getTemplate();
             ViewBag.pageTmpl = pt;
             ViewBag.topId = 0;
             return View(pt.templateUrl);
+
         }
+        [OutputCache(CacheProfile = "ListCache")]
         public ActionResult Category(int id, int page = 1)
         {
             GgcmsCategory category = dataHelper.Categories(id);
@@ -70,6 +74,7 @@ namespace GgcmsCSharp.Controllers
             ViewBag.pageTmpl = pt;
             return View(pt.templateUrl);
         }
+        [OutputCache(CacheProfile = "ViewCache")]
         public ActionResult Article(int id)
         {
             GgcmsArticle article = dataHelper.Article(id);
@@ -78,7 +83,7 @@ namespace GgcmsCSharp.Controllers
             {
 
             }
-            
+
             GgcmsCategory category = dataHelper.Categories(article.Category_Id);
             ViewBag.Title = article.Title;
             ViewBag.article = article;

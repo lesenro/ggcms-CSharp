@@ -7147,7 +7147,8 @@ fieldset[disabled] .btn.purple-soft:not(.btn-outline):hover {
 }
 
 .dropdown-menu li.divider {
-    background: #f1f3f6
+    background: #f1f3f6;
+    height: 1px;
 }
 
 .dropdown-menu li.header {

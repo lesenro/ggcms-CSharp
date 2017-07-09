@@ -23,7 +23,7 @@
                 <!-- DOC: Apply "dropdown-dark" class after "dropdown-extended" to change the dropdown styte -->
                 <!-- DOC: Apply "dropdown-hoverable" class after below "dropdown" and remove data-toggle="dropdown" data-hover="dropdown" data-close-others="true" attributes to enable hover dropdown mode -->
                 <!-- DOC: Remove "dropdown-hoverable" and add data-toggle="dropdown" data-hover="dropdown" data-close-others="true" attributes to the below A element with dropdown-toggle class -->
-                <li class="dropdown dropdown-extended dropdown-notification" id="header_notification_bar">
+                <li class="dropdown dropdown-extended dropdown-notification hidden" id="header_notification_bar">
                     <a href="javascript:;" class="dropdown-toggle nav-link" data-toggle="dropdown" data-hover="dropdown" data-close-others="true">
                         <i class="icon-bell"></i>
                         <span class="badge badge-default"> 7 </span>
@@ -124,7 +124,7 @@
                 <!-- END NOTIFICATION DROPDOWN -->
                 <!-- BEGIN INBOX DROPDOWN -->
                 <!-- DOC: Apply "dropdown-dark" class after below "dropdown-extended" to change the dropdown styte -->
-                <li class="dropdown dropdown-extended dropdown-inbox" id="header_inbox_bar">
+                <li class="dropdown dropdown-extended dropdown-inbox hidden" id="header_inbox_bar">
                     <a href="javascript:;" class="dropdown-toggle nav-link" data-toggle="dropdown" data-hover="dropdown" data-close-others="true">
                         <i class="icon-envelope-open"></i>
                         <span class="badge badge-default"> 4 </span>
@@ -141,7 +141,7 @@
                 <!-- END INBOX DROPDOWN -->
                 <!-- BEGIN TODO DROPDOWN -->
                 <!-- DOC: Apply "dropdown-dark" class after below "dropdown-extended" to change the dropdown styte -->
-                <li class="dropdown dropdown-extended dropdown-tasks" id="header_task_bar">
+                <li class="dropdown dropdown-extended dropdown-tasks hidden" id="header_task_bar">
                     <a href="javascript:;" class="dropdown-toggle nav-link" data-toggle="dropdown" data-hover="dropdown" data-close-others="true">
                         <i class="icon-calendar"></i>
                         <span class="badge badge-default"> 3 </span>
@@ -260,24 +260,15 @@
                     </a>
                     <ul class="dropdown-menu dropdown-menu-default" aria-labelledby="dropdownManual">
                         <li>
+                            <a (click)="clearCache()"><i class="icon-trash"></i> 清理缓存</a>
+                        </li>
+                        <li>
+                            <a (click)="appRestart()"><i class="icon-reload"></i> 应用重启</a>
+                        </li>
+                        <li class="divider"> </li>
+                        <li>
                             <a [routerLink]="['/index/modifyPassword']">
                                 <i class="icon-user"></i> 修改密码 </a>
-                        </li>
-                        <li>
-                            <a href="app_calendar.html">
-                                <i class="icon-calendar"></i> My Calendar </a>
-                        </li>
-                        <li>
-                            <a href="app_inbox.html">
-                                <i class="icon-envelope-open"></i> My Inbox
-                                <span class="badge badge-danger"> 3 </span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="app_todo.html">
-                                <i class="icon-rocket"></i> My Tasks
-                                <span class="badge badge-success"> 7 </span>
-                            </a>
                         </li>
                         <li class="divider"> </li>
                         <li>

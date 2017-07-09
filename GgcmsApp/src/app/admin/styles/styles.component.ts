@@ -33,7 +33,7 @@ export class StylesComponent implements OnInit {
             }
           });
         },
-      })
+      });
   }
   styleImport(ev) {
     if (ev.Code == 0) {

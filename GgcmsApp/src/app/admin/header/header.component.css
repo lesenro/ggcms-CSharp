@@ -1,0 +1,4 @@
+.navbar-nav .actions .btn {
+    display: block;
+    transform: translateY(7px);
+}

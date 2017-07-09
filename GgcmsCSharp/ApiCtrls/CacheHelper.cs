@@ -10,7 +10,7 @@ namespace GgcmsCSharp.ApiCtrls
 {
     public enum CacheTypeNames
     {
-        SysConfigs, Categorys
+        SysConfigs, Categorys, PagesCache
     }
     public class CacheHelper
     {
@@ -45,9 +45,9 @@ namespace GgcmsCSharp.ApiCtrls
             {
                 GgcmsDB db = new GgcmsDB();
                 var tmps = (from r in db.GgcmsCategories
-                           where r.CategoryType == 0
-                           orderby r.OrderId ascending
-                           select r).ToList();
+                            where r.CategoryType == 0
+                            orderby r.OrderId ascending
+                            select r).ToList();
                 categorys = GgcmsCategory.GetCategoryList(0, tmps as List<GgcmsCategory>);
                 SetCache(cacheName, categorys);
             }
@@ -57,7 +57,34 @@ namespace GgcmsCSharp.ApiCtrls
             }
             return categorys;
         }
-
+        public static List<string> GetPages()
+        {
+            string cacheName = CacheTypeNames.PagesCache.ToString();
+            List<string> pages = new List<string>();
+            object obj = GetCache(cacheName);
+            if (obj == null)
+            {
+                pages = new List<string>();
+                SetCache(cacheName, pages);
+            }
+            else
+            {
+                pages = obj as List<string>;
+            }
+            return pages;
+        }
+        public static bool SetPages(string path)
+        {
+            string cacheName = CacheTypeNames.PagesCache.ToString();
+            List<string> pages = GetPages();
+            if (!pages.Contains(path))
+            {
+                pages.Add(path);
+                SetCache(cacheName, pages);
+                return true;
+            }
+            return false;
+        }
         /// <summary>  
         /// 获取数据缓存  
         /// </summary>  
