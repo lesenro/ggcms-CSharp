@@ -1,4 +1,4 @@
-@media only screen and (min-width : 768px) {
+﻿@media only screen and (min-width : 768px) {
   .nav.navbar-nav > li:hover > ul.sub-menu{
     display: block;
     -webkit-animation: fadeInUp 400ms;
@@ -290,7 +290,8 @@
 
   #home-slider .slider-hill {
     right: 50%;
-    margin-right: -200px;
+    margin-right: -160px;
+    max-width: 100%;
   }
 
   #home-slider .slider-house {
@@ -312,7 +313,7 @@
   #home-slider .slider-birds2 {
     width: 70px;
     right: 50%;
-    margin-right: -200px;
+    margin-right: -150px;
   }
 
   /*Pricing Table*/
