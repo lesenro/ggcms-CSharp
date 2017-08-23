@@ -19,6 +19,7 @@ namespace GgcmsCSharp.Utils
         private string AccessKey;
         private string SecretKey;
         private string bucket;
+        private string linkTemplate;
         private FormUploader uploader;
         private Mac mac;
         PutPolicy putPolicy;
@@ -30,6 +31,7 @@ namespace GgcmsCSharp.Utils
             this.AccessKey = cfgs["cfg_access_key"];
             this.SecretKey = cfgs["cfg_secret_key"];
             this.bucket = cfgs["cfg_bucket"];
+            this.linkTemplate = cfgs["cfg_link_template"];
             uploader = new FormUploader();
             mac = new Mac(AccessKey, SecretKey);
             putPolicy = new PutPolicy();
@@ -58,7 +60,7 @@ namespace GgcmsCSharp.Utils
             string tempFile = HttpContext.Current.Server.MapPath("~" + file);
             string fname = Path.GetFileName(tempFile);
             HttpResult result = uploader.UploadFile(tempFile, fname, token);
-            string url = "http://7xw2i7.com1.z0.glb.clouddn.com/" + fname;
+            string url = this.linkTemplate.Replace("{fn}", fname);
             return new ResultData
             {
                 Code = result.Code == 200 ? 0 : result.Code,

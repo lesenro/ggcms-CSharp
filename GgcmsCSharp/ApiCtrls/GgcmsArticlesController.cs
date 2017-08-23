@@ -5,6 +5,7 @@ using System.Web.Http.Description;
 using System;
 using GgcmsCSharp.Controllers;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace GgcmsCSharp.ApiCtrls
 {
@@ -27,7 +28,18 @@ namespace GgcmsCSharp.ApiCtrls
         // GET: api/GgcmsCategories/5
         public ResultData GetInfo(int id)
         {
-            return dbtool.GetById(id);
+            ResultData rdata= dbtool.GetById(id);
+            if (rdata.Code == 0)
+            {
+                GgcmsArticle artInfo = (GgcmsArticle)rdata.Data;
+                GgcmsDB db = new GgcmsDB();
+                var list = from r in db.GgcmsAttachments
+                           where r.Articles_Id == artInfo.Id
+                           select r;
+                artInfo.attachments = list.ToList();
+                rdata.Data = artInfo;
+            }
+            return rdata;
         }
 
         // PUT: api/GgcmsCategories/5
@@ -54,6 +66,32 @@ namespace GgcmsCSharp.ApiCtrls
                     updateArticleNumber(old.Category_Id, -1);
                     CacheHelper.RemoveAllCache(CacheTypeNames.Categorys);
                 }
+                var list = db.GgcmsAttachments.Where(x => x.Articles_Id == article.Id).ToList();
+                foreach (GgcmsAttachment attach in list)
+                {
+                    var item = article.attachments.Find(x => x.Id == attach.Id);
+                    if (item == null)
+                    {
+                        db.GgcmsAttachments.Remove(attach);
+                    }
+                    else
+                    {
+                        attach.AttaUrl = item.AttaUrl;
+                        attach.AttaTitle = item.AttaTitle;
+                        attach.Describe = item.Describe;
+                        attach.CreateTime = DateTime.Now;
+                        attach.RealName = item.RealName;
+                    }
+                }
+                foreach (GgcmsAttachment attach in article.attachments)
+                {
+                    if (attach.Id == 0)
+                    {
+                        attach.Articles_Id = article.Id;
+                        db.GgcmsAttachments.Add(attach);
+                    }
+                }
+                db.SaveChanges();
             }
             return dbtool.Edit(article.Id, article);
         }
@@ -61,9 +99,10 @@ namespace GgcmsCSharp.ApiCtrls
         // POST: api/GgcmsCategories
         public ResultData Add(GgcmsArticle article)
         {
+            ResultData result;
             if (!ModelState.IsValid)
             {
-                ResultData result = new ResultData
+                result = new ResultData
                 {
                     Code = 3,
                     Msg = "",
@@ -72,11 +111,21 @@ namespace GgcmsCSharp.ApiCtrls
                 return result;
             }
             UpFileClass.FileSave<GgcmsArticle>(article, article.files);
-
             article.CreateTime = DateTime.Now;
             updateArticleNumber(article.Category_Id, 1);
             CacheHelper.RemoveAllCache(CacheTypeNames.Categorys);
-            return dbtool.Add(article);
+            result = dbtool.Add(article);
+            using (GgcmsDB db = new GgcmsDB())
+            {
+                foreach (GgcmsAttachment attach in article.attachments)
+                {
+                    attach.Articles_Id = article.Id;
+                    db.GgcmsAttachments.Add(attach);
+                }
+                db.SaveChanges();
+            }
+
+            return result;
         }
 
         // DELETE: api/GgcmsCategories/5
@@ -95,13 +144,21 @@ namespace GgcmsCSharp.ApiCtrls
             CacheHelper.RemoveAllCache(CacheTypeNames.Categorys);
             try
             {
-                dbtool.db.GgcmsArticles.Remove(info);
-                dbtool.db.SaveChanges();
-                return new ResultData
+                using (GgcmsDB db = new GgcmsDB())
                 {
-                    Code = 0,
-                    Msg = "ok"
-                };
+                    db.GgcmsArticles.Remove(info);
+                    var list = db.GgcmsAttachments.Where(x => x.Articles_Id == info.Id).ToList();
+                    foreach (GgcmsAttachment attach in list)
+                    {
+                        db.GgcmsAttachments.Remove(attach);
+                    }
+                    db.SaveChanges();
+                    return new ResultData
+                    {
+                        Code = 0,
+                        Msg = "ok"
+                    };
+                }
             }
             catch (Exception ex)
             {
@@ -134,7 +191,7 @@ namespace GgcmsCSharp.ApiCtrls
 
         protected override void Dispose(bool disposing)
         {
-            if (disposing)
+            if (disposing && dbtool != null)
             {
                 dbtool.Dispose(true);
             }

@@ -1,14 +1,20 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild,ElementRef } from '@angular/core';
 import { ActivatedRoute } from "@angular/router";
 import { AppService, AdminService } from "app/services";
 import { Location } from '@angular/common';
-
+import {
+  OverlayPanel,
+} from 'primeng/primeng';
 @Component({
   selector: 'app-article-edit',
   templateUrl: './article-edit.component.html',
   styleUrls: ['./article-edit.component.css']
 })
+
 export class ArticleEditComponent implements OnInit {
+
+  @ViewChild('imgPreview') overlayPanel: OverlayPanel;
+  @ViewChild('preVideo') preVideo: ElementRef;
   styleList: any[] = [];
   articleTmpl: any[] = [];
   mobArticleTmpl: any[] = [];
@@ -36,7 +42,9 @@ export class ArticleEditComponent implements OnInit {
     Author: "",
     Category_Id: 0,
     files: [],
+    attachments: [],
   };
+  //风格改变
   onStyleChange(ev) {
     var styleinfo = this.styleList.find(x => x.Folder == ev);
     if (styleinfo) {
@@ -46,6 +54,7 @@ export class ArticleEditComponent implements OnInit {
       this.mobArticleTmpl = [];
     }
   };
+  //根据风格模板读取模板
   tmplLoad(styleId) {
     this.adminServ.GetTemplateList(styleId).then(data => {
       if (data.Code == 0) {
@@ -55,26 +64,17 @@ export class ArticleEditComponent implements OnInit {
       }
     });
   };
-  editorOption = {
-    language: "zh_cn", //配置语言
-    placeholderText: "请输入内容", // 文本框提示内容
-    charCounterCount: true, // 是否开启统计字数
-    imageUploadURL: this.adminServ.ServerApiUrl + "Common/fileUpload",
-    fileUploadURL: this.adminServ.ServerApiUrl + "Common/fileUpload",
-    imageUploadParams: { serverUrl: this.adminServ.ServerBaseUrl },
-    events: {
-      'froalaEditor.image.uploaded': (e, editor, response) => {
-        e.preventDefault();
-        let data = JSON.parse(response);
-        this.dataInfo.files.push({
-          "filePath": data.Data[0].url,
-          "fileType": 1,
-          "propertyName": "Content",
-        });
-      }
-    }
-    //charCounterMax: 200, // 最大输入字数,目前只支持英文字母
+  //添加附件
+  addAttachment() {
+    var attachInfo = new GgcmsAttachment();
+    this.dataInfo.attachments.push(attachInfo);
   };
+  //删除附件
+  delAttachment(idx) {
+    this.dataInfo.attachments.splice(idx, 1);
+  }
+  preViewUrl = "";
+  preViewVideo = "";
   showCategoryTree: boolean = false;
   selectedCategorys: any = { CategoryName: "", label: "", Id: 0, data: 0 };
   categorys: any[] = [];
@@ -96,6 +96,21 @@ export class ArticleEditComponent implements OnInit {
     }
     return menus;
   }
+  filePreview(ev, url) {
+    this.preViewUrl = "";
+    this.preViewVideo = "";
+    var picRgx = /(.jpg|.JPG|.gif|.GIF)$/i;
+    var videoRgx = /(.mp4|.ogg)$/i;
+    if (picRgx.test(url)) {
+      this.preViewUrl = url;
+    } else if (videoRgx.test(url)) {
+      this.preViewVideo = url;
+    } else {
+      this.appServ.showToaster("此文件无法预览");
+      return;
+    }
+    this.overlayPanel.toggle(ev);
+  }
   categorySelect(ev) {
     this.dataInfo.Category_Id = ev.node.Id;
     this.showCategoryTree = false;
@@ -107,20 +122,43 @@ export class ArticleEditComponent implements OnInit {
       }
     });
   }
-  fileSelect(ev) {
+  editUpload(ev, name) {
+    if (ev.Code == 0) {
+      this.dataInfo.files.push({
+        "filePath": ev.Data[0].url,
+        "fileType": 1,
+        "propertyName": name,
+      });
+    }
+  }
+  fileSelect(ev, type, name) {
     if (ev.Code == 0) {
       this.adminServ.fileUpload(ev.Data).then(data => {
         if (data.Code == 0) {
-          let idx = this.dataInfo.files.indexOf(data.Data.url);
-          if (idx != -1) {
-            this.dataInfo.files.splice(idx, 1);
+          if (type === 0) {
+            let idx = this.dataInfo.files.indexOf(data.Data.url);
+            if (idx != -1) {
+              this.dataInfo.files.splice(idx, 1);
+            }
+            this.dataInfo.files.push({
+              "filePath": data.Data[0].url,
+              "fileType": type,
+              "propertyName": name,
+            });
+            this.dataInfo[name] = data.link;
+          } else if (type === 2) {
+            let idx = this.dataInfo.files.indexOf(data.Data.url);
+            if (idx != -1) {
+              this.dataInfo.files.splice(idx, 1);
+            }
+            this.dataInfo.files.push({
+              "filePath": data.Data[0].url,
+              "fileType": type,
+              "propertyName": "attachments",
+            });
+            this.dataInfo.attachments[name].AttaUrl = data.link;
+            this.dataInfo.attachments[name].RealName = data.Data[0].url;
           }
-          this.dataInfo.files.push({
-            "filePath": data.Data[0].url,
-            "fileType": 0,
-            "propertyName": "TitleImg",
-          });
-          this.dataInfo.TitleImg = data.link;
         }
       });
     } else {
@@ -162,9 +200,16 @@ export class ArticleEditComponent implements OnInit {
             if (data.Code == 0) {
               this.styleList = data.Data.List;
             }
-          });          
+          });
         }
       });
   }
 
+}
+class GgcmsAttachment {
+  Id = 0;
+  AttaTitle = "";
+  AttaUrl = "";
+  Describe = "";
+  RealName = "";
 }

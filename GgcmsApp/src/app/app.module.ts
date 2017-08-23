@@ -17,7 +17,6 @@ import { SidebarComponent } from './admin/sidebar/sidebar.component';
 import { PageHeaderComponent } from './admin/page-header/page-header.component';
 import { SideMenusComponent } from './admin/side-menus/side-menus.component';
 import { LoginComponent, ArticleEditComponent, ArticleComponent, HomeComponent, IndexComponent, CategoryComponent, CategoryEditComponent } from "app/admin";
-import { FroalaEditorModule, FroalaViewModule } from 'angular2-froala-wysiwyg';
 import { TreeModule } from 'angular-tree-component';
 
 import { DictionaryComponent } from './admin/dictionary/dictionary.component';
@@ -79,7 +78,6 @@ import { TinyEditorComponent } from './tiny-editor/tiny-editor.component';
     AppRoutingModule,
     TreeModule,
     ReactiveFormsModule,
-    FroalaEditorModule.forRoot(), FroalaViewModule.forRoot(),
     NgArrayPipesModule,
     CodemirrorModule,
     // NgStringPipesModule,

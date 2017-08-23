@@ -1,4 +1,4 @@
-import { Component, OnInit, EventEmitter } from '@angular/core';
+import { Component, OnInit, EventEmitter,ElementRef,ViewChild } from '@angular/core';
 
 @Component({
   selector: 'file-upload',
@@ -8,6 +8,7 @@ import { Component, OnInit, EventEmitter } from '@angular/core';
   outputs: ['fileSelect']
 })
 export class FileUploadComponent implements OnInit {
+  @ViewChild('fileInput')  fileInputElement: ElementRef;
   fileType: string = "";
   fileMaxSize: string = "";
   fileTypeErr: string = "上传文件类型错误";
@@ -16,6 +17,9 @@ export class FileUploadComponent implements OnInit {
   regex: RegExp;
   maxSize: number;
   constructor() { }
+  onClick(ev){
+    this.fileInputElement.nativeElement.click();
+  }
   fileSelected(ev) {
     ev.preventDefault();
     let fdata = {

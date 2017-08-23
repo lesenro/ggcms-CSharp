@@ -39,19 +39,23 @@ declare var tinymce: any;
   selector: 'tiny-editor',
   templateUrl: './tiny-editor.component.html',
   styleUrls: ['./tiny-editor.component.css'],
-  inputs: ['elementId'],
-  outputs: ['onEditorKeyup'],
+  inputs: ['elementId', 'value', 'options'],
+  outputs: ['valueChange','fileUploaded'],
 })
 
 export class TinyEditorComponent implements AfterViewInit, OnDestroy {
   elementId: String;
-  onEditorKeyup = new EventEmitter<any>();
-
+  value: String = "";
+  valueChange = new EventEmitter<any>();
+  fileUploaded = new EventEmitter<any>();
+  options = {};
   editor;
+
   constructor(public adminServ: AdminService) { }
   ngAfterViewInit() {
-    tinymce.init({
+    var defaultOptions = {
       selector: '#' + this.elementId,
+      height: 300,
       plugins: [
         'advlist autolink lists link image charmap print preview hr anchor pagebreak',
         'searchreplace wordcount visualblocks visualchars code fullscreen',
@@ -63,24 +67,35 @@ export class TinyEditorComponent implements AfterViewInit, OnDestroy {
       image_advtab: true,
       skin_url: 'assets/plugins/tinymce/skins/lightgray',
       images_upload_url: this.adminServ.getFileUploadUrl(),
-      images_upload_handler: (blobInfo, success, failure)=>{
-        this.adminServ.fileUpload(blobInfo.blob()).then(resp=>{
+      images_upload_handler: (blobInfo, success, failure) => {
+        this.adminServ.fileUpload(blobInfo.blob()).then(resp => {
           success(resp.link);
+          this.fileUploaded.emit(resp);
         });
       },
-      images_upload_credentials:true, 
+
+      images_upload_credentials: true,
       automatic_uploads: true,
       file_picker_types: 'image',
       setup: editor => {
         this.editor = editor;
-        editor.on('keyup', () => {
+        // editor.on('keyup', () => {
+        //   const content = editor.getContent();
+        //   this.valueChange.emit(content);
+        // });
+        editor.on('change', () => {
           const content = editor.getContent();
-          this.onEditorKeyup.emit(content);
+          this.valueChange.emit(content);
         });
+      },
+      init_instance_callback: editor => {
+        editor.setContent(this.value);
       },
       languages: "zh_CN",
       menubar: false,
-    });
+    };
+    var option = Object.assign({}, defaultOptions, this.options);
+    tinymce.init(option);
   }
 
   ngOnDestroy() {

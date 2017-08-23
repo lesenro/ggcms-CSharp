@@ -49,12 +49,24 @@ namespace GgcmsCSharp.Models
             foreach (UpFileClass ufile in files)
             {
                 PropertyInfo pinfo = t.GetProperty(ufile.propertyName);
-                string cnt = pinfo.GetValue(tinfo).ToString();
+                
                 ResultData result = fileStorage.UploadFile(ufile.filePath);
                 switch (ufile.fileType)
                 {
                     case 1:
+                        string cnt = pinfo.GetValue(tinfo).ToString();
                         pinfo.SetValue(tinfo, cnt.Replace(fileStorage.serverUrl + ufile.filePath, result.Data));
+                        break;
+                    case 2:
+                        List<GgcmsAttachment> attachments = (List<GgcmsAttachment>)pinfo.GetValue(tinfo);
+                        foreach (GgcmsAttachment attach in attachments)
+                        {
+                            if (attach.RealName == ufile.filePath)
+                            {
+                                attach.AttaUrl = result.Data;
+                                attach.CreateTime = DateTime.Now;
+                            }
+                        }
                         break;
                     default:
                         pinfo.SetValue(tinfo, result.Data);

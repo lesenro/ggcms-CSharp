@@ -79,7 +79,8 @@
             <div class="form-group row">
                 <label class="col-2 col-form-label">分类说明:</label>
                 <div class="col-10">
-                    <div [froalaEditor]="editorOption" [(froalaModel)]="dataInfo.Content"></div>
+                    <tiny-editor [elementId]="'my-editor-id'" [(value)]="dataInfo.Content">
+                    </tiny-editor>
                 </div>
             </div>
             <div class="form-group row">

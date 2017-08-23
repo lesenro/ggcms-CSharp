@@ -24,8 +24,6 @@
         ],
         "scripts": [
             "../node_modules/jquery/dist/jquery.min.js",
-            "../node_modules/froala-editor/js/froala_editor.pkgd.min.js",
-            "../node_modules/froala-editor/js/languages/zh_cn.js",
             "../node_modules/tinymce/tinymce.js",
             "../node_modules/tinymce/themes/modern/theme.js"
         ],

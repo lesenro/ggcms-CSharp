@@ -61,46 +61,17 @@ export class FormInputComponent implements OnInit {
     }
   }
   richeditor = {
-    language: "zh_cn", //配置语言
-    placeholderText: "请输入内容", // 文本框提示内容
-    charCounterCount: true, // 是否开启统计字数
-    imageUploadURL: this.adminServ.ServerApiUrl + "Common/fileUpload",
-    fileUploadURL: this.adminServ.ServerApiUrl + "Common/fileUpload",
-    imageUploadParams: { serverUrl: this.adminServ.ServerBaseUrl },
-    events: {
-      'froalaEditor.image.uploaded': (e, editor, response) => {
-        e.preventDefault();
-        let data = JSON.parse(response);
-        this.uploaded.emit({
-          "filePath": data.Data[0].url,
-          "fileType": 1,
-          "propertyName": this.name,
-        });
-      }
-    }
-    //charCounterMax: 200, // 最大输入字数,目前只支持英文字母
   };
   simpleditor = {
-    heightMax: 200,
-    toolbarButtons: ['bold', 'italic', 'underline', 'fontSize', 'color', 'clearFormatting', 'insertImage', 'html'],
-    language: "zh_cn", //配置语言
-    placeholderText: "请输入内容", // 文本框提示内容
-    charCounterCount: true, // 是否开启统计字数
-    imageUploadURL: this.adminServ.ServerApiUrl + "Common/fileUpload",
-    fileUploadURL: this.adminServ.ServerApiUrl + "Common/fileUpload",
-    imageUploadParams: { serverUrl: this.adminServ.ServerBaseUrl },
-    events: {
-      'froalaEditor.image.uploaded': (e, editor, response) => {
-        e.preventDefault();
-        let data = JSON.parse(response);
-        this.uploaded.emit({
-          "filePath": data.Data[0].url,
-          "fileType": 1,
-          "propertyName": this.name,
-        });
-      }
-    }
-    //charCounterMax: 200, // 最大输入字数,目前只支持英文字母
+    plugins: [
+      'advlist autolink lists link image charmap print preview hr anchor pagebreak',
+      'searchreplace wordcount visualblocks visualchars code fullscreen',
+      'insertdatetime media nonbreaking save table contextmenu directionality',
+      'emoticons template paste textcolor colorpicker textpattern imagetools toc help'
+    ],
+    toolbar1: 'insert link | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent ',
+    toolbar2: false,
+    height: 150,
   };
 
 

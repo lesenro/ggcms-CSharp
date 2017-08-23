@@ -120,7 +120,7 @@ namespace GgcmsCSharp.ApiCtrls
         }
         protected override void Dispose(bool disposing)
         {
-            if (disposing)
+            if (disposing&& dbtool!=null)
             {
                 dbtool.Dispose(true);
             }

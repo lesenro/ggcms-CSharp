@@ -53,9 +53,9 @@
     <!--简单的文本框-->
     <textarea (ngModelChange)="onChange($event)" [formControlName]="name" [id]="name" [name]="name" class="form-control" [placeholder]="placeholder" [(ngModel)]="value" *ngIf="',textarea,'.indexOf(','+option.type+',')!=-1"></textarea>
     <!--富文本框-->
-    <textarea [froalaEditor]="richeditor" [(ngModel)]="value" (ngModelChange)="onChange($event)" [formControlName]="name" *ngIf="',richeditor,'.indexOf(','+option.type+',')!=-1"></textarea>
+    <tiny-editor [elementId]="name" (valueChange)="onChange($event)" [(value)]="value" [options]="richeditor" *ngIf="',richeditor,'.indexOf(','+option.type+',')!=-1"> </tiny-editor>
     <!--简单的富文本框-->
-    <textarea [froalaEditor]="simpleditor" [(ngModel)]="value" (ngModelChange)="onChange($event)" [formControlName]="name" *ngIf="',simpleditor,'.indexOf(','+option.type+',')!=-1"></textarea>
+    <tiny-editor [elementId]="name" (valueChange)="onChange($event)" [(value)]="value" [options]="simpleditor" *ngIf="',simpleditor,'.indexOf(','+option.type+',')!=-1"> </tiny-editor>
     <!--单选select-->
     <select (ngModelChange)="onChange($event)" [formControlName]="name" class="form-control input-inline" [id]="name" [name]="name" [(ngModel)]="value" *ngIf="',select,'.indexOf(','+option.type+',')!=-1&&!option.multiple&&option.datasource=='sysdict'">
         <option value="" selected>---请选择---</option> 

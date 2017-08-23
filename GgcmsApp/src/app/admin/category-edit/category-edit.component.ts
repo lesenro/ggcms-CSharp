@@ -36,28 +36,7 @@ export class CategoryEditComponent implements OnInit {
     CategoryType: 0,
     files: [],
   };
-  editorOption = {
-    language: "zh_cn", //配置语言
-    placeholderText: "请输入内容", // 文本框提示内容
-    charCounterCount: true, // 是否开启统计字数
-    imageUploadURL: this.adminServ.ServerApiUrl + "Common/fileUpload",
-    fileUploadURL: this.adminServ.ServerApiUrl + "Common/fileUpload",
-    imageUploadParams: { serverUrl: this.adminServ.ServerBaseUrl },
-    events: {
-      'froalaEditor.image.uploaded': (e, editor, response) => {
-        e.preventDefault();
-        let data = JSON.parse(response);
-        console.log(this.dataInfo);
-        //console.log(data.Data[0].url);
-        this.dataInfo.files.push({
-          "filePath": data.Data[0].url,
-          "fileType": 1,
-          "propertyName": "Content",
-        });
-      }
-    }
-    //charCounterMax: 200, // 最大输入字数,目前只支持英文字母
-  };
+
   showCategoryTree: boolean = false;
   selectedCategorys: any = { CategoryName: "顶级菜单", label: "顶级菜单", Id: 0, data: 0 };
   categorys: any[] = [];

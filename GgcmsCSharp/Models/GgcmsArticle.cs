@@ -78,6 +78,7 @@ namespace GgcmsCSharp.Models
         public int Category_Id { get; set; }
         [NotMapped]
         public List<UpFileClass> files { get; set; }
-
+        [NotMapped]
+        public List<GgcmsAttachment> attachments { get; set; }
     }
 }
