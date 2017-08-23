@@ -36,6 +36,7 @@ import { TemplateEditComponent } from './admin/template-edit/template-edit.compo
 import { ModifyPasswordComponent } from './admin/modify-password/modify-password.component';
 // import { NgArrayPipesModule, NgStringPipesModule } from 'angular-pipes';
 import { EqualValidator } from './services/equal-validator.directive';
+import { TinyEditorComponent } from './tiny-editor/tiny-editor.component';
 
 @NgModule({
   declarations: [
@@ -67,6 +68,7 @@ import { EqualValidator } from './services/equal-validator.directive';
     TemplateEditComponent,
     ModifyPasswordComponent,
     EqualValidator,
+    TinyEditorComponent,
   ],
   imports: [
     BrowserModule,

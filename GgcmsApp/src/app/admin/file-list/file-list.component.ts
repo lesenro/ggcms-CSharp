@@ -36,7 +36,7 @@ export class FileListComponent implements OnInit {
     for (var item of list) {
       let fullPath = this.severPath + "/" + item.name;
       fullPath = fullPath.replace("//", "/");
-      fullPath = this.adminServ.ServerUrl + fullPath;
+      fullPath = this.adminServ.ServerBaseUrl + fullPath;
       item.fullPath = fullPath;
       if (item.type == "dir") {
         item.typeName = "文件夹";

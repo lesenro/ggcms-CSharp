@@ -91,7 +91,9 @@ export class HomeComponent implements OnInit {
     ];
 
   constructor(private adminServ:AdminService) { }
-
+  keyupHandlerFunction(ev){
+    
+  }
   ngOnInit() {
 
   }

@@ -59,9 +59,9 @@ export class ArticleEditComponent implements OnInit {
     language: "zh_cn", //配置语言
     placeholderText: "请输入内容", // 文本框提示内容
     charCounterCount: true, // 是否开启统计字数
-    imageUploadURL: this.adminServ.ServerUrl + "api/Common/fileUpload",
-    fileUploadURL: this.adminServ.ServerUrl + "api/Common/fileUpload",
-    imageUploadParams: { serverUrl: this.adminServ.ServerUrl },
+    imageUploadURL: this.adminServ.ServerApiUrl + "Common/fileUpload",
+    fileUploadURL: this.adminServ.ServerApiUrl + "Common/fileUpload",
+    imageUploadParams: { serverUrl: this.adminServ.ServerBaseUrl },
     events: {
       'froalaEditor.image.uploaded': (e, editor, response) => {
         e.preventDefault();

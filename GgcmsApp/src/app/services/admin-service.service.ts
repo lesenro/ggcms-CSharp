@@ -1,3 +1,4 @@
+import { retry } from 'rxjs/operator/retry';
 import { Injectable, Inject } from '@angular/core';
 import { Http, Headers, RequestOptions, URLSearchParams } from "@angular/http";
 import { AppService, LocalStorageService } from "app/services";
@@ -28,7 +29,8 @@ export class PageData {
 export class AdminService {
   private localServ: LocalStorageService = new LocalStorageService();
   private options: RequestOptions;
-  ServerUrl: string = ServerBaseUrl;
+  ServerBaseUrl: string = ServerBaseUrl;
+  ServerApiUrl: string = ServerUrl;
   constructor(private http: Http, private appServ: AppService) {
     this.options = new RequestOptions();
     this.options.headers = new Headers({ 'Content-Type': 'application/json' });
@@ -59,11 +61,14 @@ export class AdminService {
     var url = ServerUrl + "Common/fileUpload";
     let formData: FormData = new FormData();
     formData.append('file', file);
-    formData.append('serverUrl', ServerUrl);
+    formData.append('serverUrl', ServerBaseUrl);
     return this.http.post(url, formData)
       .toPromise()
       .then(response => response.json())
       .catch(err => this.handleError(err));
+  }
+  getFileUploadUrl(): string {
+    return ServerUrl + "Common/fileUpload";
   }
   //用户登录
   login(data: any): Promise<any> {
@@ -643,7 +648,7 @@ export class AdminService {
       })
       .catch(err => this.handleError(err));
   }
-  ClearCache(){
+  ClearCache() {
     var url = ServerUrl + 'Common/ClearCache';
     sessionStorage.clear();
     localStorage.clear();
@@ -652,7 +657,7 @@ export class AdminService {
       .then(response => response.json())
       .catch(err => this.handleError(err));
   }
-  AppRestart(){
+  AppRestart() {
     var url = ServerUrl + 'Common/AppRestart';
     sessionStorage.clear();
     localStorage.clear();
