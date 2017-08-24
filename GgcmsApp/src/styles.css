@@ -18,6 +18,31 @@ body {
     margin-top: 10px;
 }
 
+.mg-vertical {
+    margin-bottom: 15px;
+    margin-top: 15px;
+}
+
+.mg-all {
+    margin: 15px;
+}
+
+.mg-left {
+    margin-left: 15px;
+}
+
+.mg-right {
+    margin-right: 15px;
+}
+
+.mg-bottom {
+    margin-bottom: 15px;
+}
+
+.mg-top {
+    margin-top: 15px;
+}
+
 .block {
     display: block !important;
 }
@@ -44,6 +69,10 @@ body {
 .page-content-white .page-bar {
     margin: 0 -20px;
     border-bottom: none !important;
+}
+
+.rounded-corner {
+    border-radius: 0.25rem;
 }
 
 .page-content-white .page-title {
