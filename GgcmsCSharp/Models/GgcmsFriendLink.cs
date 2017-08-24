@@ -32,5 +32,7 @@ namespace GgcmsCSharp.Models
 
         
         public string ExtAttrib { get; set; }
+        [NotMapped]
+        public List<UpFileClass> files { get; set; }
     }
 }

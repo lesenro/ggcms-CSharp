@@ -26,6 +26,10 @@ namespace GgcmsCSharp.Controllers
         public GgcmsArticle Article(int id)
         {
             GgcmsArticle article = db.GgcmsArticles.Find(id);
+            var list = from r in db.GgcmsAttachments
+                       where r.Articles_Id == article.Id
+                       select r;
+            article.attachments = list.ToList();
             article.RedirectUrl = string.IsNullOrEmpty(article.RedirectUrl.Trim()) ? "/Article/" + article.Id.ToString() : article.RedirectUrl;
             return article;
         }

@@ -166,6 +166,8 @@
 
 </div>
 <p-overlayPanel #imgPreview appendTo="body">
-    <img [src]="preViewUrl" *ngIf="preViewUrl" />
-    <video [src]="preViewVideo" #preVideo controls="true" *ngIf="preViewVideo"></video>
+    <div class="imgPreview">
+        <img [src]="preViewUrl" *ngIf="preViewUrl" class="img-fluid" />
+        <video [src]="preViewVideo" #preVideo controls="true" *ngIf="preViewVideo"></video>
+    </div>
 </p-overlayPanel>

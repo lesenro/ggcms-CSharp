@@ -666,4 +666,58 @@ export class AdminService {
       .then(response => response.json())
       .catch(err => this.handleError(err));
   }
+  //友情链接
+  //保存友情链接
+  FriendLinksSave(data: any): Promise<any> {
+    var action = data.Id > 0 ? "Edit" : "Add";
+    var url = ServerUrl + "GgcmsFriendLinks/" + action;
+    return this.http.post(url, data, this.options)
+      .toPromise()
+      .then(response => response.json())
+      .catch(err => this.handleError(err));
+  }
+  DelFriendLinks(ids: number[]): Promise<any> {
+    let params: URLSearchParams = new URLSearchParams();
+    params.append("query", "Id.in:" + ids.join("|"));
+    var url = ServerUrl + "GgcmsFriendLinks/MultDelete";
+    var opt = new RequestOptions({
+      search: params
+    });
+    return this.http.get(url, opt)
+      .toPromise()
+      .then(response => response.json())
+      .catch(err => this.handleError(err));
+  }
+  GetFriendLinks(id): Promise<any> {
+    var url = ServerUrl + "GgcmsFriendLinks/GetInfo/" + id;
+    return this.http.get(url)
+      .toPromise()
+      .then(response => {
+        let jsonData = response.json();
+        return jsonData;
+      })
+      .catch(err => this.handleError(err));
+  }
+
+  //获取系统字典列表
+  GetFriendLinksList(pn: number, all: boolean = false, query?: string): Promise<any> {
+    var url = ServerUrl + "GgcmsFriendLinks/GetList";
+    var pdata = new PageData();
+    pdata.sortby = "OrderID";
+    pdata.order = "asc";
+    pdata.query = query || "Status:0";
+    pdata.columns = "Id,WebName,LogoImg,Url";
+    if (all) {
+      pdata.limit = 1000;
+    } else {
+      pdata = this.comPages(pdata);
+    }
+    var params = this.appServ.objectToParams(pdata);
+    return this.http.get(url, {
+      search: params
+    })
+      .toPromise()
+      .then(response => response.json())
+      .catch(err => this.handleError(err));
+  }
 }

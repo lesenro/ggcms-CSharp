@@ -28,7 +28,7 @@ namespace GgcmsCSharp.ApiCtrls
         }
 
         // PUT: api/GgcmsCategories/5
-        public ResultData Edit(int id, GgcmsFriendLink GgcmsFriendLink)
+        public ResultData Edit(GgcmsFriendLink friendLink)
         {
 
             if (!ModelState.IsValid)
@@ -42,11 +42,11 @@ namespace GgcmsCSharp.ApiCtrls
                 return result;
             }
 
-            return dbtool.Edit(id, GgcmsFriendLink);
+            return dbtool.Edit(friendLink.Id, friendLink);
         }
 
         // POST: api/GgcmsCategories
-        public ResultData Add(GgcmsFriendLink GgcmsFriendLink)
+        public ResultData Add(GgcmsFriendLink friendLink)
         {
             if (!ModelState.IsValid)
             {
@@ -58,7 +58,9 @@ namespace GgcmsCSharp.ApiCtrls
                 };
                 return result;
             }
-            return dbtool.Add(GgcmsFriendLink);
+            UpFileClass.FileSave<GgcmsFriendLink>(friendLink, friendLink.files);
+
+            return dbtool.Add(friendLink);
         }
 
         // DELETE: api/GgcmsCategories/5

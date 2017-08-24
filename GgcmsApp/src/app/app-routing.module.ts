@@ -2,7 +2,7 @@ import { NgModule, Inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Routes, Router, NavigationEnd, NavigationStart, ActivatedRoute } from '@angular/router';
 import { AppService } from "app/services";
-import { TemplateComponent, TemplateEditComponent, LoginComponent, ArticleEditComponent, ArticleComponent, HomeComponent, IndexComponent, CategoryComponent, CategoryEditComponent, DictionaryComponent, DictionaryEditComponent, SettingsComponent, StylesComponent, StylesEditComponent, StaticFileComponent, StaticFileEditComponent, ModifyPasswordComponent } from "app/admin";
+import { TemplateComponent,FriendLinksEditComponent, FriendLinksComponent, TemplateEditComponent, LoginComponent, ArticleEditComponent, ArticleComponent, HomeComponent, IndexComponent, CategoryComponent, CategoryEditComponent, DictionaryComponent, DictionaryEditComponent, SettingsComponent, StylesComponent, StylesEditComponent, StaticFileComponent, StaticFileEditComponent, ModifyPasswordComponent } from "app/admin";
 import { Observable } from 'rxjs/Rx';
 
 let routes: Routes = [
@@ -147,6 +147,20 @@ let routes: Routes = [
         component: ModifyPasswordComponent,
         data: {
           "title": "密码修改"
+        },
+      },
+      {
+        path: 'links',
+        component: FriendLinksComponent,
+        data: {
+          "title": "友情链接"
+        },
+      },
+      {
+        path: 'linksEdit',
+        component: FriendLinksEditComponent,
+        data: {
+          "title": "友情链接编辑"
         },
       }
     ]
