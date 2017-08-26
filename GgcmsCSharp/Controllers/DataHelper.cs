@@ -95,13 +95,12 @@ namespace GgcmsCSharp.Controllers
             {
                 list = list.Where(x => x.Title.Contains(title));
             }
-            int count = list.Count();
-            pagination.setMaxSize(count);
-            list.Take(pagination.pageSize).Skip(pagination.getSkip());
-            
+
+            var arts = list.Skip(pagination.getSkip()).Take(pagination.pageSize);
+
             List<GgcmsArticle> articles = new List<GgcmsArticle>();
 
-            foreach (var c in list)
+            foreach (var c in arts)
             {
                 var info = new GgcmsArticle
                 {
@@ -129,6 +128,8 @@ namespace GgcmsCSharp.Controllers
                 };
                 articles.Add(info);
             }
+            int count = list.Count();
+            pagination.setMaxSize(count);
             return articles;
         }
     }

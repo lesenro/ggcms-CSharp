@@ -55,7 +55,7 @@ export class StylesComponent implements OnInit {
     }
   }
   pageChange(ev) {
-    this.appServ.goRouter('/index/styles', { page: ev.page });
+    this.appServ.goRouter('/index/styles', { page: ev });
   }
   dataLoad() {
     this.adminServ.GetStylesList(this.pdata.pagenum).then(data => {

@@ -41,7 +41,7 @@ export class DictionaryComponent implements OnInit {
     }
   }
   pageChange(ev) {
-    this.appServ.goRouter('/index/dictionary', { page: ev.page });
+    this.appServ.goRouter('/index/dictionary', { page: ev });
   }
   dataLoad() {
     this.adminServ.GetDictionaryList(this.pdata.pagenum).then(data => {

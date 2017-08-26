@@ -39,7 +39,7 @@ export class FriendLinksComponent implements OnInit {
     }
   }
   pageChange(ev) {
-    this.appServ.goRouter('/index/links', { page: ev.page });
+    this.appServ.goRouter('/index/links', { page: ev });
   }
   dataLoad() {
     this.adminServ.GetFriendLinksList(this.pdata.pagenum).then(data => {

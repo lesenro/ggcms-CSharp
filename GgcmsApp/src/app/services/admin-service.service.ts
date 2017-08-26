@@ -54,6 +54,7 @@ export class AdminService {
   }
   private comPages(pdata: PageData): PageData {
     pdata.offset = (pdata.pagenum - 1) * pdata.limit;
+    console.log(pdata);
     return pdata;
   }
   //文件上传
@@ -242,6 +243,7 @@ export class AdminService {
     var pdata = new PageData();
     pdata.query = query || "Category_Id.gt:0";
     pdata.columns = "Id,Title,CreateTime,Category_Id";
+    pdata.pagenum = pn;
     pdata = this.comPages(pdata);
     var params = this.appServ.objectToParams(pdata);
     return this.http.get(url, {
@@ -322,6 +324,7 @@ export class AdminService {
     if (all) {
       pdata.limit = 1000;
     } else {
+      pdata.pagenum = pn;
       pdata = this.comPages(pdata);
     }
     var params = this.appServ.objectToParams(pdata);
@@ -428,6 +431,7 @@ export class AdminService {
     var pdata = new PageData();
     pdata.query = query || "Id.gt:0";
     pdata.columns = "Id,StyleName,Folder,Descrip";
+    pdata.pagenum = pn;
     pdata = this.comPages(pdata);
     var params = this.appServ.objectToParams(pdata);
     return this.http.get(url, {
@@ -710,6 +714,7 @@ export class AdminService {
     if (all) {
       pdata.limit = 1000;
     } else {
+      pdata.pagenum = pn;
       pdata = this.comPages(pdata);
     }
     var params = this.appServ.objectToParams(pdata);

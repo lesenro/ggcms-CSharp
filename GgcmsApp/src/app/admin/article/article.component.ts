@@ -41,7 +41,7 @@ export class ArticleComponent implements OnInit {
     }
   }
   pageChange(ev) {
-    this.appServ.goRouter('/index/article', { page: ev.page });
+    this.appServ.goRouter('/index/article', { page: ev });
   }
   dataLoad() {
     this.adminServ.GetArticleList(this.pdata.pagenum).then(data => {

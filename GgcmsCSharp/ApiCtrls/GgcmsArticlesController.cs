@@ -120,6 +120,7 @@ namespace GgcmsCSharp.ApiCtrls
                 foreach (GgcmsAttachment attach in article.attachments)
                 {
                     attach.Articles_Id = article.Id;
+                    attach.CreateTime = DateTime.Now;
                     db.GgcmsAttachments.Add(attach);
                 }
                 db.SaveChanges();
