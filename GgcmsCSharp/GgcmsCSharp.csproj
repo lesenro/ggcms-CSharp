@@ -27,6 +27,7 @@
     </NuGetPackageImportStamp>
     <TargetFrameworkProfile />
     <TypeScriptToolsVersion>1.7</TypeScriptToolsVersion>
+    <Use64BitIISExpress />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -205,6 +206,7 @@
     </Compile>
     <Compile Include="Models\PageTemplate.cs" />
     <Compile Include="Models\Pagination.cs" />
+    <Compile Include="Models\ResultList.cs" />
     <Compile Include="Models\UpFileClass.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />

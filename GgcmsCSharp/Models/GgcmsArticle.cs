@@ -80,5 +80,63 @@ namespace GgcmsCSharp.Models
         public List<UpFileClass> files { get; set; }
         [NotMapped]
         public List<GgcmsAttachment> attachments { get; set; }
+        public GgcmsArticle Clone()
+        {
+            var info = new GgcmsArticle
+            {
+                Author = Author,
+                Category_Id = Category_Id,
+                CreateTime = CreateTime,
+                Description = Description,
+                ExtModelId = ExtModelId,
+                Hits = Hits,
+                Id = Id,
+                Keywords = Keywords,
+                MobileTmplName = MobileTmplName,
+                PageTitle = PageTitle,
+                RedirectUrl = RedirectUrl,
+                Source = Source,
+                SourceUrl = SourceUrl,
+                StyleName = StyleName,
+                Title = Title,
+                TitleImg = TitleImg,
+                TitleThumbnail = TitleThumbnail,
+                TmplName = TmplName,
+                ShowLevel = ShowLevel,
+                ShowType = ShowType,
+                Content=Content,
+                MemberId=MemberId,
+            };
+
+            return info;
+        }
+        public static GgcmsArticle Clone(dynamic dinfo)
+        {
+            var info = new GgcmsArticle
+            {
+                Author = dinfo.Author,
+                Category_Id = dinfo.Category_Id,
+                CreateTime = dinfo.CreateTime,
+                Description = dinfo.Description,
+                ExtModelId = dinfo.ExtModelId,
+                Hits = dinfo.Hits,
+                Id = dinfo.Id,
+                Keywords = dinfo.Keywords,
+                MobileTmplName = dinfo.MobileTmplName,
+                PageTitle = dinfo.PageTitle,
+                RedirectUrl = dinfo.RedirectUrl,
+                Source = dinfo.Source,
+                SourceUrl = dinfo.SourceUrl,
+                StyleName = dinfo.StyleName,
+                Title = dinfo.Title,
+                TitleImg = dinfo.TitleImg,
+                TitleThumbnail = dinfo.TitleThumbnail,
+                TmplName = dinfo.TmplName,
+                ShowLevel = dinfo.ShowLevel,
+                ShowType = dinfo.ShowType,
+            };
+
+            return info;
+        }
     }
 }

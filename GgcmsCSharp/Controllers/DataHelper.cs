@@ -44,93 +44,46 @@ namespace GgcmsCSharp.Controllers
                 return GetCategoryTopId(Categories(info.ParentId));
             }
         }
-        public List<GgcmsArticle> Articles(int[] ids, Pagination pagination, string title = "", int stype = -1, int slevel = -1, int order = 0)
+        public Pagination paginationInstance(int pnum = 1, int psize = 10)
         {
-            var list = from c in db.GgcmsArticles
-                       select new
-                       {
-                           c.Author,
-                           c.Category_Id,
-                           c.CreateTime,
-                           c.Description,
-                           c.ExtModelId,
-                           c.Hits,
-                           c.Id,
-                           c.Keywords,
-                           c.MobileTmplName,
-                           c.PageTitle,
-                           c.RedirectUrl,
-                           c.Source,
-                           c.SourceUrl,
-                           c.StyleName,
-                           c.Title,
-                           c.TitleImg,
-                           c.TitleThumbnail,
-                           c.TmplName,
-                           c.ShowLevel,
-                           c.ShowType
-                       };
-            //排序
-            if (order == 0)
+            Pagination pagination = new Pagination();
+            pagination.pageSize = psize;
+            pagination.page = pnum;
+            return pagination;
+        }
+        public ResultList<GgcmsArticle> Articles(RequestParams rparams)
+        {
+            dbTools<GgcmsArticle> dbtool = new dbTools<GgcmsArticle>(rparams);
+            ResultData result = dbtool.GetList(false);
+            ResultList<GgcmsArticle> rlist = new ResultList<GgcmsArticle>();
+            if (result.Code == 0)
             {
-                list = list.OrderByDescending(x => x.Id);
-            }
-            else if (order == 1)
-            {
-                list = list.OrderByDescending(x => x.ShowLevel);
-            }
-            //分类id
-            if (ids.Length > 0)
-            {
-                list = list.Where(x => ids.Contains(x.Category_Id));
-            }
-
-            //显示类型
-            if (stype != -1)
-            {
-                list = list.Where(x => x.ShowType >= stype);
-            }
-            //名称过滤
-            if (string.IsNullOrEmpty(title.Trim()))
-            {
-                list = list.Where(x => x.Title.Contains(title));
-            }
-
-            var arts = list.Skip(pagination.getSkip()).Take(pagination.pageSize);
-
-            List<GgcmsArticle> articles = new List<GgcmsArticle>();
-
-            foreach (var c in arts)
-            {
-                var info = new GgcmsArticle
+                rlist.List = new List<GgcmsArticle>();
+                IQueryable list = result.Data.List as IQueryable;
+                foreach (var ainfo in list)
                 {
-                    Author = c.Author,
-                    Category_Id = c.Category_Id,
-                    CreateTime = c.CreateTime,
-                    Description = c.Description,
-                    ExtModelId = c.ExtModelId,
-                    Hits = c.Hits,
-                    Id = c.Id,
-                    Keywords = c.Keywords,
-                    MobileTmplName = c.MobileTmplName,
-                    PageTitle = c.PageTitle,
-                    RedirectUrl = string.IsNullOrEmpty(c.RedirectUrl.Trim()) ? "/Article/" + c.Id.ToString() : c.RedirectUrl,
-                    Source = c.Source,
-                    SourceUrl = c.SourceUrl,
-                    StyleName = c.StyleName,
-                    Title = c.Title,
-                    TitleImg = c.TitleImg,
-                    TitleThumbnail = c.TitleThumbnail,
-                    TmplName = c.TmplName,
-                    ShowLevel = c.ShowLevel,
-                    ShowType = c.ShowType
-
-                };
-                articles.Add(info);
+                    GgcmsArticle ninfo = GgcmsArticle.Clone(ainfo);
+                    ninfo.RedirectUrl = string.IsNullOrEmpty(ninfo.RedirectUrl.Trim()) ? "/Article/" + ninfo.Id.ToString() : ninfo.RedirectUrl;
+                    rlist.List.Add(ninfo);
+                }
+                rlist.Count = (int)result.Data.Count;
             }
-            int count = list.Count();
-            pagination.setMaxSize(count);
-            return articles;
+            return rlist;
+        }
+        public List<GgcmsArticle> Articles(int[] ids, Pagination pagination)
+        {
+            RequestParams rparams = new RequestParams();
+            rparams.offset = pagination.getSkip();
+            rparams.limit = pagination.pageSize;
+            rparams.columns = "Author,Category_Id,CreateTime,Description,ExtModelId,Hits,Id,Keywords,MobileTmplName,PageTitle,RedirectUrl,Source,SourceUrl,StyleName,Title,TitleImg,TitleThumbnail,TmplName,ShowLevel,ShowType";
+            rparams.sortby = "Id";
+            rparams.order = "desc";
+            rparams.pagenum = pagination.page;
+            rparams.query = "Category_Id.in:" + string.Join("|", ids);
+            ResultList<GgcmsArticle> rlist = Articles(rparams);
+
+            pagination.setMaxSize(rlist.Count);
+            return rlist.List;
         }
     }
 }

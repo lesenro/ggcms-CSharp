@@ -60,8 +60,16 @@ namespace GgcmsCSharp.ApiCtrls
             reqParams.limit = int.Parse(Request.GetQueryString("limit")??"10");
             reqParams.offset = int.Parse(Request.GetQueryString("offset")??"0");
             reqParams.pagenum = int.Parse(Request.GetQueryString("pagenum")??"1");
-            reqParams.order = DecodeOutputString(Request.GetQueryString("order")??"");
-            reqParams.sortby = DecodeOutputString(Request.GetQueryString("sortby")??"");
+
+            reqParams.query = DecodeOutputString(Request.GetQueryString("query"));
+            reqParams.query = getQuery(reqParams.query);
+
+            reqParams.order = DecodeOutputString(Request.GetQueryString("order") ?? "");
+            reqParams.sortby = DecodeOutputString(Request.GetQueryString("sortby") ?? "");
+            orderInit();
+        }
+        public void orderInit()
+        {
             reqParams.orderby = "";
             if (!string.IsNullOrEmpty(reqParams.order))
             {
@@ -77,9 +85,6 @@ namespace GgcmsCSharp.ApiCtrls
                     reqParams.orderby = string.Join(",", ss);
                 }
             }
-            reqParams.query = DecodeOutputString(Request.GetQueryString("query"));
-            reqParams.query = getQuery(reqParams.query);
-
         }
         public string getQuery(string qs)
         {
@@ -190,16 +195,67 @@ namespace GgcmsCSharp.ApiCtrls
             reqParams = new RequestParams();
             reqParams.queryParams = new List<object>();
         }
-        public ResultData GetList()
+        public dbTools(RequestParams rparams)
         {
-            initRequestParams();
-            var list = db.Set(typeof(T))
-                .Where(reqParams.query)
-                .OrderBy(reqParams.orderby)
-                .Skip(reqParams.offset)
-                .Take(reqParams.limit)
-                .Select(reqParams.columns);
-            int count = db.Set(typeof(T)).Where(reqParams.query).Count();
+            reqParams = rparams;
+            if (!string.IsNullOrEmpty(reqParams.columns))
+            {
+                reqParams.columns = "New(" + reqParams.columns + ")";
+            }
+            reqParams.queryParams = new List<object>();
+            reqParams.query= getQuery(reqParams.query);
+            orderInit();
+        }
+        public ResultData GetList(bool initparam=true)
+        {
+            if (initparam)
+            {
+                initRequestParams();
+            }
+            IQueryable list;
+            int count = 0;
+            if (reqParams.queryParams.Count > 0)
+            {
+                string t = reqParams.queryParams[0].GetType().ToString();
+                if (t.ToLower().EndsWith("string"))
+                {
+                    List<string> ids = new List<string>();
+                    foreach (object val in reqParams.queryParams)
+                    {
+                        ids.Add(val.ToString());
+                    }
+                    list = db.Set(typeof(T)).Where(reqParams.query, ids.ToArray())
+                    .OrderBy(reqParams.orderby)
+                    .Skip(reqParams.offset)
+                    .Take(reqParams.limit)
+                    .Select(reqParams.columns);
+                    count = db.Set(typeof(T)).Where(reqParams.query, ids.ToArray()).Count();
+                }
+                else
+                {
+                    List<int> ids = new List<int>();
+                    foreach (object val in reqParams.queryParams)
+                    {
+                        ids.Add((int)val);
+                    }
+                    list = db.Set(typeof(T)).Where(reqParams.query, ids.ToArray())
+                     .OrderBy(reqParams.orderby)
+                    .Skip(reqParams.offset)
+                    .Take(reqParams.limit)
+                    .Select(reqParams.columns);
+                    count = db.Set(typeof(T)).Where(reqParams.query, ids.ToArray()).Count();
+                }
+            }
+            else
+            {
+                list = db.Set(typeof(T))
+                   .Where(reqParams.query)
+                   .OrderBy(reqParams.orderby)
+                   .Skip(reqParams.offset)
+                   .Take(reqParams.limit)
+                   .Select(reqParams.columns);
+                count = db.Set(typeof(T)).Where(reqParams.query).Count();
+            }
             ResultData result = new ResultData
             {
                 Code = 0,
