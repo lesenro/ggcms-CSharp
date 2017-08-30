@@ -1,5 +1,6 @@
 ﻿@{
     Layout = "_Layout.cshtml";
+	var fllist=ViewBag.dataHelper.Adverts("");
 }
     <section id="home-slider">
         <div class="container">
@@ -110,6 +111,9 @@
                     </div>
                 </div>
             </div>
+			@foreach (var item in fllist){
+			<div> @item.Id , @item.Title  </div>
+			}
         </div>
     </section>
      <!--/#features-->

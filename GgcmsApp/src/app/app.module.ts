@@ -16,7 +16,7 @@ import { FooterComponent } from './admin/footer/footer.component';
 import { SidebarComponent } from './admin/sidebar/sidebar.component';
 import { PageHeaderComponent } from './admin/page-header/page-header.component';
 import { SideMenusComponent } from './admin/side-menus/side-menus.component';
-import { LoginComponent, ArticleEditComponent, ArticleComponent, HomeComponent, IndexComponent, CategoryComponent, CategoryEditComponent } from "app/admin";
+import { AdvertsComponent,AdvertsEditComponent,LoginComponent, ArticleEditComponent, ArticleComponent, HomeComponent, IndexComponent, CategoryComponent, CategoryEditComponent } from "app/admin";
 import { TreeModule } from 'angular-tree-component';
 
 import { DictionaryComponent } from './admin/dictionary/dictionary.component';
@@ -38,6 +38,7 @@ import { EqualValidator } from './services/equal-validator.directive';
 import { TinyEditorComponent } from './tiny-editor/tiny-editor.component';
 import { FriendLinksComponent } from './admin/friend-links/friend-links.component';
 import { FriendLinksEditComponent } from './admin/friend-links-edit/friend-links-edit.component';
+
 
 @NgModule({
   declarations: [
@@ -72,6 +73,8 @@ import { FriendLinksEditComponent } from './admin/friend-links-edit/friend-links
     TinyEditorComponent,
     FriendLinksComponent,
     FriendLinksEditComponent,
+    AdvertsComponent,
+    AdvertsEditComponent,
   ],
   imports: [
     BrowserModule,

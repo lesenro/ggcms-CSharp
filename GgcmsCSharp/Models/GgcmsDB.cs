@@ -28,6 +28,8 @@ namespace GgcmsCSharp.Models
         public virtual DbSet<GgcmsSysConfig> GgcmsSysConfigs { get; set; }
         public virtual DbSet<GgcmsTask> GgcmsTasks { get; set; }
         public virtual DbSet<GgcmsTopic> GgcmsTopics { get; set; }
+        public virtual DbSet<GgcmsAdverts> GgcmsAdverts { get; set; }
+        
 
     }
 }

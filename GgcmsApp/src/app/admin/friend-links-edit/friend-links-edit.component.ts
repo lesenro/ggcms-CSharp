@@ -12,12 +12,14 @@ export class FriendLinksEditComponent implements OnInit {
     Id: 0,
     WebName: "",
     Url: "",
-    OrderId: 0,
+    OrderId: "0",
     Status: 0,
     LogoImg: "",
     ExtAttrib: "",
-    files:[]
+    LinkType: "",
+    files: []
   };
+  linkTypes = [];
   dataSave() {
     this.adminServ.FriendLinksSave(this.dataInfo).then(data => {
       if (data.Code == 0) {
@@ -47,11 +49,12 @@ export class FriendLinksEditComponent implements OnInit {
     }
   }
   ngOnInit() {
+    let id = -1;
     this.route
       .queryParams
       .subscribe(params => {
         // Defaults to 0 if no query param provided.
-        let id = +params['id'] || 0;
+        id = +params['id'] || 0;
         if (id > 0) {
           this.adminServ.GetFriendLinks(id).then(data => {
             if (data.Code == 0) {
@@ -60,6 +63,15 @@ export class FriendLinksEditComponent implements OnInit {
           });
         }
       });
+    this.adminServ.GetDictionaryList(1, true, "SysFlag:0,DictType:link_type").then(data => {
+      if (data.Code == 0) {
+        this.linkTypes = data.Data.List;
+        if (this.linkTypes.length > 0 && id === 0) {
+          this.dataInfo.LinkType = this.linkTypes[0].Value;
+        }
+      }
+    });
+
   }
 
 }

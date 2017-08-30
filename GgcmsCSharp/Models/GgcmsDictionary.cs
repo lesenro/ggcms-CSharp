@@ -15,8 +15,8 @@ namespace GgcmsCSharp.Models
         public string Title { get; set; }
         [StringLength(100)]
         public string Value { get; set; }
-
-        public int DictType { get; set; }
+        [StringLength(100)]
+        public string DictType { get; set; }
 
         public int OrderID { get; set; }
 

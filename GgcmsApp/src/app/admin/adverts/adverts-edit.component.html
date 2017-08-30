@@ -8,7 +8,7 @@
                 <i class="fa fa-angle-right"></i>
             </li>
             <li>
-                <a [routerLink]="['/index/links']">系统字典管理</a>
+                <a [routerLink]="['/index/ads']">广告管理</a>
                 <i class="fa fa-angle-right"></i>
             </li>
             <li>
@@ -24,20 +24,26 @@
         <input type="hidden" ng-model="data.Id">
         <div class="form-body">
             <div class="form-group row">
-                <label for="WebName" class="col-2 col-form-label">友链名称:</label>
+                <label for="Title" class="col-2 col-form-label">标题:</label>
                 <div class="col-10">
-                    <input type="text" [(ngModel)]="dataInfo.WebName" name="WebName" minlength="2" maxlength="100" class="form-control" placeholder="友链名称" required>
+                    <input type="text" [(ngModel)]="dataInfo.Title" name="Title" minlength="2" maxlength="255" class="form-control" placeholder="标题" required>
                 </div>
             </div>
             <div class="form-group row">
-                <label for="Url" class="col-2 col-form-label">友链地址:</label>
-                <div class="col-10">
-                    <input type="text" [(ngModel)]="dataInfo.Url" name="Url" minlength="2" maxlength="100" class="form-control" placeholder="友链地址" required>
+                <label for="Url" class="col-2 col-form-label">URL地址:</label>
+                <div class="col-4">
+                    <input type="text" [(ngModel)]="dataInfo.Url" name="Url" minlength="2" maxlength="255" class="form-control" placeholder="URL地址">
+                </div>
+                <label for="RedirectUrl" class="col-2 col-form-label">广告分组:</label>
+                <div class="col-4">
+                    <select name="GroupKey" class="form-control" [(ngModel)]="dataInfo.GroupKey">
+                        <option *ngFor="let item of AdsGroups" [value]="item.Value">{{item.Title}}</option>
+                    </select>
                 </div>
             </div>
             <div class="form-group row">
-                <label class="col-2 col-form-label">LOGO图片:</label>
-                <div class="col-10">
+                <label for="RedirectUrl" class="col-2 col-form-label">图片:</label>
+                <div class="col-6">
                     <div class="input-group">
                         <input type="text" class="form-control input-medium" [(ngModel)]="dataInfo.LogoImg" name="Logo" id="Logo" placeholder="可以直接填写Url地址" />
                         <div class="btn-group">
@@ -51,38 +57,39 @@
                 </div>
             </div>
             <div class="form-group row">
-                <label class="col-2 col-form-label">是否显示:</label>
+                <label for="RedirectUrl" class="col-2 col-form-label">内容:</label>
                 <div class="col-10">
-                    <div class="mt-radio-inline">
-                        <label class="mt-radio mt-radio-outline">
-                            <input type="radio" name="Status" id="Status" [value]="0" checked> 显示
-                            <span></span>
-                        </label>
-                        <label class="mt-radio mt-radio-outline">
-                            <input type="radio" name="Status" id="Status" [value]="1"> 不显示
-                            <span></span>
-                        </label>
+                    <div class="portlet light bordered">
+                        <codemirror #content="ngModel" name="content" [(ngModel)]="dataInfo.Content" [config]="config"></codemirror>
                     </div>
                 </div>
             </div>
             <div class="form-group row">
-                <label for="RedirectUrl" class="col-2 col-form-label">链接类型:</label>
+                <label for="RedirectUrl" class="col-2 col-form-label">排序:</label>
                 <div class="col-4">
-                    <select name="LinkType" class="form-control" [(ngModel)]="dataInfo.LinkType">
-                        <option *ngFor="let item of linkTypes" [value]="item.Value">{{item.Title}}</option>
-                    </select>
+                    <input type="number" min="0" max="10000" [(ngModel)]="dataInfo.OrderID" name="OrderID" minlength="1" maxlength="5" class="form-control" placeholder="排序" />
                 </div>
-                <label for="OrderID" class="col-2 col-form-label">排序id:</label>
+                <label for="RedirectUrl" class="col-2 col-form-label">状态:</label>
                 <div class="col-4">
-                    <input type="text" min="0" max="10000" [(ngModel)]="dataInfo.OrderId" name="OrderId" minlength="1" maxlength="5" class="form-control" placeholder="排序" required>
+                    <div class="mt-radio-inline">
+                        <label class="mt-radio mt-radio-outline">
+                        <input type="radio" name="Status" id="Status" [value]="0" checked> 显示
+                        <span></span>
+                    </label>
+                        <label class="mt-radio mt-radio-outline">
+                        <input type="radio" name="Status" id="Status" [value]="1"> 不显示
+                        <span></span>
+                    </label>
+                    </div>
                 </div>
             </div>
             <div class="form-group row">
-                <label class="col-2 col-form-label">扩展属性:</label>
+                <label class="col-2 col-form-label">描述:</label>
                 <div class="col-10">
-                    <input type="text" [(ngModel)]="dataInfo.ExtAttrib" name="ExtAttrib" maxlength="100" class="form-control" placeholder="扩展属性">
+                    <textarea name="Describe" maxlength="255" id="Describe" [(ngModel)]="dataInfo.Describe" placeholder="描述" class="form-control" rows="3"></textarea>
                 </div>
             </div>
+
         </div>
         <div class="form-actions">
             <hr/>
@@ -95,9 +102,3 @@
     </form>
 
 </div>
-
-<p-overlayPanel #imgPreview appendTo="body">
-    <div class="imgPreview">
-        <img [src]="dataInfo.LogoImg" class="img-fluid" />
-    </div>
-</p-overlayPanel>

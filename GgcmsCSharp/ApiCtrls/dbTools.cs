@@ -107,7 +107,7 @@ namespace GgcmsCSharp.ApiCtrls
                             bool isString = pinfo.PropertyType.ToString().ToLower().EndsWith("string");
                             if (isString)
                             {
-                                val = "'" + val + "'";
+                                val = "\"" + val + "\"";
                             }
                             if (keys.Length == 1)
                             {
@@ -123,7 +123,7 @@ namespace GgcmsCSharp.ApiCtrls
                                         lquery.Add(k1 + " = " + val);
                                         break;
                                     case "contains":
-                                        lquery.Add(k1 + " like " + "'%" + val.Replace("'", "") + "%'");
+                                        lquery.Add(k1 + ".Contains(" + val + ")");
                                         break;
                                     case "gt":
                                         lquery.Add(k1 + " > " + val);
@@ -144,10 +144,10 @@ namespace GgcmsCSharp.ApiCtrls
                                         lquery.Add(k1 + " <> " + val);
                                         break;
                                     case "startswith":
-                                        lquery.Add(k1 + " like " + "'" + val.Replace("'", "") + "%'");
+                                        lquery.Add(k1 + ".StartsWith(" + val + ")");
                                         break;
                                     case "endswith":
-                                        lquery.Add(k1 + " like " + "'%" + val.Replace("'", "") + "'");
+                                        lquery.Add(k1 + ".endswith(" + val + ")");
                                         break;
                                     case "in":
                                         lquery.Add("@" + paramIdx.ToString() + ".Contains(outerIt." + k1 + ")");

@@ -52,9 +52,9 @@ export class AdminService {
     }
     return Promise.reject(error.message || error);
   }
+  //计算分页
   private comPages(pdata: PageData): PageData {
     pdata.offset = (pdata.pagenum - 1) * pdata.limit;
-    console.log(pdata);
     return pdata;
   }
   //文件上传
@@ -298,7 +298,7 @@ export class AdminService {
     pdata.limit = 10000;
     pdata.sortby = "OrderID";
     pdata.order = "asc";
-    pdata.columns = "Id,Title,describe";
+    pdata.columns = "Id,Title,describe,Value";
     var params = this.appServ.objectToParams(pdata);
     return this.http.get(url, {
       search: params
@@ -711,6 +711,62 @@ export class AdminService {
     pdata.order = "asc";
     pdata.query = query || "Status:0";
     pdata.columns = "Id,WebName,LogoImg,Url";
+    if (all) {
+      pdata.limit = 1000;
+    } else {
+      pdata.pagenum = pn;
+      pdata = this.comPages(pdata);
+    }
+    var params = this.appServ.objectToParams(pdata);
+    return this.http.get(url, {
+      search: params
+    })
+      .toPromise()
+      .then(response => response.json())
+      .catch(err => this.handleError(err));
+  }
+
+    //广告管理
+  //保存广告
+  AdvertsSave(data: any): Promise<any> {
+    var action = data.Id > 0 ? "Edit" : "Add";
+    var url = ServerUrl + "GgcmsAdverts/" + action;
+    return this.http.post(url, data, this.options)
+      .toPromise()
+      .then(response => response.json())
+      .catch(err => this.handleError(err));
+  }
+  DelAdverts(ids: number[]): Promise<any> {
+    let params: URLSearchParams = new URLSearchParams();
+    params.append("query", "Id.in:" + ids.join("|"));
+    var url = ServerUrl + "GgcmsAdverts/MultDelete";
+    var opt = new RequestOptions({
+      search: params
+    });
+    return this.http.get(url, opt)
+      .toPromise()
+      .then(response => response.json())
+      .catch(err => this.handleError(err));
+  }
+  GetAdverts(id): Promise<any> {
+    var url = ServerUrl + "GgcmsAdverts/GetInfo/" + id;
+    return this.http.get(url)
+      .toPromise()
+      .then(response => {
+        let jsonData = response.json();
+        return jsonData;
+      })
+      .catch(err => this.handleError(err));
+  }
+
+  //获取系统字典列表
+  GetAdvertsList(pn: number, all: boolean = false, query?: string): Promise<any> {
+    var url = ServerUrl + "GgcmsAdverts/GetList";
+    var pdata = new PageData();
+    pdata.sortby = "OrderID";
+    pdata.order = "asc";
+    pdata.query = query || "Status:0";
+    pdata.columns = "Id,Title,Url,Status";
     if (all) {
       pdata.limit = 1000;
     } else {

@@ -39,7 +39,7 @@
                 <label for="RedirectUrl" class="col-2 col-form-label">词条类型:</label>
                 <div class="col-4">
                     <select name="DictType" class="form-control" [(ngModel)]="dataInfo.DictType" required>
-                        <option *ngFor="let item of dictTypes" [value]="item.Id">{{item.Title}}</option>
+                        <option *ngFor="let item of dictTypes" [value]="item.Value">{{item.Title}}</option>
                     </select>
                 </div>
                 <label for="OrderID" class="col-2 col-form-label">排序id:</label>

@@ -166,6 +166,8 @@
     <None Include="Properties\PublishProfiles\todir.pubxml" />
     <Content Include="sqldb\20170709-01.sql" />
     <Content Include="sqldb\20170705-01.sql" />
+    <Content Include="sqldb\20170830-01.sql" />
+    <Content Include="sqldb\20170829-01.sql" />
     <Content Include="sqldb\ggcmsdb.sql" />
     <Content Include="Web.config" />
   </ItemGroup>
@@ -174,6 +176,7 @@
     <Compile Include="ApiCtrls\dbTools.cs" />
     <Compile Include="ApiCtrls\FileManagerController.cs" />
     <Compile Include="ApiCtrls\GgcmsArticlePagesController.cs" />
+    <Compile Include="ApiCtrls\GgcmsAdvertsController.cs" />
     <Compile Include="ApiCtrls\GgcmsArticlesController.cs" />
     <Compile Include="ApiCtrls\GgcmsAuthorizeAttribute.cs" />
     <Compile Include="ApiCtrls\CacheHelper.cs" />
@@ -204,6 +207,27 @@
     <Compile Include="Migrations\201706290753311_分类中添加文章数统计.Designer.cs">
       <DependentUpon>201706290753311_分类中添加文章数统计.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201708290947439_增加广告表GgcmsAdverts.cs" />
+    <Compile Include="Migrations\201708290947439_增加广告表GgcmsAdverts.Designer.cs">
+      <DependentUpon>201708290947439_增加广告表GgcmsAdverts.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201708291024185_广告表增加URL字段.cs" />
+    <Compile Include="Migrations\201708291024185_广告表增加URL字段.Designer.cs">
+      <DependentUpon>201708291024185_广告表增加URL字段.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201708291030174_广告表增加Image字段.cs" />
+    <Compile Include="Migrations\201708291030174_广告表增加Image字段.Designer.cs">
+      <DependentUpon>201708291030174_广告表增加Image字段.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201708300038156_修改友情链接类型LinkType为字符型.cs" />
+    <Compile Include="Migrations\201708300038156_修改友情链接类型LinkType为字符型.Designer.cs">
+      <DependentUpon>201708300038156_修改友情链接类型LinkType为字符型.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201708300131572_修改字典类型DictType为字符型.cs" />
+    <Compile Include="Migrations\201708300131572_修改字典类型DictType为字符型.Designer.cs">
+      <DependentUpon>201708300131572_修改字典类型DictType为字符型.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Models\GgcmsAdverts.cs" />
     <Compile Include="Models\PageTemplate.cs" />
     <Compile Include="Models\Pagination.cs" />
     <Compile Include="Models\ResultList.cs" />
@@ -312,6 +336,21 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201706290753311_分类中添加文章数统计.resx">
       <DependentUpon>201706290753311_分类中添加文章数统计.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201708290947439_增加广告表GgcmsAdverts.resx">
+      <DependentUpon>201708290947439_增加广告表GgcmsAdverts.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201708291024185_广告表增加URL字段.resx">
+      <DependentUpon>201708291024185_广告表增加URL字段.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201708291030174_广告表增加Image字段.resx">
+      <DependentUpon>201708291030174_广告表增加Image字段.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201708300038156_修改友情链接类型LinkType为字符型.resx">
+      <DependentUpon>201708300038156_修改友情链接类型LinkType为字符型.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201708300131572_修改字典类型DictType为字符型.resx">
+      <DependentUpon>201708300131572_修改字典类型DictType为字符型.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
