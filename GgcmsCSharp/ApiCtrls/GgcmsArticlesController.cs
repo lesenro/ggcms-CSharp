@@ -88,6 +88,7 @@ namespace GgcmsCSharp.ApiCtrls
                     if (attach.Id == 0)
                     {
                         attach.Articles_Id = article.Id;
+                        attach.CreateTime = DateTime.Now;
                         db.GgcmsAttachments.Add(attach);
                     }
                 }
