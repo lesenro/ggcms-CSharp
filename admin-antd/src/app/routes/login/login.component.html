@@ -1,0 +1,60 @@
+<div class="login-root">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-4 col-md-offset-4">
+        <div class="text-center login-top">
+          <img src="assets/imgs/logo.png" alt="" />
+          <p class="text-muted">后台管理系统</p>
+        </div>
+        <form nz-form [formGroup]="validateForm" class="login-form center-block" (ngSubmit)="_submitForm()">
+          <div nz-form-item>
+            <div nz-form-control [nzValidateStatus]="validateForm.controls.userName">
+              <nz-input formControlName="userName" [nzPlaceHolder]="'帐号'" [nzSize]="'large'">
+                <ng-template #prefix>
+                  <i class="anticon anticon-user"></i>
+                </ng-template>
+              </nz-input>
+              <div nz-form-explain *ngIf="validateForm.controls.userName.dirty&&validateForm.controls.userName.invalid">请输入帐号!</div>
+            </div>
+          </div>
+          <div nz-form-item>
+            <div nz-form-control [nzValidateStatus]="validateForm.controls.password">
+              <nz-input formControlName="password" [nzType]="'密码'" [nzPlaceHolder]="'Password'" [nzSize]="'large'">
+                <ng-template #prefix>
+                  <i class="anticon anticon-lock"></i>
+                </ng-template>
+              </nz-input>
+              <div nz-form-explain *ngIf="validateForm.controls.password.dirty&&validateForm.controls.password.invalid">请输入密码!</div>
+            </div>
+          </div>
+          <div nz-form-item>
+            <div nz-row [nzGutter]="8">
+              <div nz-col [nzSpan]="16">
+                <div nz-form-control [nzValidateStatus]="validateForm.controls.captcha">
+                  <nz-input formControlName="captcha" [nzPlaceHolder]="'验证码'" [nzSize]="'large'">
+                    <ng-template #prefix>
+                      <i class="anticon anticon-check-circle-o"></i>
+                    </ng-template>
+                  </nz-input>
+                  <div nz-form-explain *ngIf="validateForm.controls.captcha.dirty&&validateForm.controls.captcha.invalid">请输入4位验证码!</div>
+                </div>
+              </div>
+              <div nz-col [nzSpan]="8" class="text-right">
+                <nz-tooltip [nzTitle]="'看不清?点击换一张.'">
+                  <img nz-tooltip [src]="CaptchaUrl" alt="" class="login-captcha" (click)="captchaChange()" />
+                </nz-tooltip>
+              </div>
+            </div>
+
+          </div>
+          <div nz-form-item>
+            <div nz-form-control>
+              <button nz-button class="login-form-button btn btn-block" [nzType]="'primary'" [nzSize]="'large'">登录</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <footer></footer>
+</div>

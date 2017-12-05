@@ -45,13 +45,13 @@
                 <label for="RedirectUrl" class="col-2 col-form-label">图片:</label>
                 <div class="col-6">
                     <div class="input-group">
-                        <input type="text" class="form-control input-medium" [(ngModel)]="dataInfo.LogoImg" name="Logo" id="Logo" placeholder="可以直接填写Url地址" />
+                        <input type="text" class="form-control input-medium" [(ngModel)]="dataInfo.Image" name="Logo" id="Logo" placeholder="可以直接填写Url地址" />
                         <div class="btn-group">
                             <file-upload (fileSelect)="fileSelect($event)" [fileType]="'image/*'" [fileTypeErr]="'上传文件类型不正确'" [fileMaxSize]="'500KB'" [fileMaxSizeErr]="'文件太大了'">
                                 <button class="btn blue" type="button"><i class="icon-picture"></i> 选择图片 </button>
                             </file-upload>
-                            <button type="button" class="btn green" name="btnPreviewLogo" (click)="imgPreview.toggle($event)" *ngIf="dataInfo.LogoImg"> <i class="icon-eye"></i> 预览 </button>
-                            <button type="button" class="btn btn-danger" name="btnClearLogo" *ngIf="dataInfo.LogoImg" (click)="dataInfo.LogoImg=''"> <i class="icon-trash"></i> 清除 </button>
+                            <button type="button" class="btn green" name="btnPreviewLogo" (click)="imgPreview.toggle($event)" *ngIf="dataInfo.Image"> <i class="icon-eye"></i> 预览 </button>
+                            <button type="button" class="btn btn-danger" name="btnClearLogo" *ngIf="dataInfo.Image" (click)="dataInfo.Image=''"> <i class="icon-trash"></i> 清除 </button>
                         </div>
                     </div>
                 </div>

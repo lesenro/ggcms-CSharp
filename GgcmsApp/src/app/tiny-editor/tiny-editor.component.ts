@@ -16,6 +16,7 @@ import 'tinymce/plugins/wordcount';
 import 'tinymce/plugins/visualblocks';
 import 'tinymce/plugins/visualchars';
 import 'tinymce/plugins/code';
+import 'tinymce/plugins/codesample';
 import 'tinymce/plugins/fullscreen';
 import 'tinymce/plugins/insertdatetime';
 import 'tinymce/plugins/media';
@@ -60,10 +61,10 @@ export class TinyEditorComponent implements AfterViewInit, OnDestroy {
         'advlist autolink lists link image charmap print preview hr anchor pagebreak',
         'searchreplace wordcount visualblocks visualchars code fullscreen',
         'insertdatetime media nonbreaking save table contextmenu directionality',
-        'emoticons template paste textcolor colorpicker textpattern imagetools toc help'
+        'emoticons template paste textcolor colorpicker textpattern imagetools toc help code codesample'
       ],
       toolbar1: 'undo redo | insert | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent ',
-      toolbar2: 'link image media | forecolor backcolor | preview print',
+      toolbar2: 'link image media | forecolor backcolor | preview print code codesample',
       image_advtab: true,
       skin_url: 'assets/plugins/tinymce/skins/lightgray',
       images_upload_url: this.adminServ.getFileUploadUrl(),
@@ -83,6 +84,7 @@ export class TinyEditorComponent implements AfterViewInit, OnDestroy {
         //   const content = editor.getContent();
         //   this.valueChange.emit(content);
         // });
+        editor.contentCSS.push("assets/plugins/tinymce/plugins/codesample/prism.css");
         editor.on('change', () => {
           const content = editor.getContent();
           this.valueChange.emit(content);
@@ -90,9 +92,11 @@ export class TinyEditorComponent implements AfterViewInit, OnDestroy {
       },
       init_instance_callback: editor => {
         editor.setContent(this.value);
+        //editor.setContentCSS("aaa.css");
       },
       languages: "zh_CN",
       menubar: false,
+      contentCSS:"aaa.css"
     };
     var option = Object.assign({}, defaultOptions, this.options);
     tinymce.init(option);

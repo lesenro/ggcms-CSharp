@@ -18,9 +18,30 @@ export class AdvertsEditComponent implements OnInit {
     Status: 0,
     Describe: "",
     Url: "",
-    Image: ""
+    Image: "",
+    files:[]
   };
   AdsGroups = [];
+  fileSelect(ev) {
+    if (ev.Code == 0) {
+      this.adminServ.fileUpload(ev.Data).then(data => {
+        if (data.Code == 0) {
+          let idx = this.dataInfo.files.indexOf(data.Data.url);
+          if (idx != -1) {
+            this.dataInfo.files.splice(idx, 1);
+          }
+          this.dataInfo.files.push({
+            "filePath": data.Data[0].url,
+            "fileType": 0,
+            "propertyName": "Image",
+          });
+          this.dataInfo.Image = data.link;
+        }
+      });
+    } else {
+      this.appServ.showToaster(ev.Msg);
+    }
+  }
   dataSave() {
     this.adminServ.AdvertsSave(this.dataInfo).then(data => {
       if (data.Code == 0) {
