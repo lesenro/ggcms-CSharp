@@ -2,6 +2,7 @@
 using GgcmsCSharp.Models;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Web;
 
@@ -10,10 +11,15 @@ namespace GgcmsCSharp.Controllers
     public class DataHelper
     {
         private GgcmsDB db = new GgcmsDB();
+        public string Prefix { get; set; }
+        public DataHelper()
+        {
+            Prefix = ConfigurationManager.AppSettings["UploadPrefix"].ToString();
+        }
         //获取分类列表
         public List<GgcmsCategory> Categories()
         {
-            List<GgcmsCategory> list = CacheHelper.GetCategorys();
+            List<GgcmsCategory> list = CacheHelper.GetCategorys(Prefix);
             return list;
         }
         //获取单个分类
@@ -30,7 +36,7 @@ namespace GgcmsCSharp.Controllers
                        where r.Articles_Id == article.Id
                        select r;
             article.attachments = list.ToList();
-            article.RedirectUrl = string.IsNullOrEmpty(article.RedirectUrl.Trim()) ? "/Article/" + article.Id.ToString() : article.RedirectUrl;
+            article.RedirectUrl = string.IsNullOrEmpty(article.RedirectUrl.Trim()) ? Prefix+"/Article/" + article.Id.ToString() : article.RedirectUrl;
             return article;
         }
         public int GetCategoryTopId(GgcmsCategory info)
@@ -117,7 +123,7 @@ namespace GgcmsCSharp.Controllers
                 foreach (var ainfo in list)
                 {
                     GgcmsArticle ninfo = GgcmsArticle.Clone(ainfo);
-                    ninfo.RedirectUrl = string.IsNullOrEmpty(ninfo.RedirectUrl.Trim()) ? "/Article/" + ninfo.Id.ToString() : ninfo.RedirectUrl;
+                    ninfo.RedirectUrl = string.IsNullOrEmpty(ninfo.RedirectUrl.Trim()) ? Prefix+"/Article/" + ninfo.Id.ToString() : ninfo.RedirectUrl;
                     rlist.List.Add(ninfo);
                 }
                 rlist.Count = (int)result.Data.Count;

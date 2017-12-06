@@ -68,15 +68,15 @@ namespace GgcmsCSharp.Models
         public List<UpFileClass> files { get; set; }
         [NotMapped]
         public List<GgcmsCategory> subCategory { get; set; }
-        public static List<GgcmsCategory> GetCategoryList(int pid, List<GgcmsCategory> categorys)
+        public static List<GgcmsCategory> GetCategoryList(int pid, List<GgcmsCategory> categorys,string prefix)
         {
             var list = (from c in categorys
                        where c.ParentId == pid
                        select c).ToList();
             foreach(var item in list)
             {
-                item.RedirectUrl = string.IsNullOrEmpty(item.RedirectUrl.Trim()) ? "/Category/" + item.Id.ToString() : item.RedirectUrl;
-                item.subCategory = GgcmsCategory.GetCategoryList(item.Id, categorys);
+                item.RedirectUrl = string.IsNullOrEmpty(item.RedirectUrl.Trim()) ? prefix+"/Category/" + item.Id.ToString() : item.RedirectUrl;
+                item.subCategory = GgcmsCategory.GetCategoryList(item.Id, categorys, prefix);
             }
             return list as List<GgcmsCategory>;
         }

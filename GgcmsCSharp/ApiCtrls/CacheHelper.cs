@@ -36,7 +36,7 @@ namespace GgcmsCSharp.ApiCtrls
             }
             return cfgs;
         }
-        public static List<GgcmsCategory> GetCategorys()
+        public static List<GgcmsCategory> GetCategorys(string prefix="")
         {
             string cacheName = CacheTypeNames.Categorys.ToString();
             List<GgcmsCategory> categorys = new List<GgcmsCategory>();
@@ -48,7 +48,7 @@ namespace GgcmsCSharp.ApiCtrls
                             where r.CategoryType == 0
                             orderby r.OrderId ascending
                             select r).ToList();
-                categorys = GgcmsCategory.GetCategoryList(0, tmps as List<GgcmsCategory>);
+                categorys = GgcmsCategory.GetCategoryList(0, tmps as List<GgcmsCategory>, prefix);
                 SetCache(cacheName, categorys);
             }
             else

@@ -37,6 +37,7 @@ namespace GgcmsCSharp.Controllers
             ViewBag.dataHelper = dataHelper;
             ViewBag.topId = -1;
             ViewBag.AppVirtualPath = HttpRuntime.AppDomainAppVirtualPath;
+            ViewBag.Prefix = dataHelper.Prefix;
             CacheHelper.SetPages(Request.Url.AbsolutePath);
         }
         [OutputCache(CacheProfile = "IndexCache")]
@@ -55,7 +56,7 @@ namespace GgcmsCSharp.Controllers
             GgcmsCategory category = dataHelper.Categories(id);
             Pagination pagination = new Pagination();
             pagination.page = page;
-            pagination.baseLink = "/Category/" + id.ToString() + "/{page}";
+            pagination.baseLink = dataHelper.Prefix+"/Category/" + id.ToString() + "/{page}";
             pagination.pageSize = Tools.parseInt(sysConfigs["cfg_page_size"], 10);
             if (category.PageSize > 0)
             {
