@@ -65,6 +65,7 @@ export class AdvertsEditComponent implements OnInit {
           this.adminServ.GetAdverts(id).then(data => {
             if (data.Code == 0) {
               this.dataInfo = data.Data;
+              this.dataInfo.files = [];
             }
           });
         }

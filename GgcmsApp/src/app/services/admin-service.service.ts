@@ -1,7 +1,8 @@
 import { retry } from 'rxjs/operator/retry';
 import { Injectable, Inject } from '@angular/core';
 import { Http, Headers, RequestOptions, URLSearchParams } from "@angular/http";
-import { AppService, LocalStorageService } from "app/services";
+import { AppService } from "app/services/app-service.service";
+import { LocalStorageService } from "app/services/LocalStorageService";
 
 const ServerUrl = window["GgcmsServerConfig"].serviceUrl + window["GgcmsServerConfig"].apiPath;
 const ServerBaseUrl = window["GgcmsServerConfig"].serviceUrl;

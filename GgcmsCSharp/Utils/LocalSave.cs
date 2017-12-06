@@ -14,11 +14,13 @@ namespace GgcmsCSharp.Utils
 
         private string root { get; set; }
         private string rootpath { get; set; }
+        private string UploadPrefix { get; set; }
         public LocalSave()
         {
             serverUrl = "";
             string staticDir = ConfigurationManager.AppSettings["StaticDir"].ToString();
             string uploadDir = ConfigurationManager.AppSettings["UploadDir"].ToString();
+            UploadPrefix = ConfigurationManager.AppSettings["UploadPrefix"].ToString();
             DateTime dtime = DateTime.Now;
             root = "/" + staticDir + "/" + uploadDir + "/" + dtime.ToString("yyyyMM");
             rootpath = HttpContext.Current.Server.MapPath("~" + root);
@@ -44,12 +46,12 @@ namespace GgcmsCSharp.Utils
             string ext = Path.GetExtension(tempFile);
             string fn = Path.GetFileName(tempFile);
             string filePath = HttpContext.Current.Server.MapPath("~" + root + "/" + fn);
-            string url = root + "/" + fn;
+            string url = UploadPrefix + root + "/" + fn;
             while (File.Exists(filePath))
             {
                 fn = Path.GetFileName(Path.GetTempFileName()) + ext;
                 filePath = HttpContext.Current.Server.MapPath("~" + root + "/" + fn);
-                url = root + "/" + fn;
+                url = UploadPrefix+root + "/" + fn;
             }
             File.Move(tempFile, filePath);
             return new ResultData

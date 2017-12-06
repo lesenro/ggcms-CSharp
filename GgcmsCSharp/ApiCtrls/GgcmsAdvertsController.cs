@@ -45,12 +45,12 @@ namespace GgcmsCSharp.ApiCtrls
                 };
                 return result;
             }
-
+            UpFileClass.FileSave<GgcmsAdverts>(adverts, adverts.files);
             return dbtool.Edit(adverts.Id, adverts);
         }
 
         // POST: api/GgcmsCategories
-        public ResultData Add(GgcmsAdverts GgcmsAdverts)
+        public ResultData Add(GgcmsAdverts adverts)
         {
             if (!ModelState.IsValid)
             {
@@ -62,7 +62,8 @@ namespace GgcmsCSharp.ApiCtrls
                 };
                 return result;
             }
-            return dbtool.Add(GgcmsAdverts);
+            UpFileClass.FileSave<GgcmsAdverts>(adverts, adverts.files);
+            return dbtool.Add(adverts);
         }
 
         // DELETE: api/GgcmsCategories/5

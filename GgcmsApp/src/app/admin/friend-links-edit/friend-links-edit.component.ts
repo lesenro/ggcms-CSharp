@@ -59,6 +59,7 @@ export class FriendLinksEditComponent implements OnInit {
           this.adminServ.GetFriendLinks(id).then(data => {
             if (data.Code == 0) {
               this.dataInfo = data.Data;
+              this.dataInfo.files = [];              
             }
           });
         }

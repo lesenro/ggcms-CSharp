@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Web.Routing;
 using System.Text.RegularExpressions;
 using GgcmsCSharp.Utils;
+using System.Web;
 
 namespace GgcmsCSharp.Controllers
 {
@@ -35,6 +36,7 @@ namespace GgcmsCSharp.Controllers
             ViewBag.sysConfig = sysConfigs;
             ViewBag.dataHelper = dataHelper;
             ViewBag.topId = -1;
+            ViewBag.AppVirtualPath = HttpRuntime.AppDomainAppVirtualPath;
             CacheHelper.SetPages(Request.Url.AbsolutePath);
         }
         [OutputCache(CacheProfile = "IndexCache")]

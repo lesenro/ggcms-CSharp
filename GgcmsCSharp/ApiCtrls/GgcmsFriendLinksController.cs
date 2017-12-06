@@ -41,7 +41,7 @@ namespace GgcmsCSharp.ApiCtrls
                 };
                 return result;
             }
-
+            UpFileClass.FileSave<GgcmsFriendLink>(friendLink, friendLink.files);
             return dbtool.Edit(friendLink.Id, friendLink);
         }
 

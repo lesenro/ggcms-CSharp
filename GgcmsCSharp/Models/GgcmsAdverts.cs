@@ -1,13 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.ComponentModel.DataAnnotations;
-using GgcmsCSharp.Utils;
-
+﻿
 namespace GgcmsCSharp.Models
 {
-    public class GgcmsAdverts
+    using GgcmsCSharp.Utils;
+    using System;
+    using System.Collections.Generic;
+    using System.ComponentModel.DataAnnotations;
+    using System.ComponentModel.DataAnnotations.Schema;
+    using System.Data.Entity.Spatial;
+    public partial class GgcmsAdverts
     {
         public int Id { get; set; }
 
@@ -33,6 +33,10 @@ namespace GgcmsCSharp.Models
 
         [StringLength(255)]
         public string Describe { get; set; }
+
+        [NotMapped]
+        public List<UpFileClass> files { get; set; }
+
         public static GgcmsAdverts Clone(dynamic data)
         {
             GgcmsAdverts info = new GgcmsAdverts();
