@@ -764,8 +764,8 @@ export class AdminService {
   GetAdvertsList(pn: number, all: boolean = false, query?: string): Promise<any> {
     var url = ServerUrl + "GgcmsAdverts/GetList";
     var pdata = new PageData();
-    pdata.sortby = "OrderID";
-    pdata.order = "asc";
+    pdata.sortby = "GroupKey,OrderID";
+    pdata.order = "asc,asc";
     pdata.query = query || "Status:0";
     pdata.columns = "Id,Title,Url,Status";
     if (all) {

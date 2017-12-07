@@ -224,12 +224,18 @@ namespace GgcmsCSharp.ApiCtrls
                     {
                         ids.Add(val.ToString());
                     }
-                    list = db.Set(typeof(T)).Where(reqParams.query, ids.ToArray())
-                    .OrderBy(reqParams.orderby)
-                    .Skip(reqParams.offset)
-                    .Take(reqParams.limit)
-                    .Select(reqParams.columns);
+                    list = db.Set(typeof(T));
+                    list = list.Where(reqParams.query, ids.ToArray());
                     count = db.Set(typeof(T)).Where(reqParams.query, ids.ToArray()).Count();
+                    if (!string.IsNullOrEmpty(reqParams.orderby))
+                    {
+                        list = list.OrderBy(reqParams.orderby);
+                    }
+                    if (!string.IsNullOrEmpty(reqParams.columns))
+                    {
+                        list = list.Select(reqParams.columns);
+                    }
+                    list = list.Skip(reqParams.offset).Take(reqParams.limit);
                 }
                 else
                 {
@@ -238,23 +244,42 @@ namespace GgcmsCSharp.ApiCtrls
                     {
                         ids.Add((int)val);
                     }
-                    list = db.Set(typeof(T)).Where(reqParams.query, ids.ToArray())
-                     .OrderBy(reqParams.orderby)
-                    .Skip(reqParams.offset)
-                    .Take(reqParams.limit)
-                    .Select(reqParams.columns);
+
+                    list = db.Set(typeof(T));
+                    list = list.Where(reqParams.query, ids.ToArray());
                     count = db.Set(typeof(T)).Where(reqParams.query, ids.ToArray()).Count();
+                    if (!string.IsNullOrEmpty(reqParams.orderby))
+                    {
+                        list = list.OrderBy(reqParams.orderby);
+                    }
+                    if (!string.IsNullOrEmpty(reqParams.columns))
+                    {
+                        list = list.Select(reqParams.columns);
+                    }
+                    list = list.Skip(reqParams.offset).Take(reqParams.limit);
                 }
             }
             else
             {
-                list = db.Set(typeof(T))
-                   .Where(reqParams.query)
-                   .OrderBy(reqParams.orderby)
-                   .Skip(reqParams.offset)
-                   .Take(reqParams.limit)
-                   .Select(reqParams.columns);
-                count = db.Set(typeof(T)).Where(reqParams.query).Count();
+                list = db.Set(typeof(T));
+                if (!string.IsNullOrEmpty(reqParams.query))
+                {
+                    list = list.Where(reqParams.query);
+                    count = db.Set(typeof(T)).Where(reqParams.query).Count();
+                }
+                else
+                {
+                    count = db.Set(typeof(T)).Count();
+                }
+                if (!string.IsNullOrEmpty(reqParams.orderby))
+                {
+                    list = list.OrderBy(reqParams.orderby);
+                }
+                if (!string.IsNullOrEmpty(reqParams.columns))
+                {
+                    list = list.Select(reqParams.columns);
+                }
+                list = list.Skip(reqParams.offset).Take(reqParams.limit);
             }
             ResultData result = new ResultData
             {
