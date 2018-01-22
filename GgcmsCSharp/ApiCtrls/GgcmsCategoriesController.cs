@@ -7,26 +7,33 @@ using System;
 
 namespace GgcmsCSharp.ApiCtrls
 {
-    public class GgcmsCategoriesController : ApiController
+    public class GgcmsCategoriesController : ApiBaseController
     {
-        private dbTools<GgcmsCategory> dbtool;
 
-        protected override void Initialize(HttpControllerContext controllerContext)
-        {
-            base.Initialize(controllerContext);
-            this.dbtool = new dbTools<GgcmsCategory>(Request);
-        }
         // GET: api/GgcmsCategories
         [HttpGet]
         public ResultData GetList()
         {
-            return dbtool.GetList(); 
+            var reqParams = InitRequestParams<GgcmsCategory>();
+            var result = dbHelper.GetList<GgcmsCategory>(reqParams);
+            return new ResultData
+            {
+                Code = 0,
+                Data = result,
+                Msg = ""
+            };
         }
 
         // GET: api/GgcmsCategories/5
         public ResultData GetInfo(int id)
         {
-            return dbtool.GetById(id);
+            var result = dbHelper.GetById<GgcmsCategory>(id);
+            return new ResultData
+            {
+                Code = 0,
+                Data = result,
+                Msg = ""
+            };
         }
 
         // PUT: api/GgcmsCategories/5
@@ -45,7 +52,12 @@ namespace GgcmsCSharp.ApiCtrls
             }
             UpFileClass.FileSave<GgcmsCategory>(category, category.files);
             CacheHelper.RemoveAllCache(CacheTypeNames.Categorys);
-            return dbtool.Edit(category.Id, category);
+            return new ResultData
+            {
+                Code = 0,
+                Data = dbHelper.Edit(category.Id, category),
+                Msg = ""
+            };
         }
 
         // POST: api/GgcmsCategories
@@ -61,9 +73,14 @@ namespace GgcmsCSharp.ApiCtrls
                 };
                 return result;
             }
-            UpFileClass.FileSave<GgcmsCategory>(category, category.files);
+            UpFileClass.FileSave(category, category.files);
             CacheHelper.RemoveAllCache(CacheTypeNames.Categorys);
-            return dbtool.Add(category);
+            return new ResultData
+            {
+                Code = 0,
+                Msg = "",
+                Data = dbHelper.Add(category)
+            };
         }
         public ResultData CategorySortSave(dynamic[] list)
         {
@@ -75,7 +92,7 @@ namespace GgcmsCSharp.ApiCtrls
                 Data = 0,
                 };
             try {
-                dbtool.db.GgcmsCategories
+                dbHelper.dbCxt.GgcmsCategories
                    .ToList()
                    .ForEach(x => {
                        foreach (var item in list)
@@ -88,7 +105,7 @@ namespace GgcmsCSharp.ApiCtrls
                        }
                    });
 
-                result.Data = dbtool.db.SaveChanges();
+                result.Data = dbHelper.dbCxt.SaveChanges();
             }catch(Exception ex)
             {
                 result.Data = ex;
@@ -103,26 +120,35 @@ namespace GgcmsCSharp.ApiCtrls
         public ResultData Delete(int id)
         {
             CacheHelper.RemoveAllCache(CacheTypeNames.Categorys);
-            return dbtool.Delete(id);
+            return new ResultData
+            {
+                Code = 0,
+                Msg = "",
+                Data = dbHelper.Delete<GgcmsCategory>(id)
+            };
         }
         [HttpGet]
         public ResultData MultDelete()
         {
             CacheHelper.RemoveAllCache(CacheTypeNames.Categorys);
-            return dbtool.MultDelete();
-        }
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing && dbtool != null)
+            var reqParams = InitRequestParams<GgcmsCategory>();
+            return new ResultData
             {
-                dbtool.Dispose(true);
-            }
-            base.Dispose(disposing);
+                Code = 0,
+                Msg = "",
+                Data = dbHelper.MultDelete<GgcmsCategory>(reqParams)
+            };
         }
+
 
         public ResultData Exists(int id)
         {
-            return dbtool.Exists(id);
+            return new ResultData
+            {
+                Code = 0,
+                Msg = "",
+                Data = dbHelper.Exists<GgcmsCategory>(id)
+            };
         }
     }
 }

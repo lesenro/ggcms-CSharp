@@ -173,10 +173,10 @@
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ApiCtrls\ApiBaseController.cs" />
     <Compile Include="ApiCtrls\CommonController.cs" />
-    <Compile Include="ApiCtrls\dbTools.cs" />
+    <Compile Include="Utils\DataBaseHelper.cs" />
     <Compile Include="ApiCtrls\FileManagerController.cs" />
-    <Compile Include="ApiCtrls\GgcmsArticlePagesController.cs" />
     <Compile Include="ApiCtrls\GgcmsAdvertsController.cs" />
     <Compile Include="ApiCtrls\GgcmsArticlesController.cs" />
     <Compile Include="ApiCtrls\GgcmsAuthorizeAttribute.cs" />
@@ -231,7 +231,6 @@
     <Compile Include="Models\GgcmsAdverts.cs" />
     <Compile Include="Models\PageTemplate.cs" />
     <Compile Include="Models\Pagination.cs" />
-    <Compile Include="Models\ResultList.cs" />
     <Compile Include="Models\UpFileClass.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />

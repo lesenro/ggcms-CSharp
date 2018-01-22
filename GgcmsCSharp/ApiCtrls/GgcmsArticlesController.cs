@@ -9,37 +9,42 @@ using System.Linq;
 
 namespace GgcmsCSharp.ApiCtrls
 {
-    public class GgcmsArticlesController : ApiController
+    public class GgcmsArticlesController : ApiBaseController
     {
-        private dbTools<GgcmsArticle> dbtool;
-
-        protected override void Initialize(HttpControllerContext controllerContext)
-        {
-            base.Initialize(controllerContext);
-            this.dbtool = new dbTools<GgcmsArticle>(Request);
-        }
         // GET: api/GgcmsCategories
         [HttpGet]
         public ResultData GetList()
         {
-            return dbtool.GetList();
+            var reqParams = InitRequestParams<GgcmsArticle>();
+            var result = dbHelper.GetList<GgcmsArticle>(reqParams);
+            return new ResultData
+            {
+                Code = 0,
+                Data = result,
+                Msg = ""
+            };
         }
 
         // GET: api/GgcmsCategories/5
         public ResultData GetInfo(int id)
         {
-            ResultData rdata= dbtool.GetById(id);
-            if (rdata.Code == 0)
+            var result = dbHelper.GetById<GgcmsArticle>(id);
+            if (result !=null)
             {
-                GgcmsArticle artInfo = (GgcmsArticle)rdata.Data;
-                GgcmsDB db = new GgcmsDB();
-                var list = from r in db.GgcmsAttachments
-                           where r.Articles_Id == artInfo.Id
-                           select r;
-                artInfo.attachments = list.ToList();
-                rdata.Data = artInfo;
+                using (GgcmsDB db = new GgcmsDB())
+                {
+                    var list = from r in db.GgcmsAttachments
+                               where r.Articles_Id == result.Id
+                               select r;
+                    result.attachments = list.ToList();
+                }
             }
-            return rdata;
+            return new ResultData
+            {
+                Code = 0,
+                Data = result,
+                Msg = ""
+            };
         }
 
         // PUT: api/GgcmsCategories/5
@@ -94,28 +99,31 @@ namespace GgcmsCSharp.ApiCtrls
                 }
                 db.SaveChanges();
             }
-            return dbtool.Edit(article.Id, article);
+            return new ResultData
+            {
+                Code = 0,
+                Data = dbHelper.Edit(article.Id, article),
+                Msg = ""
+            };
         }
 
         // POST: api/GgcmsCategories
         public ResultData Add(GgcmsArticle article)
         {
-            ResultData result;
             if (!ModelState.IsValid)
             {
-                result = new ResultData
+                return new ResultData
                 {
                     Code = 3,
                     Msg = "",
                     Data = BadRequest(ModelState)
-                };
-                return result;
+                }; 
             }
             UpFileClass.FileSave<GgcmsArticle>(article, article.files);
             article.CreateTime = DateTime.Now;
             updateArticleNumber(article.Category_Id, 1);
             CacheHelper.RemoveAllCache(CacheTypeNames.Categorys);
-            result = dbtool.Add(article);
+            article = dbHelper.Add(article);
             using (GgcmsDB db = new GgcmsDB())
             {
                 foreach (GgcmsAttachment attach in article.attachments)
@@ -127,13 +135,18 @@ namespace GgcmsCSharp.ApiCtrls
                 db.SaveChanges();
             }
 
-            return result;
+            return new ResultData
+            {
+                Code = 0,
+                Msg = "",
+                Data = article
+            }; ;
         }
 
         // DELETE: api/GgcmsCategories/5
         public ResultData Delete(int id)
         {
-            GgcmsArticle info = dbtool.db.GgcmsArticles.Find(id);
+            GgcmsArticle info = dbHelper.dbCxt.GgcmsArticles.Find(id);
             if (info == null)
             {
                 return new ResultData
@@ -175,15 +188,13 @@ namespace GgcmsCSharp.ApiCtrls
         [HttpGet]
         public ResultData MultDelete()
         {
-            string query = dbtool.DecodeOutputString(Request.GetQueryString("query"));
-            query = dbtool.getQuery(query);
-            //List<int> ids = new List<int>();
+            var reqParams = InitRequestParams<GgcmsArticle>();
+            var articleList = dbHelper.GetList<GgcmsArticle>(reqParams);
             using (GgcmsDB db = new GgcmsDB())
             {
-                foreach (object val in dbtool.reqParams.queryParams)
+                foreach (var item in articleList.List)
                 {
-                    int id = (int)val;
-                    GgcmsArticle info = dbtool.db.GgcmsArticles.Find(id);
+                    GgcmsArticle info = item as GgcmsArticle;
 
                     if (info != null)
                     {
@@ -195,21 +206,23 @@ namespace GgcmsCSharp.ApiCtrls
                 db.SaveChanges();
             }
             CacheHelper.RemoveAllCache(CacheTypeNames.Categorys);
-            return dbtool.MultDelete();
+            return new ResultData
+            {
+                Code = 0,
+                Msg = "",
+                Data = dbHelper.MultDelete<GgcmsArticle>(reqParams)
+            };
         }
 
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing && dbtool != null)
-            {
-                dbtool.Dispose(true);
-            }
-            base.Dispose(disposing);
-        }
 
         public ResultData Exists(int id)
         {
-            return dbtool.Exists(id);
+            return new ResultData
+            {
+                Code = 0,
+                Msg = "",
+                Data = dbHelper.Exists<GgcmsArticle>(id)
+            };
         }
         private void updateArticleNumber(int id, int num)
         {

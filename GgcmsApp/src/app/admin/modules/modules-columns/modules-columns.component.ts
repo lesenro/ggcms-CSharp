@@ -21,6 +21,9 @@ export class ModulesColumnsComponent implements OnInit {
   onChange(ev){
     this.columnsChange.emit(this.columns);
   }
+  deleteColumns(item){
+    this.columns=this.columns.filter(x=>x.Id!=item.Id);
+  }
   open(content,item) {
     this.columnItem=item||{isnew:true};
     this.modalService.open(content,{size:"lg" }).result.then((result) => {

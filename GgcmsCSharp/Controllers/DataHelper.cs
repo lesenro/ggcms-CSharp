@@ -1,5 +1,6 @@
 ﻿using GgcmsCSharp.ApiCtrls;
 using GgcmsCSharp.Models;
+using GgcmsCSharp.Utils;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -63,26 +64,14 @@ namespace GgcmsCSharp.Controllers
             {
                 query = query + ",Status:0";
             }
-            RequestParams rparams = new RequestParams();
-            rparams.offset = offset;
-            rparams.limit = limit;
-            rparams.columns = string.IsNullOrWhiteSpace(columns) ? "Id,OrderId,Url,WebName,LogoImg,LinkType,RelationId,ExtAttrib" : columns;
-            rparams.sortby = sortby;
-            rparams.order = order;
-            rparams.query = string.IsNullOrWhiteSpace(query) ? "Status:0" : query;
-            dbTools<GgcmsFriendLink> dbtool = new dbTools<GgcmsFriendLink>(rparams);
-            ResultData result = dbtool.GetList(false);
-            List<GgcmsFriendLink> fllist = new List<GgcmsFriendLink>();
-            if (result.Code == 0)
-            {
-                IQueryable list = result.Data.List as IQueryable;
-                foreach (var info in list)
-                {
-                    GgcmsFriendLink ninfo = GgcmsFriendLink.Clone(info);
-                    fllist.Add(ninfo);
-                }
-            }
-            return fllist;
+            columns = string.IsNullOrWhiteSpace(columns) ? "Id,OrderId,Url,WebName,LogoImg,LinkType,RelationId,ExtAttrib" : columns;
+            query = string.IsNullOrWhiteSpace(query) ? "Status:0" : query;
+            RequestParams rparams = RequestParams.GetRequestParams<GgcmsDB, GgcmsFriendLink>(columns, limit, offset, 1, order, sortby, query);
+            
+
+            DataBaseHelper<GgcmsDB> dbHelper = new DataBaseHelper<GgcmsDB>(new GgcmsDB());
+            var result = dbHelper.GetList<GgcmsFriendLink>(rparams);
+            return result.List.Cast<GgcmsFriendLink>().ToList();
         }
         public List<GgcmsAdverts> Adverts(string query, string columns = "", int offset = 0, int limit = 100, string sortby = "OrderID", string order = "asc")
         {
@@ -90,45 +79,21 @@ namespace GgcmsCSharp.Controllers
             {
                 query = query + ",Status:0";
             }
-            RequestParams rparams = new RequestParams();
-            rparams.offset = offset;
-            rparams.limit = limit;
-            rparams.columns = string.IsNullOrWhiteSpace(columns) ? "Id,Title,Url,Image,GroupKey,Content,OrderID" : columns;
-            rparams.sortby = sortby;
-            rparams.order = order;
-            rparams.query = string.IsNullOrWhiteSpace(query) ? "Status:0" : query;
-            dbTools<GgcmsAdverts> dbtool = new dbTools<GgcmsAdverts>(rparams);
-            ResultData result = dbtool.GetList(false);
-            List<GgcmsAdverts> adlist = new List<GgcmsAdverts>();
-            if (result.Code == 0)
-            {
-                IQueryable list = result.Data.List as IQueryable;
-                foreach (var info in list)
-                {
-                    GgcmsAdverts ninfo = GgcmsAdverts.Clone(info);
-                    adlist.Add(ninfo);
-                }
-            }
-            return adlist;
+            columns = string.IsNullOrWhiteSpace(columns) ? "Id,Title,Url,Image,GroupKey,Content,OrderID" : columns;
+            query = string.IsNullOrWhiteSpace(query) ? "Status:0" : query;
+            RequestParams rparams = RequestParams.GetRequestParams<GgcmsDB, GgcmsAdverts>(columns, limit, offset, 1, order, sortby, query);
+
+            DataBaseHelper<GgcmsDB> dbHelper = new DataBaseHelper<GgcmsDB>(new GgcmsDB());
+
+            var result = dbHelper.GetList<GgcmsAdverts>(rparams);
+            return result.List.Cast<GgcmsAdverts>().ToList();
+
         }
-        public ResultList<GgcmsArticle> Articles(RequestParams rparams)
+        public ListResult Articles(RequestParams rparams)
         {
-            dbTools<GgcmsArticle> dbtool = new dbTools<GgcmsArticle>(rparams);
-            ResultData result = dbtool.GetList(false);
-            ResultList<GgcmsArticle> rlist = new ResultList<GgcmsArticle>();
-            if (result.Code == 0)
-            {
-                rlist.List = new List<GgcmsArticle>();
-                IQueryable list = result.Data.List as IQueryable;
-                foreach (var ainfo in list)
-                {
-                    GgcmsArticle ninfo = GgcmsArticle.Clone(ainfo);
-                    ninfo.RedirectUrl = string.IsNullOrEmpty(ninfo.RedirectUrl.Trim()) ? Prefix+"/Article/" + ninfo.Id.ToString() : ninfo.RedirectUrl;
-                    rlist.List.Add(ninfo);
-                }
-                rlist.Count = (int)result.Data.Count;
-            }
-            return rlist;
+            DataBaseHelper<GgcmsDB> dbHelper = new DataBaseHelper<GgcmsDB>(new GgcmsDB());
+            rparams = RequestParams.GetRequestParams<GgcmsDB, GgcmsAdverts>(rparams.columns, rparams.limit, rparams.offset, 1, rparams.order, rparams.sortby, rparams.query);
+            return dbHelper.GetList<GgcmsArticle>(rparams);
         }
         public List<GgcmsArticle> Articles(string query, string columns="", int offset=0,int limit=100,string sortby = "Id",string order="desc")
         {
@@ -139,8 +104,9 @@ namespace GgcmsCSharp.Controllers
             rparams.sortby = sortby;
             rparams.order = order;
             rparams.query = query;
-            ResultList<GgcmsArticle> rlist = Articles(rparams);
-            return rlist.List;
+            ListResult rlist = Articles(rparams);
+
+            return rlist.List.Cast<GgcmsArticle>().ToList();
         }
         public List<GgcmsArticle> Articles(int[] ids, Pagination pagination)
         {
@@ -152,10 +118,10 @@ namespace GgcmsCSharp.Controllers
             rparams.order = "desc";
             rparams.pagenum = pagination.page;
             rparams.query = "Category_Id.in:" + string.Join("|", ids);
-            ResultList<GgcmsArticle> rlist = Articles(rparams);
+            ListResult rlist = Articles(rparams);
 
             pagination.setMaxSize(rlist.Count);
-            return rlist.List;
+            return rlist.List.Cast<GgcmsArticle>().ToList();
         }
     }
 }

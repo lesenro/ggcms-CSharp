@@ -5,30 +5,37 @@ using System.Web.Http.Description;
 
 namespace GgcmsCSharp.ApiCtrls
 {
-    public class GgcmsTopicsController : ApiController
+    public class GgcmsTopicsController : ApiBaseController
     {
-        private dbTools<GgcmsTopic> dbtool;
 
-        protected override void Initialize(HttpControllerContext controllerContext)
-        {
-            base.Initialize(controllerContext);
-            this.dbtool = new dbTools<GgcmsTopic>(Request);
-        }
         // GET: api/GgcmsCategories
         [HttpGet]
         public ResultData GetList()
         {
-            return dbtool.GetList();
+            var reqParams = InitRequestParams<GgcmsTopic>();
+            var result = dbHelper.GetList<GgcmsTopic>(reqParams);
+            return new ResultData
+            {
+                Code = 0,
+                Data = result,
+                Msg = ""
+            };
         }
 
         // GET: api/GgcmsCategories/5
         public ResultData GetInfo(int id)
         {
-            return dbtool.GetById(id);
+            var result = dbHelper.GetById<GgcmsTopic>(id);
+            return new ResultData
+            {
+                Code = 0,
+                Data = result,
+                Msg = ""
+            };
         }
 
         // PUT: api/GgcmsCategories/5
-        public ResultData Edit(int id, GgcmsTopic GgcmsTopic)
+        public ResultData Edit(int id, GgcmsTopic topic)
         {
 
             if (!ModelState.IsValid)
@@ -42,11 +49,16 @@ namespace GgcmsCSharp.ApiCtrls
                 return result;
             }
 
-            return dbtool.Edit(id, GgcmsTopic);
+            return new ResultData
+            {
+                Code = 0,
+                Data = dbHelper.Edit(topic.Id, topic),
+                Msg = ""
+            };
         }
 
         // POST: api/GgcmsCategories
-        public ResultData Add(GgcmsTopic GgcmsTopic)
+        public ResultData Add(GgcmsTopic topic)
         {
             if (!ModelState.IsValid)
             {
@@ -58,31 +70,45 @@ namespace GgcmsCSharp.ApiCtrls
                 };
                 return result;
             }
-            return dbtool.Add(GgcmsTopic);
+            return new ResultData
+            {
+                Code = 0,
+                Msg = "",
+                Data = dbHelper.Add(topic)
+            };
         }
 
         // DELETE: api/GgcmsCategories/5
         public ResultData Delete(int id)
         {
-            return dbtool.Delete(id);
+            return new ResultData
+            {
+                Code = 0,
+                Msg = "",
+                Data = dbHelper.Delete<GgcmsTopic>(id)
+            };
         }
         [HttpGet]
         public ResultData MultDelete()
         {
-            return dbtool.MultDelete();
-        }
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing && dbtool != null)
+            var reqParams = InitRequestParams<GgcmsTopic>();
+            return new ResultData
             {
-                dbtool.Dispose(true);
-            }
-            base.Dispose(disposing);
+                Code = 0,
+                Msg = "",
+                Data = dbHelper.MultDelete<GgcmsTopic>(reqParams)
+            };
         }
+
 
         public ResultData Exists(int id)
         {
-            return dbtool.Exists(id);
+            return new ResultData
+            {
+                Code = 0,
+                Msg = "",
+                Data = dbHelper.Exists<GgcmsTopic>(id)
+            };
         }
     }
 }

@@ -5,26 +5,33 @@ using System.Web.Http.Description;
 
 namespace GgcmsCSharp.ApiCtrls
 {
-    public class GgcmsFriendLinksController : ApiController
+    public class GgcmsFriendLinksController : ApiBaseController
     {
-        private dbTools<GgcmsFriendLink> dbtool;
 
-        protected override void Initialize(HttpControllerContext controllerContext)
-        {
-            base.Initialize(controllerContext);
-            this.dbtool = new dbTools<GgcmsFriendLink>(Request);
-        }
         // GET: api/GgcmsCategories
         [HttpGet]
         public ResultData GetList()
         {
-            return dbtool.GetList();
+            var reqParams = InitRequestParams<GgcmsFriendLink>();
+            var result = dbHelper.GetList<GgcmsFriendLink>(reqParams);
+            return new ResultData
+            {
+                Code = 0,
+                Data = result,
+                Msg = ""
+            };
         }
 
         // GET: api/GgcmsCategories/5
         public ResultData GetInfo(int id)
         {
-            return dbtool.GetById(id);
+            var result = dbHelper.GetById<GgcmsFriendLink>(id);
+            return new ResultData
+            {
+                Code = 0,
+                Data = result,
+                Msg = ""
+            };
         }
 
         // PUT: api/GgcmsCategories/5
@@ -41,8 +48,13 @@ namespace GgcmsCSharp.ApiCtrls
                 };
                 return result;
             }
-            UpFileClass.FileSave<GgcmsFriendLink>(friendLink, friendLink.files);
-            return dbtool.Edit(friendLink.Id, friendLink);
+            UpFileClass.FileSave(friendLink, friendLink.files);
+            return new ResultData
+            {
+                Code = 0,
+                Data = dbHelper.Edit(friendLink.Id, friendLink),
+                Msg = ""
+            };
         }
 
         // POST: api/GgcmsCategories
@@ -58,33 +70,46 @@ namespace GgcmsCSharp.ApiCtrls
                 };
                 return result;
             }
-            UpFileClass.FileSave<GgcmsFriendLink>(friendLink, friendLink.files);
+            UpFileClass.FileSave(friendLink, friendLink.files);
 
-            return dbtool.Add(friendLink);
+            return new ResultData
+            {
+                Code = 0,
+                Msg = "",
+                Data = dbHelper.Add(friendLink)
+            };
         }
 
         // DELETE: api/GgcmsCategories/5
         public ResultData Delete(int id)
         {
-            return dbtool.Delete(id);
+            return new ResultData
+            {
+                Code = 0,
+                Msg = "",
+                Data = dbHelper.Delete<GgcmsFriendLink>(id)
+            };
         }
         [HttpGet]
         public ResultData MultDelete()
         {
-            return dbtool.MultDelete();
-        }
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing && dbtool != null)
+            var reqParams = InitRequestParams<GgcmsFriendLink>();
+            return new ResultData
             {
-                dbtool.Dispose(true);
-            }
-            base.Dispose(disposing);
+                Code = 0,
+                Msg = "",
+                Data = dbHelper.MultDelete<GgcmsFriendLink>(reqParams)
+            };
         }
 
         public ResultData Exists(int id)
         {
-            return dbtool.Exists(id);
+            return new ResultData
+            {
+                Code = 0,
+                Msg = "",
+                Data = dbHelper.Exists<GgcmsFriendLink>(id)
+            };
         }
     }
 }

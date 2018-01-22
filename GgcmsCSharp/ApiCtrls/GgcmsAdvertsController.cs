@@ -9,26 +9,34 @@ using System.Linq;
 
 namespace GgcmsCSharp.ApiCtrls
 {
-    public class GgcmsAdvertsController : ApiController
+    public class GgcmsAdvertsController : ApiBaseController
     {
-        private dbTools<GgcmsAdverts> dbtool;
+        
 
-        protected override void Initialize(HttpControllerContext controllerContext)
-        {
-            base.Initialize(controllerContext);
-            this.dbtool = new dbTools<GgcmsAdverts>(Request);
-        }
         // GET: api/GgcmsCategories
         [HttpGet]
         public ResultData GetList()
         {
-            return dbtool.GetList();
+            var reqParams = InitRequestParams<GgcmsAdverts>();
+            var result = dbHelper.GetList<GgcmsAdverts>(reqParams);
+            return new ResultData
+            {
+                Code = 0,
+                Data = result,
+                Msg = ""
+            };
         }
 
         // GET: api/GgcmsCategories/5
         public ResultData GetInfo(int id)
         {
-            return dbtool.GetById(id);
+            var result = dbHelper.GetById<GgcmsAdverts>(id);
+            return new ResultData
+            {
+                Code = 0,
+                Data = result,
+                Msg = ""
+            };
         }
 
         // PUT: api/GgcmsCategories/5
@@ -45,8 +53,13 @@ namespace GgcmsCSharp.ApiCtrls
                 };
                 return result;
             }
-            UpFileClass.FileSave<GgcmsAdverts>(adverts, adverts.files);
-            return dbtool.Edit(adverts.Id, adverts);
+            UpFileClass.FileSave(adverts, adverts.files);
+            return new ResultData
+            {
+                Code = 0,
+                Data = dbHelper.Edit(adverts.Id, adverts),
+                Msg = ""
+            };
         }
 
         // POST: api/GgcmsCategories
@@ -54,40 +67,55 @@ namespace GgcmsCSharp.ApiCtrls
         {
             if (!ModelState.IsValid)
             {
-                ResultData result = new ResultData
+                return new ResultData
                 {
                     Code = 3,
                     Msg = "",
                     Data = BadRequest(ModelState)
-                };
-                return result;
+                }; 
             }
-            UpFileClass.FileSave<GgcmsAdverts>(adverts, adverts.files);
-            return dbtool.Add(adverts);
+            adverts = UpFileClass.FileSave(adverts, adverts.files);
+            return new ResultData
+            {
+                Code = 0,
+                Msg = "",
+                Data = dbHelper.Add(adverts)
+            }; 
         }
 
         // DELETE: api/GgcmsCategories/5
         public ResultData Delete(int id)
         {
-            return dbtool.Delete(id);
+            return new ResultData
+            {
+                Code = 0,
+                Msg = "",
+                Data = dbHelper.Delete<GgcmsAdverts>(id)
+            };
+
         }
         [HttpGet]
         public ResultData MultDelete()
         {
-            return dbtool.MultDelete();
-        }
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing && dbtool != null)
+            var reqParams = InitRequestParams<GgcmsAdverts>();
+            return new ResultData
             {
-                dbtool.Dispose(true);
-            }
-            base.Dispose(disposing);
+                Code = 0,
+                Msg = "",
+                Data = dbHelper.MultDelete<GgcmsAdverts>(reqParams)
+            };
+            
         }
+        
 
         public ResultData Exists(int id)
         {
-            return dbtool.Exists(id);
+            return new ResultData
+            {
+                Code = 0,
+                Msg = "",
+                Data = dbHelper.Exists<GgcmsAdverts>(id)
+            };
         }
     }
 }

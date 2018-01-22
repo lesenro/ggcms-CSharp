@@ -38,9 +38,7 @@
             <div class="form-group row">
                 <label for="RedirectUrl" class="col-2 col-form-label">词条类型:</label>
                 <div class="col-4">
-                    <select name="DictType" class="form-control" [(ngModel)]="dataInfo.DictType" required>
-                        <option *ngFor="let item of dictTypes" [value]="item.Value">{{item.Title}}</option>
-                    </select>
+                    <p-autoComplete [ngModelOptions]="{standalone: true}" [(ngModel)]="dataInfo.DictType" field="Title" [suggestions]="dictTypes" (completeMethod)="search($event)" [dropdown]="true"></p-autoComplete>
                 </div>
                 <label for="OrderID" class="col-2 col-form-label">排序id:</label>
                 <div class="col-4">

@@ -7,30 +7,37 @@ using System;
 
 namespace GgcmsCSharp.ApiCtrls
 {
-    public class GgcmsSysConfigsController : ApiController
+    public class GgcmsSysConfigsController : ApiBaseController
     {
-        private dbTools<GgcmsSysConfig> dbtool;
 
-        protected override void Initialize(HttpControllerContext controllerContext)
-        {
-            base.Initialize(controllerContext);
-            this.dbtool = new dbTools<GgcmsSysConfig>(Request);
-        }
         // GET: api/GgcmsCategories
         [HttpGet]
         public ResultData GetList()
         {
-            return dbtool.GetList();
+            var reqParams = InitRequestParams<GgcmsSysConfig>();
+            var result = dbHelper.GetList<GgcmsSysConfig>(reqParams);
+            return new ResultData
+            {
+                Code = 0,
+                Data = result,
+                Msg = ""
+            };
         }
 
         // GET: api/GgcmsCategories/5
         public ResultData GetInfo(int id)
         {
-            return dbtool.GetById(id);
+            var result = dbHelper.GetById<GgcmsSysConfig>(id);
+            return new ResultData
+            {
+                Code = 0,
+                Data = result,
+                Msg = ""
+            };
         }
 
         // PUT: api/GgcmsCategories/5
-        public ResultData Edit(int id, GgcmsSysConfig GgcmsSysConfig)
+        public ResultData Edit(int id, GgcmsSysConfig config)
         {
 
             if (!ModelState.IsValid)
@@ -44,11 +51,16 @@ namespace GgcmsCSharp.ApiCtrls
                 return result;
             }
 
-            return dbtool.Edit(id, GgcmsSysConfig);
+            return new ResultData
+            {
+                Code = 0,
+                Data = dbHelper.Edit(config.Id, config),
+                Msg = ""
+            };
         }
 
         // POST: api/GgcmsCategories
-        public ResultData Add(GgcmsSysConfig GgcmsSysConfig)
+        public ResultData Add(GgcmsSysConfig config)
         {
             if (!ModelState.IsValid)
             {
@@ -61,7 +73,12 @@ namespace GgcmsCSharp.ApiCtrls
 
                 return result;
             }
-            return dbtool.Add(GgcmsSysConfig);
+            return new ResultData
+            {
+                Code = 0,
+                Msg = "",
+                Data = dbHelper.Add(config)
+            };
         }
         public ResultData SettingsSave(dynamic data)
         {
@@ -84,7 +101,7 @@ namespace GgcmsCSharp.ApiCtrls
                         }
                     }
                 }
-                dbtool.db.GgcmsSysConfigs
+                dbHelper.dbCxt.GgcmsSysConfigs
                    .ToList()
                    .ForEach(x =>
                    {
@@ -96,7 +113,7 @@ namespace GgcmsCSharp.ApiCtrls
                            }
                        }
                    });
-                dbtool.db.SaveChanges();
+                dbHelper.dbCxt.SaveChanges();
                 result.Data = data.list;
                 CacheHelper.RemoveAllCache(CacheTypeNames.SysConfigs.ToString());
             }
@@ -111,25 +128,33 @@ namespace GgcmsCSharp.ApiCtrls
         // DELETE: api/GgcmsCategories/5
         public ResultData Delete(int id)
         {
-            return dbtool.Delete(id);
+            return new ResultData
+            {
+                Code = 0,
+                Msg = "",
+                Data = dbHelper.Delete<GgcmsSysConfig>(id)
+            };
         }
         [HttpGet]
         public ResultData MultDelete()
         {
-            return dbtool.MultDelete();
-        }
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing&& dbtool!=null)
+            var reqParams = InitRequestParams<GgcmsSysConfig>();
+            return new ResultData
             {
-                dbtool.Dispose(true);
-            }
-            base.Dispose(disposing);
+                Code = 0,
+                Msg = "",
+                Data = dbHelper.MultDelete<GgcmsSysConfig>(reqParams)
+            };
         }
 
         public ResultData Exists(int id)
         {
-            return dbtool.Exists(id);
+            return new ResultData
+            {
+                Code = 0,
+                Msg = "",
+                Data = dbHelper.Exists<GgcmsSysConfig>(id)
+            };
         }
     }
 }

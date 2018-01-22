@@ -10,20 +10,21 @@ using System.Data.Entity;
 
 namespace GgcmsCSharp.ApiCtrls
 {
-    public class GgcmsModulesController : ApiController
+    public class GgcmsModulesController : ApiBaseController
     {
-        private dbTools<GgcmsModule> dbtool;
 
-        protected override void Initialize(HttpControllerContext controllerContext)
-        {
-            base.Initialize(controllerContext);
-            this.dbtool = new dbTools<GgcmsModule>(Request);
-        }
         // GET: api/GgcmsCategories
         [HttpGet]
         public ResultData GetList()
         {
-            return dbtool.GetList();
+            var reqParams = InitRequestParams<GgcmsModule>();
+            var result = dbHelper.GetList<GgcmsModule>(reqParams);
+            return new ResultData
+            {
+                Code = 0,
+                Data = result,
+                Msg = ""
+            };
         }
 
         // GET: api/GgcmsCategories/5
@@ -180,7 +181,13 @@ namespace GgcmsCSharp.ApiCtrls
                 }
 
             }
-            return dbtool.Edit(module.Id, module);
+            return new ResultData
+            {
+                Code = 0,
+                Data = dbHelper.Edit(module.Id, module),
+                Msg = ""
+            };
+
         }
 
         // POST: api/GgcmsCategories
@@ -193,11 +200,11 @@ namespace GgcmsCSharp.ApiCtrls
                 result.Data = BadRequest(ModelState);
                 return result;
             }
-            result = dbtool.Add(module);
+            module = dbHelper.Add(module);
             module.TableName = "moduleTab_" + module.Id.ToString();
             module.ViewName = "moduleView_" + module.Id.ToString();
-            result = dbtool.Edit(module.Id, module);
-            if (result.Code == 0&&module.Columns!=null)
+            module = dbHelper.Edit(module.Id, module);
+            if (module.Columns!=null)
             {
                 using (GgcmsDB db = new GgcmsDB())
                 {
@@ -255,17 +262,24 @@ namespace GgcmsCSharp.ApiCtrls
                     db.GgcmsModuleColumns.RemoveRange(collist);
                 }
             }
-            return dbtool.Delete(id);
+            return new ResultData
+            {
+                Code = 0,
+                Msg = "",
+                Data = dbHelper.Delete<GgcmsModule>(id)
+            };
         }
         [HttpGet]
         public ResultData MultDelete()
         {
             try
             {
-                IQueryable list = dbtool.GetInfoList();
+                var reqParams = InitRequestParams<GgcmsModule>();
+
+                var list = dbHelper.GetList<GgcmsModule>(reqParams);
                 using (GgcmsDB db = new GgcmsDB())
                 {
-                    foreach (var item in list)
+                    foreach (var item in list.List)
                     {
                         GgcmsModule module = item as GgcmsModule;
                         try
@@ -280,7 +294,12 @@ namespace GgcmsCSharp.ApiCtrls
                     }
                     db.SaveChanges();
                 }
-                return dbtool.MultDelete();
+                return new ResultData
+                {
+                    Code = 0,
+                    Msg = "",
+                    Data = dbHelper.MultDelete<GgcmsModule>(reqParams)
+                };
             } catch (Exception ex)
             {
                 return new ResultData
@@ -291,18 +310,16 @@ namespace GgcmsCSharp.ApiCtrls
                 };
             }
         }
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing && dbtool != null)
-            {
-                dbtool.Dispose(true);
-            }
-            base.Dispose(disposing);
-        }
+
 
         public ResultData Exists(int id)
         {
-            return dbtool.Exists(id);
+            return new ResultData
+            {
+                Code = 0,
+                Msg = "",
+                Data = dbHelper.Exists<GgcmsModule>(id)
+            };
         }
     }
 }

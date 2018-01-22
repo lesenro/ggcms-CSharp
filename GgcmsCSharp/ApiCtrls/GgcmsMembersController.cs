@@ -6,30 +6,37 @@ using System.Web.Http.Description;
 
 namespace GgcmsCSharp.ApiCtrls
 {
-    public class GgcmsMembersController : ApiController
+    public class GgcmsMembersController : ApiBaseController
     {
-        private dbTools<GgcmsMember> dbtool;
 
-        protected override void Initialize(HttpControllerContext controllerContext)
-        {
-            base.Initialize(controllerContext);
-            this.dbtool = new dbTools<GgcmsMember>(Request);
-        }
         // GET: api/GgcmsCategories
         [HttpGet]
         public ResultData GetList()
         {
-            return dbtool.GetList();
+            var reqParams = InitRequestParams<GgcmsMember>();
+            var result = dbHelper.GetList<GgcmsMember>(reqParams);
+            return new ResultData
+            {
+                Code = 0,
+                Data = result,
+                Msg = ""
+            };
         }
 
         // GET: api/GgcmsCategories/5
         public ResultData GetInfo(int id)
         {
-            return dbtool.GetById(id);
+            var result = dbHelper.GetById<GgcmsMember>(id);
+            return new ResultData
+            {
+                Code = 0,
+                Data = result,
+                Msg = ""
+            };
         }
 
         // PUT: api/GgcmsCategories/5
-        public ResultData Edit(int id, GgcmsMember GgcmsMember)
+        public ResultData Edit(int id, GgcmsMember member)
         {
 
             if (!ModelState.IsValid)
@@ -43,11 +50,16 @@ namespace GgcmsCSharp.ApiCtrls
                 return result;
             }
 
-            return dbtool.Edit(id, GgcmsMember);
+            return new ResultData
+            {
+                Code = 0,
+                Data = dbHelper.Edit(member.Id, member),
+                Msg = ""
+            };
         }
 
         // POST: api/GgcmsCategories
-        public ResultData Add(GgcmsMember GgcmsMember)
+        public ResultData Add(GgcmsMember member)
         {
             if (!ModelState.IsValid)
             {
@@ -59,18 +71,34 @@ namespace GgcmsCSharp.ApiCtrls
                 };
                 return result;
             }
-            return dbtool.Add(GgcmsMember);
+            return new ResultData
+            {
+                Code = 0,
+                Msg = "",
+                Data = dbHelper.Add(member)
+            };
         }
 
         // DELETE: api/GgcmsCategories/5
         public ResultData Delete(int id)
         {
-            return dbtool.Delete(id);
+            return new ResultData
+            {
+                Code = 0,
+                Msg = "",
+                Data = dbHelper.Delete<GgcmsMember>(id)
+            };
         }
         [HttpGet]
         public ResultData MultDelete()
         {
-            return dbtool.MultDelete();
+            var reqParams = InitRequestParams<GgcmsMember>();
+            return new ResultData
+            {
+                Code = 0,
+                Msg = "",
+                Data = dbHelper.MultDelete<GgcmsMember>(reqParams)
+            };
         }
         public ResultData ModifyPassword(dynamic passData)
         {
@@ -88,7 +116,7 @@ namespace GgcmsCSharp.ApiCtrls
                 if (session["ggcms_loginUser"] != null)
                 {
                     GgcmsMember m = session["ggcms_loginUser"] as GgcmsMember;
-                    GgcmsMember info = dbtool.db.GgcmsMembers.Find(m.Id);
+                    GgcmsMember info = dbHelper.dbCxt.GgcmsMembers.Find(m.Id);
                     if (info.PassWord != oldPassword)
                     {
                         result.Msg = "原密码不正确";
@@ -100,9 +128,9 @@ namespace GgcmsCSharp.ApiCtrls
                     else
                     {
                         info.PassWord = newPassword;
-                        var ent = dbtool.db.Entry(info);
+                        var ent = dbHelper.dbCxt.Entry(info);
                         ent.Property("PassWord").IsModified = true;
-                        dbtool.db.SaveChanges();
+                        dbHelper.dbCxt.SaveChanges();
                         result.Code = 0;
                         session.RemoveAll();
                     }
@@ -111,18 +139,15 @@ namespace GgcmsCSharp.ApiCtrls
 
             return result;
         }
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing && dbtool != null)
-            {
-                dbtool.Dispose(true);
-            }
-            base.Dispose(disposing);
-        }
 
         public ResultData Exists(int id)
         {
-            return dbtool.Exists(id);
+            return new ResultData
+            {
+                Code = 0,
+                Msg = "",
+                Data = dbHelper.Exists<GgcmsMember>(id)
+            };
         }
     }
 }

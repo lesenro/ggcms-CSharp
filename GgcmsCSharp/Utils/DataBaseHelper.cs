@@ -1,36 +1,24 @@
-﻿using GgcmsCSharp.Models;
-using System;
-using System.Text.RegularExpressions;
-using System.Linq;
-using System.Linq.Dynamic;
-
-using System.Net.Http;
-using System.Web;
+﻿using System;
 using System.Collections.Generic;
-using System.Reflection;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
+using System.Linq;
+using System.Linq.Dynamic;
+using System.Reflection;
+using System.Text;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
-namespace GgcmsCSharp.ApiCtrls
+namespace GgcmsCSharp.Utils
 {
-    public class RequestParams
+    public class DataBaseHelper<TP> where TP : DbContext
     {
-        public string columns { get; set; }
-        public int limit { get; set; }
-        public int offset { get; set; }
-        public int pagenum { get; set; }
-        public string order { get; set; }
-        public string orderby { get; set; }
-        public string sortby { get; set; }
-        public string query { get; set; }
-        public List<object> queryParams { get; set; }
-    }
-    public class dbTools<T> where T : class
-    {
-        public GgcmsDB db = new GgcmsDB();
-        private HttpRequestMessage Request;
-        public RequestParams reqParams { get; set; }
-        public string DecodeOutputString(string outputstring)
+        public TP dbCxt { get; set; }
+        public DataBaseHelper(TP db)
+        {
+            dbCxt = db;
+        }
+        public static string DecodeOutputString(string outputstring)
         {
             //要替换的敏感字
             string str_Regex = @"(/sand/s)|(/sand/s)|(/slike/s)|(select/s)|(insert/s)|(delete/s)|(update/s[/s/S].*/sset)|(create/s)|(/stable)|(<[iframe|/iframe|script|/script])|(')|(/sexec)|(/sdeclare)|(/struncate)|(/smaster)|(/sbackup)|(/smid)|(/scount)";
@@ -50,25 +38,8 @@ namespace GgcmsCSharp.ApiCtrls
             }
             return outputstring;
         }
-        private void initRequestParams()
-        {
-            reqParams.columns = DecodeOutputString(Request.GetQueryString("columns")??"");
-            if (!string.IsNullOrEmpty(reqParams.columns))
-            {
-                reqParams.columns = "New(" + reqParams.columns + ")";
-            }
-            reqParams.limit = int.Parse(Request.GetQueryString("limit")??"10");
-            reqParams.offset = int.Parse(Request.GetQueryString("offset")??"0");
-            reqParams.pagenum = int.Parse(Request.GetQueryString("pagenum")??"1");
 
-            reqParams.query = DecodeOutputString(Request.GetQueryString("query"));
-            reqParams.query = getQuery(reqParams.query);
-
-            reqParams.order = DecodeOutputString(Request.GetQueryString("order") ?? "");
-            reqParams.sortby = DecodeOutputString(Request.GetQueryString("sortby") ?? "");
-            orderInit();
-        }
-        public void orderInit()
+        public static string OrderInit(RequestParams reqParams)
         {
             reqParams.orderby = "";
             if (!string.IsNullOrEmpty(reqParams.order))
@@ -85,15 +56,28 @@ namespace GgcmsCSharp.ApiCtrls
                     reqParams.orderby = string.Join(",", ss);
                 }
             }
+            return reqParams.orderby;
         }
-        public string getQuery(string qs)
+        public static RequestParams getQuery<T>(RequestParams reqParams) where T : class
         {
+            string qs = reqParams.query;
             try
             {
                 if (!string.IsNullOrEmpty(qs))
                 {
                     List<string> lquery = new List<string>();
-                    string[] arr = qs.Split(",".ToCharArray());
+                    string[] arr;
+                    string condition = " ";
+                    if (qs.Contains(";"))
+                    {
+                        arr = qs.Split(";".ToCharArray());
+                        condition = " OR ";
+                    }
+                    else
+                    {
+                        arr = qs.Split(",".ToCharArray());
+                        condition = " AND ";
+                    }
                     int paramIdx = 0;
                     foreach (string s in arr)
                     {
@@ -115,7 +99,7 @@ namespace GgcmsCSharp.ApiCtrls
                             }
                             else if (keys.Length == 2)
                             {
-                                string k1 = keys[0].ToLower();
+                                string k1 = keys[0];
                                 string k2 = keys[1].ToLower();
                                 switch (k2)
                                 {
@@ -147,18 +131,28 @@ namespace GgcmsCSharp.ApiCtrls
                                         lquery.Add(k1 + ".StartsWith(" + val + ")");
                                         break;
                                     case "endswith":
-                                        lquery.Add(k1 + ".endswith(" + val + ")");
+                                        lquery.Add(k1 + ".EndsWith(" + val + ")");
                                         break;
                                     case "in":
-                                        lquery.Add("@" + paramIdx.ToString() + ".Contains(outerIt." + k1 + ")");
+                                        reqParams.queryParams = new List<object>();
                                         if (isString)
                                         {
+                                            //lquery.Add("@" + paramIdx.ToString() + ".Contains(" + k1 + ")");
+                                            val = val.Replace("\"", "");
                                             reqParams.queryParams.AddRange(val.Split("|".ToCharArray()));
+                                            List<string> strParams = new List<string>();
+                                            for (int i = 0; i < reqParams.queryParams.Count; i++)
+                                            {
+                                                strParams.Add(k1 + ".Contains(@" + paramIdx.ToString() + ")");
+                                                paramIdx++;
+                                            }
+                                            lquery.Add("(" + string.Join(" OR ", strParams) + ")");
                                         }
                                         else
                                         {
+                                            lquery.Add("@" + paramIdx.ToString() + ".Contains(outerIt." + k1 + ")");
                                             string[] ids = val.Split("|".ToCharArray());
-                                            foreach(string str in ids)
+                                            foreach (string str in ids)
                                             {
                                                 reqParams.queryParams.Add(int.Parse(str));
                                             }
@@ -180,41 +174,22 @@ namespace GgcmsCSharp.ApiCtrls
                             }
                         }
                     }
-                    return string.Join(" And ", lquery);
+                    reqParams.query = string.Join(condition, lquery);
+                    return reqParams;
                 }
             }
-            catch
+            catch (Exception ex)
             {
-                return "";
+                throw ex;
             }
-            return "";
+            reqParams.query = "";
+            return reqParams;
         }
-        public dbTools(HttpRequestMessage req)
+        public ListResult GetList<T>(RequestParams reqParams) where T : class
         {
-            this.Request = req;
-            reqParams = new RequestParams();
-            reqParams.queryParams = new List<object>();
-        }
-        public dbTools(RequestParams rparams)
-        {
-            reqParams = rparams;
-            if (!string.IsNullOrEmpty(reqParams.columns))
-            {
-                reqParams.columns = "New(" + reqParams.columns + ")";
-            }
-            reqParams.queryParams = new List<object>();
-            reqParams.query= getQuery(reqParams.query);
-            orderInit();
-        }
-        public ResultData GetList(bool initparam=true)
-        {
-            if (initparam)
-            {
-                initRequestParams();
-            }
             IQueryable list;
             int count = 0;
-            if (reqParams.queryParams.Count > 0)
+            if (reqParams.queryParams != null && reqParams.queryParams.Count > 0)
             {
                 string t = reqParams.queryParams[0].GetType().ToString();
                 if (t.ToLower().EndsWith("string"))
@@ -224,9 +199,9 @@ namespace GgcmsCSharp.ApiCtrls
                     {
                         ids.Add(val.ToString());
                     }
-                    list = db.Set(typeof(T));
+                    list = dbCxt.Set(typeof(T));
                     list = list.Where(reqParams.query, ids.ToArray());
-                    count = db.Set(typeof(T)).Where(reqParams.query, ids.ToArray()).Count();
+                    count = dbCxt.Set(typeof(T)).Where(reqParams.query, ids.ToArray()).Count();
                     if (!string.IsNullOrEmpty(reqParams.orderby))
                     {
                         list = list.OrderBy(reqParams.orderby);
@@ -245,9 +220,9 @@ namespace GgcmsCSharp.ApiCtrls
                         ids.Add((int)val);
                     }
 
-                    list = db.Set(typeof(T));
+                    list = dbCxt.Set(typeof(T));
                     list = list.Where(reqParams.query, ids.ToArray());
-                    count = db.Set(typeof(T)).Where(reqParams.query, ids.ToArray()).Count();
+                    count = dbCxt.Set(typeof(T)).Where(reqParams.query, ids.ToArray()).Count();
                     if (!string.IsNullOrEmpty(reqParams.orderby))
                     {
                         list = list.OrderBy(reqParams.orderby);
@@ -261,15 +236,15 @@ namespace GgcmsCSharp.ApiCtrls
             }
             else
             {
-                list = db.Set(typeof(T));
+                list = dbCxt.Set(typeof(T));
                 if (!string.IsNullOrEmpty(reqParams.query))
                 {
                     list = list.Where(reqParams.query);
-                    count = db.Set(typeof(T)).Where(reqParams.query).Count();
+                    count = dbCxt.Set(typeof(T)).Where(reqParams.query).Count();
                 }
                 else
                 {
-                    count = db.Set(typeof(T)).Count();
+                    count = dbCxt.Set(typeof(T)).Count();
                 }
                 if (!string.IsNullOrEmpty(reqParams.orderby))
                 {
@@ -281,138 +256,85 @@ namespace GgcmsCSharp.ApiCtrls
                 }
                 list = list.Skip(reqParams.offset).Take(reqParams.limit);
             }
-            ResultData result = new ResultData
-            {
-                Code = 0,
-                Msg = "",
-                Data = new { List = list, Count = count }
-            };
-            return result;
+            return new ListResult { List = list, Count = count };
         }
-        public IQueryable GetInfoList()
+        public ListResult GetList<T>(string query="", string sortby = "Id", string order = "desc", int limit=10,int offset=0,string columns="") where T : class
         {
-            string query = Request.GetQueryString("query");
-            query = DecodeOutputString(query);
-            query = getQuery(query);
-            string t = reqParams.queryParams[0].GetType().ToString();
-            List<int> ids = new List<int>();
-            foreach (object val in reqParams.queryParams)
-            {
-                ids.Add((int)val);
-            }
-            IQueryable list = db.Set(typeof(T)).Where(query, ids.ToArray());
-            return list;
+            RequestParams reqParams = RequestParams.GetRequestParams<TP, T>(columns, limit, offset, 1, order, sortby, query);
+            return GetList<T>(reqParams);
         }
-        public ResultData GetById(int id)
+        public T GetById<T>(long id) where T : class
         {
-            var info = db.Set(typeof(T)).Find(id);
-            ResultData result = new ResultData
-            {
-                Code = 0,
-                Msg = ""
-            };
+            var info = dbCxt.Set(typeof(T)).Find(id);
+
             if (info == null)
             {
-                result.Code = 1;
-                result.Msg = "not found";
+                return null;
             }
             else
             {
-                result.Data = info;
+                return info as T;
             }
-
-            return result;
-
         }
-        public ResultData Edit(int id, T info) 
+        public T Edit<T>(long id, T info) where T : class
         {
             Type t = info.GetType();
             PropertyInfo pinfo = t.GetProperty("Id");
-            ResultData result = new ResultData
+
+            if (!Exists<T>(id))
             {
-                Code = 0,
-                Msg = ""
-            };
-            if (!(bool)Exists(id).Data)
-            {
-                result.Code = 1;
-                result.Msg = "not found";
-                return result;
+                return null;
             }
             try
             {
-                var ent = db.Entry(info);
+                var ent = dbCxt.Entry(info);
                 ent.State = EntityState.Modified;
-                db.SaveChanges();
+                dbCxt.SaveChanges();
             }
             catch (DbUpdateConcurrencyException ex)
             {
-                result.Code = 2;
-                result.Data = ex;
-                result.Msg = ex.Message;
+                throw ex;
             }
-
-            return result;
+            return info;
         }
-        public ResultData Add(T info)
+        public T Add<T>(T info) where T : class
         {
-            ResultData result = new ResultData
-            {
-                Code = 0,
-                Msg = ""
-            };
-            db.Set(typeof(T)).Add(info);
+            dbCxt.Set(typeof(T)).Add(info);
             try
             {
-                db.SaveChanges();
+                dbCxt.SaveChanges();
             }
             catch (Exception ex)
             {
-                result.Code = 2;
-                result.Data = ex;
-                result.Msg = ex.Message;
+                throw ex;
             }
-            return result;
+            return info;
         }
-        public ResultData Delete(int id)
+        public T Delete<T>(long id) where T : class
         {
-            ResultData result = new ResultData
-            {
-                Code = 0,
-                Msg = "sucess"
-            };
-            var info = db.Set(typeof(T)).Find(id);
+            var info = dbCxt.Set(typeof(T)).Find(id);
             if (info == null)
             {
-                result.Code = 1;
-                result.Msg = "not found";
-                return result;
+                return null;
             }
 
-            db.Set(typeof(T)).Remove(info);
+            dbCxt.Set(typeof(T)).Remove(info);
             try
             {
-                db.SaveChanges();
+                dbCxt.SaveChanges();
             }
             catch (Exception ex)
             {
-                result.Code = 2;
-                result.Data = ex;
-                result.Msg = ex.Message;
+                throw ex;
             }
-            return result;
+            return info as T;
         }
-        public ResultData MultDelete()
-        {
-            return MultDelete(Request.GetQueryString("query"));
-        }
-        public ResultData MultDelete(string query)
+
+        public int MultDelete<T>(RequestParams reqParams) where T : class
         {
             try
             {
-                query = DecodeOutputString(query);
-                query = getQuery(query);
-                
+                string query = reqParams.query;
                 if (reqParams.queryParams.Count > 0)
                 {
                     string t = reqParams.queryParams[0].GetType().ToString();
@@ -424,7 +346,7 @@ namespace GgcmsCSharp.ApiCtrls
                         {
                             ids.Add(val.ToString());
                         }
-                        list = db.Set(typeof(T)).Where(query, ids.ToArray());
+                        list = dbCxt.Set(typeof(T)).Where(query, ids.ToArray());
                     }
                     else
                     {
@@ -433,52 +355,76 @@ namespace GgcmsCSharp.ApiCtrls
                         {
                             ids.Add((int)val);
                         }
-                        list = db.Set(typeof(T)).Where(query, ids.ToArray());
+                        list = dbCxt.Set(typeof(T)).Where(query, ids.ToArray());
                     }
 
-                    db.Set(typeof(T)).RemoveRange(list);
+                    dbCxt.Set(typeof(T)).RemoveRange(list);
                 }
                 else
                 {
-                    db.Set(typeof(T)).RemoveRange(db.Set(typeof(T)).Where(query));
+                    dbCxt.Set(typeof(T)).RemoveRange(dbCxt.Set(typeof(T)).Where(query));
                 }
 
-                int d = db.SaveChanges();
-                return new ResultData
-                {
-                    Code = 0,
-                    Msg = "",
-                    Data = d,
-                };
+                return dbCxt.SaveChanges();
             }
             catch (Exception ex)
             {
-                return new ResultData
-                {
-                    Code = 1,
-                    Msg = ex.Message,
-                    Data = ex,
-                };
+                throw ex;
             }
         }
-        public ResultData Exists(int id)
+        public bool Exists<T>(long id)
         {
-
-            int count = db.Set(typeof(T)).Where("Id = " + id.ToString()).Count();
-            ResultData result = new ResultData
-            {
-                Code = 0,
-                Msg = "sucess",
-                Data = count > 0
-            };
-            return result;
+            return dbCxt.Set(typeof(T)).Where("Id = " + id.ToString()).Count() > 0;
         }
         public void Dispose(bool disposing)
         {
             if (disposing)
             {
-                db.Dispose();
+                dbCxt.Dispose();
             }
         }
+    }
+    public class RequestParams
+    {
+        public string columns { get; set; } = "";
+        public int limit { get; set; } = 10;
+        public int offset { get; set; } = 0;
+        public int pagenum { get; set; } = 1;
+        public string order { get; set; } = "";
+        public string orderby { get; set; } = "";
+        public string sortby { get; set; } = "";
+        public string query { get; set; } = "";
+        public List<object> queryParams { get; set; } = new List<object>();
+        public RequestParams()
+            : base()
+        {
+
+        }
+        public static RequestParams GetRequestParams<DC, DT>(string columns, int limit, int offset, int pagenum, string order, string sortby, string query) where DC : DbContext where DT : class
+        {
+            var reqParams = new RequestParams();
+            reqParams.columns = DataBaseHelper<DC>.DecodeOutputString(columns);
+            if (!string.IsNullOrEmpty(columns))
+            {
+                reqParams.columns = "New(" + columns + ")";
+            }
+            reqParams.limit = limit;
+            reqParams.offset = offset;
+            reqParams.pagenum = pagenum;
+
+            reqParams.query = DataBaseHelper<DC>.DecodeOutputString(query);
+            reqParams = DataBaseHelper<DC>.getQuery<DT>(reqParams);
+
+            reqParams.order = DataBaseHelper<DC>.DecodeOutputString(order);
+            reqParams.sortby = DataBaseHelper<DC>.DecodeOutputString(sortby);
+            reqParams.orderby = DataBaseHelper<DC>.OrderInit(reqParams);
+            return reqParams;
+        }
+
+    }
+    public class ListResult
+    {
+        public IQueryable List { get; set; }
+        public int Count { get; set; }
     }
 }

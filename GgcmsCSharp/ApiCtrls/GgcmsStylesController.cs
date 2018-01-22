@@ -12,28 +12,39 @@ using System;
 
 namespace GgcmsCSharp.ApiCtrls
 {
-    public class GgcmsStylesController : ApiController
+    public class GgcmsStylesController : ApiBaseController
     {
-        private dbTools<GgcmsStyle> dbtool;
         private FileManager fman;
 
         protected override void Initialize(HttpControllerContext controllerContext)
         {
             base.Initialize(controllerContext);
-            this.dbtool = new dbTools<GgcmsStyle>(Request);
             this.fman = new FileManager();
         }
         // GET: api/GgcmsCategories
         [HttpGet]
         public ResultData GetList()
         {
-            return dbtool.GetList();
+            var reqParams = InitRequestParams<GgcmsStyle>();
+            var result = dbHelper.GetList<GgcmsStyle>(reqParams);
+            return new ResultData
+            {
+                Code = 0,
+                Data = result,
+                Msg = ""
+            };
         }
 
         // GET: api/GgcmsCategories/5
         public ResultData GetInfo(int id)
         {
-            return dbtool.GetById(id);
+            var result = dbHelper.GetById<GgcmsStyle>(id);
+            return new ResultData
+            {
+                Code = 0,
+                Data = result,
+                Msg = ""
+            };
         }
 
         // PUT: api/GgcmsCategories/5
@@ -56,7 +67,12 @@ namespace GgcmsCSharp.ApiCtrls
                         select r;
             GgcmsStyle oldinfo = qlist.First();
             styleInfo.Folder = oldinfo.Folder;
-            return dbtool.Edit(styleInfo.Id, styleInfo);
+            return new ResultData
+            {
+                Code = 0,
+                Data = dbHelper.Edit(styleInfo.Id, styleInfo),
+                Msg = ""
+            };
         }
 
         // POST: api/GgcmsCategories
@@ -93,13 +109,23 @@ namespace GgcmsCSharp.ApiCtrls
                 Directory.CreateDirectory(rootpath);
                 Directory.CreateDirectory(templatePath);
             }
-            return dbtool.Add(styleInfo);
+            return new ResultData
+            {
+                Code = 0,
+                Msg = "",
+                Data = dbHelper.Add(styleInfo)
+            };
         }
 
         // DELETE: api/GgcmsCategories/5
         public ResultData Delete(int id)
         {
-            return dbtool.Delete(id);
+            return new ResultData
+            {
+                Code = 0,
+                Msg = "",
+                Data = dbHelper.Delete<GgcmsStyle>(id)
+            };
         }
         [HttpGet]
         public ResultData MultDelete()
@@ -109,10 +135,11 @@ namespace GgcmsCSharp.ApiCtrls
             styleDir = "/" + staticDir + "/" + styleDir + "/";
             string templateDir = ConfigurationManager.AppSettings["TemplateDir"].ToString();
             templateDir = "/Views/" + templateDir + "/";
+            var reqParams = InitRequestParams<GgcmsStyle>();
             try
             {
-                IQueryable list = dbtool.GetInfoList();
-                foreach (var item in list)
+                var result = dbHelper.GetList<GgcmsStyle>(reqParams);
+                foreach (var item in result.List)
                 {
                     GgcmsStyle styleInfo = item as GgcmsStyle;
                     string stylePath = HttpContext.Current.Server.MapPath("~" + styleDir + styleInfo.Folder);
@@ -130,27 +157,30 @@ namespace GgcmsCSharp.ApiCtrls
                     Data = ex
                 };
             }
-            return dbtool.MultDelete();
-        }
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing && dbtool != null)
+            
+            return new ResultData
             {
-                dbtool.Dispose(true);
-            }
-            base.Dispose(disposing);
+                Code = 0,
+                Msg = "",
+                Data = dbHelper.MultDelete<GgcmsStyle>(reqParams)
+            };
         }
+
 
         public ResultData Exists(int id)
         {
-            return dbtool.Exists(id);
+            return new ResultData
+            {
+                Code = 0,
+                Msg = "",
+                Data = dbHelper.Exists<GgcmsStyle>(id)
+            };
         }
         [HttpGet]
         public ResultData GetStaticFile(int id, string path)
         {
             path = HttpUtility.UrlDecode(path);
-            ResultData rdata = dbtool.GetById(id);
-            GgcmsStyle oldinfo = rdata.Data as GgcmsStyle;
+            GgcmsStyle oldinfo = dbHelper.GetById<GgcmsStyle>(id);
             string staticDir = ConfigurationManager.AppSettings["StaticDir"].ToString();
             string styleDir = ConfigurationManager.AppSettings["StyleDir"].ToString();
             string root = staticDir + "/" + styleDir + "/" + oldinfo.Folder + "/" + path;
@@ -160,8 +190,7 @@ namespace GgcmsCSharp.ApiCtrls
         public ResultData GetStaticFileInfo(int id, string path)
         {
             path = HttpUtility.UrlDecode(path);
-            ResultData rdata = dbtool.GetById(id);
-            GgcmsStyle sinfo = rdata.Data as GgcmsStyle;
+            GgcmsStyle sinfo = dbHelper.GetById<GgcmsStyle>(id); 
             string staticDir = ConfigurationManager.AppSettings["StaticDir"].ToString();
             string styleDir = ConfigurationManager.AppSettings["StyleDir"].ToString();
             string root = staticDir + "/" + styleDir + "/" + sinfo.Folder + "/" + path;
@@ -174,8 +203,7 @@ namespace GgcmsCSharp.ApiCtrls
             string path = dataInfo.path.ToString();
             path = HttpUtility.UrlDecode(path);
             string content = dataInfo.content.ToString();
-            ResultData rdata = dbtool.GetById(id);
-            GgcmsStyle sinfo = rdata.Data as GgcmsStyle;
+            GgcmsStyle sinfo = dbHelper.GetById<GgcmsStyle>(id); 
             string staticDir = ConfigurationManager.AppSettings["StaticDir"].ToString();
             string styleDir = ConfigurationManager.AppSettings["StyleDir"].ToString();
             string fullname = staticDir + "/" + styleDir + "/" + sinfo.Folder + "/" + path;
@@ -189,8 +217,8 @@ namespace GgcmsCSharp.ApiCtrls
             string path = dataInfo.path.ToString();
             path = HttpUtility.UrlDecode(path);
             dynamic files = dataInfo.files;
-            ResultData rdata = dbtool.GetById(id);
-            GgcmsStyle sinfo = rdata.Data as GgcmsStyle;
+
+            GgcmsStyle sinfo = dbHelper.GetById<GgcmsStyle>(id);
             string staticDir = ConfigurationManager.AppSettings["StaticDir"].ToString();
             string styleDir = ConfigurationManager.AppSettings["StyleDir"].ToString();
             string fullname = staticDir + "/" + styleDir + "/" + sinfo.Folder + "/" + path;
@@ -204,8 +232,8 @@ namespace GgcmsCSharp.ApiCtrls
             string path = dataInfo.path.ToString();
             string newName = dataInfo.newName.ToString();
             path = HttpUtility.UrlDecode(path);
-            ResultData rdata = dbtool.GetById(id);
-            GgcmsStyle sinfo = rdata.Data as GgcmsStyle;
+
+            GgcmsStyle sinfo = dbHelper.GetById<GgcmsStyle>(id);
             string staticDir = ConfigurationManager.AppSettings["StaticDir"].ToString();
             string styleDir = ConfigurationManager.AppSettings["StyleDir"].ToString();
             string fullname = staticDir + "/" + styleDir + "/" + sinfo.Folder + "/" + path + "/" + newName;
@@ -219,8 +247,7 @@ namespace GgcmsCSharp.ApiCtrls
             string path = dataInfo.path.ToString();
             string newName = dataInfo.newName.ToString();
             string oldName = dataInfo.oldName.ToString();
-            ResultData rdata = dbtool.GetById(id);
-            GgcmsStyle sinfo = rdata.Data as GgcmsStyle;
+            GgcmsStyle sinfo = dbHelper.GetById<GgcmsStyle>(id);
             string staticDir = ConfigurationManager.AppSettings["StaticDir"].ToString();
             string styleDir = ConfigurationManager.AppSettings["StyleDir"].ToString();
             string nname = staticDir + "/" + styleDir + "/" + sinfo.Folder + "/" + path + "/" + newName;
@@ -237,8 +264,7 @@ namespace GgcmsCSharp.ApiCtrls
             int id = int.Parse(httpRequest.Form["id"]);
             string path = httpRequest.Form["path"];
             path = HttpUtility.UrlDecode(path);
-            ResultData rdata = dbtool.GetById(id);
-            GgcmsStyle sinfo = rdata.Data as GgcmsStyle;
+            GgcmsStyle sinfo = dbHelper.GetById<GgcmsStyle>(id);
             string staticDir = ConfigurationManager.AppSettings["StaticDir"].ToString();
             string styleDir = ConfigurationManager.AppSettings["StyleDir"].ToString();
             string fullname = staticDir + "/" + styleDir + "/" + sinfo.Folder + "/" + path;
@@ -290,8 +316,7 @@ namespace GgcmsCSharp.ApiCtrls
         [HttpGet]
         public ResultData GetTemplateList(int id)
         {
-            ResultData rdata = dbtool.GetById(id);
-            GgcmsStyle styleInfo = rdata.Data as GgcmsStyle;
+            GgcmsStyle styleInfo = dbHelper.GetById<GgcmsStyle>(id);
             string templateDir = ConfigurationManager.AppSettings["TemplateDir"].ToString();
             templateDir = "Views/" + templateDir + "/" + styleInfo.Folder;
             return fman.GetList(templateDir);
@@ -300,8 +325,7 @@ namespace GgcmsCSharp.ApiCtrls
         public ResultData GetTemplateInfo(int id, string filename)
         {
             filename = HttpUtility.UrlDecode(filename);
-            ResultData rdata = dbtool.GetById(id);
-            GgcmsStyle styleInfo = rdata.Data as GgcmsStyle;
+            GgcmsStyle styleInfo = dbHelper.GetById<GgcmsStyle>(id);
             string templateDir = ConfigurationManager.AppSettings["TemplateDir"].ToString();
             templateDir = "Views/" + templateDir + "/" + styleInfo.Folder + "/" + filename;
 
@@ -312,8 +336,7 @@ namespace GgcmsCSharp.ApiCtrls
             int id = (int)dataInfo.id;
             string filename = dataInfo.filename.ToString();
             string content = dataInfo.content.ToString();
-            ResultData rdata = dbtool.GetById(id);
-            GgcmsStyle sinfo = rdata.Data as GgcmsStyle;
+            GgcmsStyle sinfo = dbHelper.GetById<GgcmsStyle>(id);
             string templateDir = ConfigurationManager.AppSettings["TemplateDir"].ToString();
             string fullname = "Views/" + templateDir + "/" + sinfo.Folder + "/" + filename;
             return fman.Save(fullname, content);
@@ -322,8 +345,7 @@ namespace GgcmsCSharp.ApiCtrls
         {
             int id = (int)dataInfo.id;
             dynamic files = dataInfo.files;
-            ResultData rdata = dbtool.GetById(id);
-            GgcmsStyle sinfo = rdata.Data as GgcmsStyle;
+            GgcmsStyle sinfo = dbHelper.GetById<GgcmsStyle>(id);
             string templateDir = ConfigurationManager.AppSettings["TemplateDir"].ToString();
             string fullname = "Views/" + templateDir + "/" + sinfo.Folder;
             return fman.Delete(fullname, files);
@@ -333,8 +355,7 @@ namespace GgcmsCSharp.ApiCtrls
         {
             var httpRequest = HttpContext.Current.Request;
             int id = int.Parse(httpRequest.Form["id"]);
-            ResultData rdata = dbtool.GetById(id);
-            GgcmsStyle sinfo = rdata.Data as GgcmsStyle;
+            GgcmsStyle sinfo = dbHelper.GetById<GgcmsStyle>(id);
             string templateDir = ConfigurationManager.AppSettings["TemplateDir"].ToString();
             string fullname = "Views/" + templateDir + "/" + sinfo.Folder;
 
@@ -346,8 +367,7 @@ namespace GgcmsCSharp.ApiCtrls
             int id = (int)dataInfo.id;
             string newName = dataInfo.newName.ToString();
             string oldName = dataInfo.oldName.ToString();
-            ResultData rdata = dbtool.GetById(id);
-            GgcmsStyle sinfo = rdata.Data as GgcmsStyle;
+            GgcmsStyle sinfo = dbHelper.GetById<GgcmsStyle>(id);
             string templateDir = ConfigurationManager.AppSettings["TemplateDir"].ToString();
 
             string nname = "Views/" + templateDir + "/" + sinfo.Folder + "/" + newName;
@@ -360,8 +380,7 @@ namespace GgcmsCSharp.ApiCtrls
         [HttpGet]
         public void StyleExport(int id)
         {
-            ResultData rdata = dbtool.GetById(id);
-            GgcmsStyle sinfo = rdata.Data as GgcmsStyle;
+            GgcmsStyle sinfo = dbHelper.GetById<GgcmsStyle>(id);
             string templateDir = ConfigurationManager.AppSettings["TemplateDir"].ToString();
             string staticDir = ConfigurationManager.AppSettings["StaticDir"].ToString();
             string styleDir = ConfigurationManager.AppSettings["StyleDir"].ToString();
@@ -472,7 +491,13 @@ namespace GgcmsCSharp.ApiCtrls
                     StyleName = fn,
                     Descrip = fn,
                 };
-                return dbtool.Add(sinfo);
+                return new ResultData
+                {
+                    Code = 0,
+                    Msg = "",
+                    Data = dbHelper.Add(sinfo)
+                };
+
             }
             catch (Exception ex)
             {
