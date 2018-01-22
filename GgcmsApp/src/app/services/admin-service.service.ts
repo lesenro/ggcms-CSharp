@@ -782,4 +782,59 @@ export class AdminService {
       .then(response => response.json())
       .catch(err => this.handleError(err));
   }
+  //信息模型管理
+  //保存信息模型
+  ModulesSave(data: any): Promise<any> {
+    var action = data.Id > 0 ? "Edit" : "Add";
+    var url = ServerUrl + "GgcmsModules/" + action;
+    return this.http.post(url, data, this.options)
+      .toPromise()
+      .then(response => response.json())
+      .catch(err => this.handleError(err));
+  }
+  DelModules(ids: number[]): Promise<any> {
+    let params: URLSearchParams = new URLSearchParams();
+    params.append("query", "Id.in:" + ids.join("|"));
+    var url = ServerUrl + "GgcmsModules/MultDelete";
+    var opt = new RequestOptions({
+      search: params
+    });
+    return this.http.get(url, opt)
+      .toPromise()
+      .then(response => response.json())
+      .catch(err => this.handleError(err));
+  }
+  GetModules(id): Promise<any> {
+    var url = ServerUrl + "GgcmsModules/GetInfo/" + id;
+    return this.http.get(url)
+      .toPromise()
+      .then(response => {
+        let jsonData = response.json();
+        return jsonData;
+      })
+      .catch(err => this.handleError(err));
+  }
+
+  //获取系统字典列表
+  GetModulesList(pn: number, all: boolean = false, query?: string): Promise<any> {
+    var url = ServerUrl + "GgcmsModules/GetList";
+    var pdata = new PageData();
+    pdata.sortby = "Id";
+    pdata.order = "desc";
+    pdata.query = query || "";
+    pdata.columns = "Id,ModuleName,TableName,ViewName";
+    if (all) {
+      pdata.limit = 1000;
+    } else {
+      pdata.pagenum = pn;
+      pdata = this.comPages(pdata);
+    }
+    var params = this.appServ.objectToParams(pdata);
+    return this.http.get(url, {
+      search: params
+    })
+      .toPromise()
+      .then(response => response.json())
+      .catch(err => this.handleError(err));
+  }
 }

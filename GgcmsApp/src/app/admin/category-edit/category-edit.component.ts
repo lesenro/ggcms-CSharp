@@ -14,6 +14,7 @@ export class CategoryEditComponent implements OnInit {
   articleTmpl: any[] = [];
   mobListTmpl: any[] = [];
   mobArticleTmpl: any[] = [];
+  modulesList:any[]=[];
   dataInfo = {
     Id: 0,
     ParentId: 0,
@@ -158,6 +159,10 @@ export class CategoryEditComponent implements OnInit {
           });
         }
       });
+      this.adminServ.GetModulesList(1,true,"").then(data=>{
+        if(data.Code==0){
+          this.modulesList=data.Data.List;
+        }
+      });
   }
-
 }

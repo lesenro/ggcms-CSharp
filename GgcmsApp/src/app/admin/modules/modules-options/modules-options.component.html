@@ -1,0 +1,32 @@
+<form class="form-horizontal" name="editForm" #editForm="ngForm" role="form" novalidate>
+    <input type="hidden" ng-model="data.Id">
+    <div class="form-body">
+        <div class="form-group row">
+            <label for="ColTitle" class="col-2 col-form-label">字段名称:</label>
+            <div class="col-10">
+                <input type="text" [(ngModel)]="columnItem.ColTitle" name="ColTitle" maxlength="255" class="form-control" placeholder="字段名称" required>
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="ColType" class="col-2 col-form-label">字段类型:</label>
+            <div class="col-10">
+                <select name="ColType" class="form-control" [(ngModel)]="columnItem.ColType" required>
+                    <option *ngFor="let item of columnTypes" [value]="item">{{item}}</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group row" *ngIf="columnItem.ColType=='nvarchar'">
+            <label for="Length" class="col-2 col-form-label">字段长度:</label>
+            <div class="col-10">
+                <input type="text" [(ngModel)]="columnItem.Length" name="Length" maxlength="5" class="form-control" placeholder="字段长度">
+            </div>
+        </div>
+        <div class="form-group row" *ngIf="columnItem.ColType=='decimal'">
+            <label for="ColDecimal" class="col-2 col-form-label">小数位:</label>
+            <div class="col-10">
+                <input type="text" [(ngModel)]="columnItem.ColDecimal" name="ColDecimal" maxlength="5" class="form-control" placeholder="小数位">
+            </div>
+        </div>
+        <hr/>
+    </div>
+</form>

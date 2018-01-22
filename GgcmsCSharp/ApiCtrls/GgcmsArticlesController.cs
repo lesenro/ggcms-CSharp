@@ -177,15 +177,22 @@ namespace GgcmsCSharp.ApiCtrls
         {
             string query = dbtool.DecodeOutputString(Request.GetQueryString("query"));
             query = dbtool.getQuery(query);
-            List<int> ids = new List<int>();
-            foreach (object val in dbtool.reqParams.queryParams)
+            //List<int> ids = new List<int>();
+            using (GgcmsDB db = new GgcmsDB())
             {
-                int id = (int)val;
-                GgcmsArticle info = dbtool.db.GgcmsArticles.Find(id);
-                if (info != null)
+                foreach (object val in dbtool.reqParams.queryParams)
                 {
-                    updateArticleNumber(info.Category_Id, -1);
+                    int id = (int)val;
+                    GgcmsArticle info = dbtool.db.GgcmsArticles.Find(id);
+
+                    if (info != null)
+                    {
+                        updateArticleNumber(info.Category_Id, -1);
+                    }
+                    var attalist = db.GgcmsAttachments.Where(x => x.Articles_Id == info.Id);
+                    db.GgcmsAttachments.RemoveRange(attalist);
                 }
+                db.SaveChanges();
             }
             CacheHelper.RemoveAllCache(CacheTypeNames.Categorys);
             return dbtool.MultDelete();

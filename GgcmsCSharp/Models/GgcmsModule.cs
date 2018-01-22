@@ -27,5 +27,7 @@ namespace GgcmsCSharp.Models
         [StringLength(50)]
         public string ViewName { get; set; }
 
+        [NotMapped]
+        public List<GgcmsModuleColumn> Columns { get; set; }
     }
 }

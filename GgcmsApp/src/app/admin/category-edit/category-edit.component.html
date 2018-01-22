@@ -71,6 +71,21 @@
                 </div>
             </div>
             <div class="form-group row">
+                    <label class="col-2 col-form-label">信息模型:</label>
+                    <div class="col-4">
+                        <div class="input-group">
+                            <select name="ExtModelId" class="form-control input-inline" id="ExtModelId" [(ngModel)]="dataInfo.ExtModelId">
+                                <option value="0" selected>---请选择---</option> 
+                                <option [value]="item.Id" *ngFor="let item of modulesList" >{{item.ModuleName}}</option>
+                            </select>
+                        </div>
+                    </div>
+                    <label class="col-2 col-form-label"></label>
+                    <div class="col-4">
+                        
+                    </div>
+                </div>            
+            <div class="form-group row">
                 <label class="col-2 col-form-label">摘要信息:</label>
                 <div class="col-10">
                     <textarea name="Description" maxlength="255" id="Description" [(ngModel)]="dataInfo.Description" placeholder="摘要信息" class="form-control" rows="3"></textarea>

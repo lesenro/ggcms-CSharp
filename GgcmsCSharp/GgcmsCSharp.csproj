@@ -164,6 +164,7 @@
   <ItemGroup>
     <Content Include="Global.asax" />
     <None Include="Properties\PublishProfiles\todir.pubxml" />
+    <Content Include="sqldb\20180122-01.sql" />
     <Content Include="sqldb\20170709-01.sql" />
     <Content Include="sqldb\20170705-01.sql" />
     <Content Include="sqldb\20170830-01.sql" />

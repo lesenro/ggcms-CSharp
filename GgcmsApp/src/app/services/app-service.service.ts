@@ -52,7 +52,7 @@ export class AppService {
   }
   //路由跳转
   goRouter(rname, params?: any) {
-    console.log(rname);
+    //console.log(rname);
     if (params) {
       this.router.navigate([rname], { queryParams: params });
     } else {
