@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core'
 import { FormControl, FormGroup, Validators } from '@angular/forms'
 import { AppService, AdminService } from "app/services";
+import { FormInputOption } from 'app/BaseModules';
 
 @Component({
   selector: 'form-input',
@@ -123,38 +124,4 @@ export class FormInputComponent implements OnInit {
     itemValidator[item.CfgName] = new FormControl(item.CfgValue, vs);
     return new FormGroup(itemValidator);
   }
-}
-export class FormInputOption {
-  type: string = "text";
-  required: boolean = false;
-  min: number = 0;
-  max: number = 0;
-  minLength: number = 0;
-  maxLength: number = 0;
-  pattern: string = "";
-  message: string = "";
-  requiredMessage: string = "";
-  minMessage: string = "";
-  maxMessage: string = "";
-  minLengthMessage: string = "";
-  maxLengthMessage: string = "";
-  patternMessage: string = "";
-  helpMessage: string = "";
-  preview: boolean = false;
-  datasource: string = "";
-  egroup: string = "";
-  multiple: boolean = false;
-  onColor: string = "info";
-  offColor: string = "default";
-  onText: string = "ON";
-  offText: string = "OFF";
-  minDate: string = "";
-  minDateMessage: string = "";
-  maxDate: string = "";
-  maxDateMessage: string = "";
-  extension: string = "";
-  extensionMessage: string = "";
-  fileSize: number = 0;
-  fileSizenMessage: string = "";
-  dependent: string = "";
 }

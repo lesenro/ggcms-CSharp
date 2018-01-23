@@ -29,10 +29,24 @@
         </div>
         <hr/>
         <div class="form-group row">
-            <label for="ColType" class="col-2 col-form-label">输入类型:</label>
+            <label for="optionsType" class="col-2 col-form-label">输入类型:</label>
             <div class="col-10">
-                <select name="ColType" class="form-control" [(ngModel)]="columnItem.ColType" required>
-                    <option *ngFor="let item of columnTypes" [value]="item">{{item}}</option>
+                <select name="optionsType" class="form-control" [(ngModel)]="options.type">
+                    <option *ngFor="let item of inputTypes" [value]="item.key">{{item.name}}</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group row" *ngIf="['single-select-dict','single-select-reldict'].indexOf(options.type)!=-1">
+            <label class="col-2 col-form-label">字典分组:</label>
+            <div class="col-10">
+                <p-autoComplete [ngModelOptions]="{standalone: true}" [(ngModel)]="options.egroup" field="Title" [suggestions]="dictTypes" (completeMethod)="search($event)" [dropdown]="true"></p-autoComplete>
+            </div>
+        </div>
+        <div class="form-group row" *ngIf="options.type=='single-select-reldict'">
+            <label for="targetName" class="col-2 col-form-label">联动字段:</label>
+            <div class="col-10">
+                <select name="targetName" class="form-control" [(ngModel)]="options.targetName">
+                    <option *ngFor="let item of columns" [value]="item.ColName">{{item.ColTitle}}</option>
                 </select>
             </div>
         </div>

@@ -1,7 +1,8 @@
 import { Component, OnInit,ViewChild } from '@angular/core';
 import { AdminService, AppService } from "app/services";
-import { FormInputOption, FormInputComponent } from "app/form-input/form-input.component";
+import { FormInputComponent } from "app/form-input/form-input.component";
 import { FormGroup, FormControl, FormBuilder, Validators, FormArray } from '@angular/forms';
+import { FormInputOption } from 'app/BaseModules';
 @Component({
   selector: 'app-settings',
   templateUrl: './settings.component.html',

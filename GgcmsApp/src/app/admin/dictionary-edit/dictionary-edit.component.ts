@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from "@angular/router";
 import { AppService, AdminService } from "app/services";
 import { Location } from '@angular/common';
+import { GgcmsDictionary } from 'app/BaseModules';
 @Component({
   selector: 'app-dictionary-edit',
   templateUrl: './dictionary-edit.component.html',
@@ -9,9 +10,9 @@ import { Location } from '@angular/common';
 })
 
 export class DictionaryEditComponent implements OnInit {
-  dataInfo :Dictionary=new Dictionary();
-  dictTypes: Dictionary[] = [];
-  defaultDictTypes: Dictionary[] = [];
+  dataInfo :GgcmsDictionary=new GgcmsDictionary();
+  dictTypes: GgcmsDictionary[] = [];
+  defaultDictTypes: GgcmsDictionary[] = [];
   dataSave() {
     let data=Object.assign({},this.dataInfo);
     if(data.DictType.Value){
@@ -69,13 +70,4 @@ export class DictionaryEditComponent implements OnInit {
       }
     });
   }
-}
-class Dictionary{
-  Id:number=0;
-  Title:string="";
-  DictType:any="";
-  OrderID:number=0;
-  SysFlag:number=0;
-  describe:string="";
-  Value:string="";
 }
