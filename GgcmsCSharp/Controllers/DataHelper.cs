@@ -58,7 +58,7 @@ namespace GgcmsCSharp.Controllers
             pagination.page = pnum;
             return pagination;
         }
-        public List<GgcmsFriendLink> FriendLinks(string query, string columns = "", int offset = 0, int limit = 100, string sortby = "OrderId", string order = "asc")
+        public List<dynamic> FriendLinks(string query, string columns = "", int offset = 0, int limit = 100, string sortby = "OrderId", string order = "asc")
         {
             if (!query.ToLower().Contains("status") && !string.IsNullOrWhiteSpace(query))
             {
@@ -71,9 +71,9 @@ namespace GgcmsCSharp.Controllers
 
             DataBaseHelper<GgcmsDB> dbHelper = new DataBaseHelper<GgcmsDB>(new GgcmsDB());
             var result = dbHelper.GetList<GgcmsFriendLink>(rparams);
-            return result.List.Cast<GgcmsFriendLink>().ToList();
+            return result.ToList();
         }
-        public List<GgcmsAdverts> Adverts(string query, string columns = "", int offset = 0, int limit = 100, string sortby = "OrderID", string order = "asc")
+        public List<dynamic> Adverts(string query, string columns = "", int offset = 0, int limit = 100, string sortby = "OrderID", string order = "asc")
         {
             if (!query.ToLower().Contains("status")&& !string.IsNullOrWhiteSpace(query))
             {
@@ -86,16 +86,16 @@ namespace GgcmsCSharp.Controllers
             DataBaseHelper<GgcmsDB> dbHelper = new DataBaseHelper<GgcmsDB>(new GgcmsDB());
 
             var result = dbHelper.GetList<GgcmsAdverts>(rparams);
-            return result.List.Cast<GgcmsAdverts>().ToList();
+            return result.ToList();
 
         }
         public ListResult Articles(RequestParams rparams)
         {
             DataBaseHelper<GgcmsDB> dbHelper = new DataBaseHelper<GgcmsDB>(new GgcmsDB());
-            rparams = RequestParams.GetRequestParams<GgcmsDB, GgcmsAdverts>(rparams.columns, rparams.limit, rparams.offset, 1, rparams.order, rparams.sortby, rparams.query);
+            rparams = RequestParams.GetRequestParams<GgcmsDB, GgcmsArticle>(rparams.columns, rparams.limit, rparams.offset, 1, rparams.order, rparams.sortby, rparams.query);
             return dbHelper.GetList<GgcmsArticle>(rparams);
         }
-        public List<GgcmsArticle> Articles(string query, string columns="", int offset=0,int limit=100,string sortby = "Id",string order="desc")
+        public List<dynamic> Articles(string query, string columns="", int offset=0,int limit=100,string sortby = "Id",string order="desc")
         {
             RequestParams rparams = new RequestParams();
             rparams.offset = offset;
@@ -106,9 +106,9 @@ namespace GgcmsCSharp.Controllers
             rparams.query = query;
             ListResult rlist = Articles(rparams);
 
-            return rlist.List.Cast<GgcmsArticle>().ToList();
+            return rlist.ToList();
         }
-        public List<GgcmsArticle> Articles(int[] ids, Pagination pagination)
+        public List<dynamic> Articles(int[] ids, Pagination pagination)
         {
             RequestParams rparams = new RequestParams();
             rparams.offset = pagination.getSkip();
@@ -121,7 +121,7 @@ namespace GgcmsCSharp.Controllers
             ListResult rlist = Articles(rparams);
 
             pagination.setMaxSize(rlist.Count);
-            return rlist.List.Cast<GgcmsArticle>().ToList();
+            return rlist.ToList();
         }
     }
 }

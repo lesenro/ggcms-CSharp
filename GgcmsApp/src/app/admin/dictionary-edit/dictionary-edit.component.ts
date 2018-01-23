@@ -14,7 +14,10 @@ export class DictionaryEditComponent implements OnInit {
   defaultDictTypes: Dictionary[] = [];
   dataSave() {
     let data=Object.assign({},this.dataInfo);
-    data.DictType=data.DictType.Value;
+    if(data.DictType.Value){
+      data.DictType=data.DictType.Value;
+    }
+    
     this.adminServ.DictionarySave(data).then(data => {
       if (data.Code == 0) {
         this._location.back();
@@ -23,16 +26,19 @@ export class DictionaryEditComponent implements OnInit {
   }
   constructor(private route: ActivatedRoute, public appServ: AppService, private adminServ: AdminService, private _location: Location) { }
   search(event) {
-    if(event.query){
-      this.adminServ.GetDictionaryList(1,true,"Title:"+event.query+",Value:"+event.query).then(data => {
-        if (data.Code == 0) {
-          
+    if(event.query.trim()){
+      this.adminServ.GetDictionaryList(1,true,"Title.contains:"+event.query+";Value.contains:"+event.query).then(data => {
+        if (data.Code == 0&&data.Data.Count>0) {
+          this.dictTypes=data.Data.List;
         }else{
           this.dictTypes= this.defaultDictTypes.slice();
         }
       });
     }else{
       this.dictTypes= this.defaultDictTypes.slice();
+      if(this.dataInfo.DictType&&this.dictTypes.filter(x=>x.Value===this.dataInfo.DictType.Value).length===0){
+        this.dictTypes.push(this.dataInfo.DictType);
+      }
     }
     
   }
@@ -47,6 +53,12 @@ export class DictionaryEditComponent implements OnInit {
           this.adminServ.GetDictionaryInfo(id).then(data => {
             if (data.Code == 0) {
               this.dataInfo = data.Data;
+              this.adminServ.GetDictionaryList(1,true,"Value:"+data.Data.DictType).then(data => {
+                if (data.Code == 0&&data.Data.Count>0) {
+                  this.dictTypes=data.Data.List;
+                  this.dataInfo.DictType=data.Data.List[0];
+                }
+              });
             }
           });
         }

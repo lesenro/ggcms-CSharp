@@ -8,6 +8,7 @@ using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace GgcmsCSharp.Utils
 {
@@ -60,7 +61,7 @@ namespace GgcmsCSharp.Utils
         }
         public static RequestParams getQuery<T>(RequestParams reqParams) where T : class
         {
-            string qs = reqParams.query;
+            string qs = HttpUtility.UrlDecode(reqParams.query); 
             try
             {
                 if (!string.IsNullOrEmpty(qs))
@@ -426,5 +427,14 @@ namespace GgcmsCSharp.Utils
     {
         public IQueryable List { get; set; }
         public int Count { get; set; }
+        public List<dynamic> ToList()
+        {
+            List<dynamic> list = new List<dynamic>();
+            foreach(var item in List)
+            {
+                list.Add(item);
+            }
+            return list;
+        }
     }
 }
