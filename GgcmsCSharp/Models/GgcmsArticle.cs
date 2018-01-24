@@ -80,6 +80,9 @@ namespace GgcmsCSharp.Models
         public List<UpFileClass> files { get; set; }
         [NotMapped]
         public List<GgcmsAttachment> attachments { get; set; }
+        [NotMapped]
+        public GgcmsModule ModuleInfo { get; set; }
+
         public GgcmsArticle Clone()
         {
             var info = new GgcmsArticle

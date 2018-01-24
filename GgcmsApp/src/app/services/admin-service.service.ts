@@ -162,7 +162,7 @@ export class AdminService {
     pdata.sortby = "OrderId";
     pdata.order = "asc";
     pdata.limit = 1000;
-    pdata.columns = "Id,CategoryName,OrderId,ParentId";
+    pdata.columns = "Id,CategoryName,OrderId,ParentId,ExtModelId";
     var params = this.appServ.objectToParams(pdata);
     return this.http.get(url, {
       search: params

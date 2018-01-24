@@ -25,8 +25,8 @@ export class FormInputOption {
   helpMessage : string = "";
   preview : boolean = false;
   datasource : string = "";
-  egroup : string = "";
-  targetName : string = "";
+  egroup : any = "";
+  targetName : any = "";
   multiple : boolean = false;
   onColor : string = "info";
   offColor : string = "default";
@@ -52,4 +52,12 @@ export class GgcmsModuleColumn {
   OrderId : number = 0;
   Options : string = "";
   Module_Id : number = 0;
+  Value:any="";
+}
+export class GgcmsAttachment {
+  Id = 0;
+  AttaTitle = "";
+  AttaUrl = "";
+  Describe = "";
+  RealName = "";
 }

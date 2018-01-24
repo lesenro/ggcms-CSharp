@@ -61,6 +61,14 @@
         <option value="" selected>---请选择---</option> 
         <option [value]="item.Value" *ngFor="let item of dataSource" >{{item.Title}}</option>
     </select>
+    <select (ngModelChange)="onChange($event)" [formControlName]="name" class="form-control input-inline" [id]="name" [name]="name" [(ngModel)]="value" *ngIf="option.type=='single-select-dict'">
+        <option value="" selected>---请选择---</option> 
+        <option [value]="item.Value" *ngFor="let item of dataSource" >{{item.Title}}</option>
+    </select>
+    <select (ngModelChange)="onChange($event)" [formControlName]="name" class="form-control input-inline" [id]="name" [name]="name" [(ngModel)]="value" *ngIf="option.type=='single-select-reldict'">
+        <option value="" selected>---请选择---</option> 
+        <option [value]="item.Value" *ngFor="let item of dataSource" >{{item.Title}}</option>
+    </select>    
     <!--风格-->
     <select (ngModelChange)="onChange($event)" [formControlName]="name" class="form-control input-inline" [id]="name" [name]="name" [(ngModel)]="value" *ngIf="',select,'.indexOf(','+option.type+',')!=-1&&!option.multiple&&option.datasource=='style'">
         <option value="" selected>---请选择---</option> 

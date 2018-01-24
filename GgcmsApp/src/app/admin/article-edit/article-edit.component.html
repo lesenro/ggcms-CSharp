@@ -22,7 +22,7 @@
 <div class="dataform">
     <form class="form-horizontal" name="editForm" #editForm="ngForm" role="form" novalidate>
         <input type="hidden" ng-model="data.Id">
-        <ngb-tabset [destroyOnHide]="false">
+        <ngb-tabset [destroyOnHide]="false" #tabset>
             <ngb-tab title="基本设置">
                 <ng-template ngbTabContent>
                     <div class="form-body">
@@ -152,12 +152,24 @@
                     </div>
                 </ng-template>
             </ngb-tab>
+            <ngb-tab title=" " id="tabModel">
+                <ng-template ngbTabContent>
+                    <div class="form-group row" *ngFor="let item of moduleInfo.Columns ; let i = index ">
+                        <label class="col-2 col-form-label">{{item.ColTitle}}:</label>
+                        <div class="col-8">
+                            <form-input (uploaded)="moduleUpload($event)" [name]="item.ColName" [itemFormGroup]="item.formGroup" [option]="item.option" [placeholder]="item.ColTitle" [(value)]="item.Value"></form-input>
+                        </div>
+                       
+                    </div>
+                </ng-template>
+            </ngb-tab>
         </ngb-tabset>
 
         <div class="form-actions">
             <hr/>
             <div class="row">
                 <div class="col-md-12 text-center">
+                    <button (click)="test($event)">dddd</button>
                     <button class="btn green" (click)="dataSave()" [disabled]="!editForm.form.valid"> <span class="fa fa-save"></span> 保存</button>
                 </div>
             </div>

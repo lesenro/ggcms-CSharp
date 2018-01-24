@@ -32,9 +32,9 @@ export class ModulesColumnsComponent implements OnInit {
       if(rtype==="object"){
         let item=result.columnItem;
         item.Options=result.optionsStringify();
-        console.log(item.Options);
+        //console.log(item.Options);
         if(item.isnew){
-          if(this.columns.filter(x=>x.ColTitle==item.ColTitle)){
+          if(this.columns.filter(x=>x.ColTitle==item.ColTitle).length>0){
             this.appServ.showToaster("字段名不能重复","输入错误","warn");
             return false;
           }
@@ -42,6 +42,7 @@ export class ModulesColumnsComponent implements OnInit {
           item.Id=this.appServ.timeStamp();
           this.columns.push(item);
         }else{
+          
           if(this.columns.filter(x=>x.ColTitle==item.ColTitle&&x.Id!=item.Id).length>0){
             this.appServ.showToaster("字段名不能重复","输入错误","warn");
             return false;

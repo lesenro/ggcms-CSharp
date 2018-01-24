@@ -6,6 +6,8 @@ using System;
 using GgcmsCSharp.Controllers;
 using System.Collections.Generic;
 using System.Linq;
+using System.Data.SqlClient;
+using System.Text;
 
 namespace GgcmsCSharp.ApiCtrls
 {
@@ -97,7 +99,12 @@ namespace GgcmsCSharp.ApiCtrls
                         db.GgcmsAttachments.Add(attach);
                     }
                 }
+
                 db.SaveChanges();
+            }
+            if (article.ModuleInfo != null)
+            {
+                ModuleSave(article.Id, article.ModuleInfo);
             }
             return new ResultData
             {
@@ -106,7 +113,55 @@ namespace GgcmsCSharp.ApiCtrls
                 Msg = ""
             };
         }
-
+        private void ModuleSave(int aid, GgcmsModule module)
+        {
+            var cols = dbHelper.dbCxt.GgcmsModuleColumns.Where(x => x.Module_Id == module.Id);
+            var m = dbHelper.dbCxt.GgcmsModules.Find(module.Id);
+            foreach (var col in cols)
+            {
+                var c = module.Columns.Find(x => x.Id == col.Id);
+                if (c != null)
+                {
+                    col.Value = c.Value;
+                }
+            }
+            using (GgcmsDB db = new GgcmsDB())
+            {
+                string sql = "SELECT COUNT(*) FROM "+m.TableName+" WHERE Articles_Id= "+aid.ToString();
+                //添加
+                if (db.Database.SqlQuery<int>(sql).First() == 0)
+                {
+                    List<string> colsStr = new List<string>();
+                    List<string> paramStr = new List<string>();
+                    List<object> valus = new List<object>();
+                    colsStr.Add("[Articles_Id]");
+                    paramStr.Add("Articles_Id");
+                    valus.Add(aid);
+                    foreach (var col in cols)
+                    {
+                        colsStr.Add("[" + col.ColName + "]");
+                        paramStr.Add("@" + col.ColName);
+                        valus.Add(col.Value);
+                    }
+                    sql = "INSERT INTO ["+m.TableName+"] ( "+ string.Join(",", colsStr) + " ) VALUES (  " + string.Join(",", paramStr) + " )";
+                    db.Database.ExecuteSqlCommand(sql, valus);
+                }
+                //修改
+                else
+                {
+                    List<string> colsStr = new List<string>();
+                    List<object> valus = new List<object>();
+                    foreach (var col in cols)
+                    {
+                        colsStr.Add("[" + col.ColName + "] = @" + col.ColName);
+                        valus.Add(col.Value);
+                    }
+                    valus.Add(aid);
+                    sql = "UPDATE ["+m.TableName+"] SET " + string.Join(",", colsStr)+ " Where [Articles_Id] = @Articles_Id";
+                    db.Database.ExecuteSqlCommand(sql, valus);
+                }
+            }
+        }
         // POST: api/GgcmsCategories
         public ResultData Add(GgcmsArticle article)
         {

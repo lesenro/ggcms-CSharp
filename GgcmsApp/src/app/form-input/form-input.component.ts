@@ -41,7 +41,16 @@ export class FormInputComponent implements OnInit {
           }
         });
       }
+    }else{
+      this.appServ.globalSubject.next({
+        msgType: "smartInputChanged", msgData: {
+          name: this.name,
+          event: ev,
+          option: this.option,
+        }
+      });
     }
+    
   };
 
   fileSelect(ev) {
@@ -81,12 +90,20 @@ export class FormInputComponent implements OnInit {
   }
   ngOnInit() {
     if (this.option.datasource == "sysdict") {
-      this.adminServ.GetDictionaryList(1, true, "SysFlag:1,DictType:-1").then(data => {
+      this.adminServ.GetDictionaryList(1, true, "SysFlag:1,DictType:"+this.option.egroup).then(data => {
         if (data.Code == 0) {
           this.dataSource = data.Data.List;
         }
       });
     }
+    if (this.option.type == "single-select-dict") {
+      this.adminServ.GetDictionaryList(1, true, "DictType:"+this.option.egroup).then(data => {
+        if (data.Code == 0) {
+          this.dataSource = data.Data.List;
+        }
+      });
+    }
+    
     if (this.option.datasource == "style") {
       this.adminServ.GetAllStylesList().then(data => {
         if (data.Code == 0) {
@@ -111,6 +128,17 @@ export class FormInputComponent implements OnInit {
           } else {
             this.dataSource = [];
           }
+        }
+      }else if(data.msgType=="smartInputChanged"){
+        if(this.option.targetName!=data.msgData.name){
+          return;
+        }
+        if(this.option.type=="single-select-reldict"){
+          this.adminServ.GetDictionaryList(1, true, "DictType:"+data.msgData.event).then(data => {
+            if (data.Code == 0) {
+              this.dataSource = data.Data.List;
+            }
+          });  
         }
       }
     });

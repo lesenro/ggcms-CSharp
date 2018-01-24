@@ -32,5 +32,7 @@ namespace GgcmsCSharp.Models
         public string Options { get; set; }
 
         public int Module_Id { get; set; }
+        [NotMapped]
+        public dynamic Value { get; set; }
     }
 }

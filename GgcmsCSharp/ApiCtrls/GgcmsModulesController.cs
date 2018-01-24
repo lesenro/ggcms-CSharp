@@ -87,7 +87,7 @@ namespace GgcmsCSharp.ApiCtrls
                 using (GgcmsDB db = new GgcmsDB())
                 {
                     int colidx = 1;
-                    foreach (var col in module.Columns)
+                    foreach (var col in module.Columns.FindAll(x=> x.Id>0))
                     {
                         string[] tmp = col.ColName.Split('_');
                         if (tmp.Length == 2)
@@ -99,7 +99,7 @@ namespace GgcmsCSharp.ApiCtrls
                             }
                         }
                     }
-                    foreach (var col in oldModule.Columns)
+                    foreach (var col in oldModule.Columns.FindAll(x => x.Id > 0))
                     {
                         string[] tmp = col.ColName.Split('_');
                         if (tmp.Length == 2)
@@ -211,6 +211,7 @@ namespace GgcmsCSharp.ApiCtrls
                     StringBuilder newTabSql = new StringBuilder();
                     newTabSql.Append("CREATE TABLE [dbo].["+ module.TableName + "] (");
                     newTabSql.Append("[Id] int NOT NULL IDENTITY(1,1) ");
+                    newTabSql.Append(",[Articles_Id] int ");
                     int colidx = 1;
                     foreach (var col in module.Columns)
                     {
