@@ -36,7 +36,7 @@ namespace GgcmsCSharp.ApiCtrls
                 Code = 0,
                 Msg = ""
             };
-            GgcmsModule module = getGgcmsModule(id);
+            GgcmsModule module = ExtendModule.GetGgcmsModule(id);
             if (module != null)
             {
                 result.Data = module;
@@ -49,22 +49,7 @@ namespace GgcmsCSharp.ApiCtrls
             
             return result;
         }
-        private GgcmsModule getGgcmsModule(int id)
-        {
-            using (GgcmsDB db = new GgcmsDB())
-            {
-                GgcmsModule module = db.GgcmsModules.Find(id);
-                if (module != null)
-                {
-                    module.Columns = db.GgcmsModuleColumns.Where(x => x.Module_Id == id).ToList();
-                    return module;
-                }
-                else
-                {
-                    return null;
-                }
-            }
-        }
+        
         // PUT: api/GgcmsCategories/5
         public ResultData Edit(GgcmsModule module)
         {
@@ -81,105 +66,10 @@ namespace GgcmsCSharp.ApiCtrls
             }
             if (module.Columns != null)
             {
-                GgcmsModule oldModule = getGgcmsModule(module.Id);
+                GgcmsModule oldModule = ExtendModule.GetGgcmsModule(module.Id);
                 module.TableName = oldModule.TableName;
                 module.ViewName = oldModule.ViewName;
-                using (GgcmsDB db = new GgcmsDB())
-                {
-                    int colidx = 1;
-                    foreach (var col in module.Columns.FindAll(x=> x.Id>0))
-                    {
-                        string[] tmp = col.ColName.Split('_');
-                        if (tmp.Length == 2)
-                        {
-                            int idx = int.Parse(tmp[1]);
-                            if (idx >= colidx)
-                            {
-                                colidx = idx+1;
-                            }
-                        }
-                    }
-                    foreach (var col in oldModule.Columns.FindAll(x => x.Id > 0))
-                    {
-                        string[] tmp = col.ColName.Split('_');
-                        if (tmp.Length == 2)
-                        {
-                            int idx = int.Parse(tmp[1]);
-                            if (idx >= colidx)
-                            {
-                                colidx = idx + 1;
-                            }
-                        }
-                        GgcmsModuleColumn newcol = module.Columns.Find(x => x.Id == col.Id);
-                        
-                        if (newcol == null)
-                        {
-                            db.GgcmsModuleColumns.Remove(col);
-                            db.Database.ExecuteSqlCommand("ALTER TABLE [dbo].[" + module.TableName + "] DROP COLUMN [" + col.ColName + "]");
-                        }
-                    }
-                    foreach (var col in module.Columns)
-                    {
-                        GgcmsModuleColumn oldcol = oldModule.Columns.Find(x => x.Id == col.Id);
-                        if (oldcol == null)
-                        {
-                            col.Module_Id = module.Id;
-                            col.ColName = "col_" + colidx.ToString();
-                            db.GgcmsModuleColumns.Add(col);
-                            
-                            switch (col.ColType)
-                            {
-                                case "nvarchar":
-                                    db.Database.ExecuteSqlCommand("ALTER TABLE [dbo].[" + module.TableName + "] ADD ["+ col.ColName + "] nvarchar("+ (col.Length > 0 ? col.Length.ToString() : "MAX") + ")");
-                                    break;
-                                case "int":
-                                    db.Database.ExecuteSqlCommand("ALTER TABLE [dbo].[" + module.TableName + "] ADD [" + col.ColName + "] int");
-                                    break;
-                                case "bigint":
-                                    db.Database.ExecuteSqlCommand("ALTER TABLE [dbo].[" + module.TableName + "] ADD [" + col.ColName + "] bigint");
-                                    break;
-                                case "datetime":
-                                    db.Database.ExecuteSqlCommand("ALTER TABLE [dbo].[" + module.TableName + "] ADD [" + col.ColName + "] datetime");
-                                    break;
-                                case "decimal":
-                                    db.Database.ExecuteSqlCommand("ALTER TABLE [dbo].[" + module.TableName + "] ADD [" + col.ColName + "] decimal(18" + (col.ColDecimal > 0 && col.ColDecimal < 6 ? "," + col.ColDecimal.ToString() : "") + ")");
-                                    break;
-                            }
-                            colidx++;
-                        }
-                        else
-                        {
-                            col.ColName = oldcol.ColName;
-                            col.Module_Id = module.Id;
-                            var ent=db.Entry(col);
-                            ent.State = EntityState.Modified;
-
-                            switch (col.ColType)
-                            {
-                                case "nvarchar":
-                                    db.Database.ExecuteSqlCommand("ALTER TABLE [dbo].[" + module.TableName + "] ALTER COLUMN [" + col.ColName + "] nvarchar(" + (col.Length > 0 ? col.Length.ToString() : "MAX") + ")");
-                                    break;
-                                case "int":
-                                    db.Database.ExecuteSqlCommand("ALTER TABLE [dbo].[" + module.TableName + "] ALTER COLUMN [" + col.ColName + "] int");
-                                    break;
-                                case "bigint":
-                                    db.Database.ExecuteSqlCommand("ALTER TABLE [dbo].[" + module.TableName + "] ALTER COLUMN [" + col.ColName + "] bigint");
-                                    break;
-                                case "datetime":
-                                    db.Database.ExecuteSqlCommand("ALTER TABLE [dbo].[" + module.TableName + "] ALTER COLUMN [" + col.ColName + "] datetime");
-                                    break;
-                                case "decimal":
-                                    db.Database.ExecuteSqlCommand("ALTER TABLE [dbo].[" + module.TableName + "] ALTER COLUMN [" + col.ColName + "] decimal(18" + (col.ColDecimal > 0 && col.ColDecimal < 6 ? "," + col.ColDecimal.ToString() : "") + ")");
-                                    break;
-                            }
-                        }
-                        
-                        
-                    }
-
-                    db.SaveChanges();
-                }
-
+                ExtendModule.TableChange(module,oldModule);
             }
             return new ResultData
             {
@@ -206,44 +96,7 @@ namespace GgcmsCSharp.ApiCtrls
             module = dbHelper.Edit(module.Id, module);
             if (module.Columns!=null)
             {
-                using (GgcmsDB db = new GgcmsDB())
-                {
-                    StringBuilder newTabSql = new StringBuilder();
-                    newTabSql.Append("CREATE TABLE [dbo].["+ module.TableName + "] (");
-                    newTabSql.Append("[Id] int NOT NULL IDENTITY(1,1) ");
-                    newTabSql.Append(",[Articles_Id] int ");
-                    int colidx = 1;
-                    foreach (var col in module.Columns)
-                    {
-                        col.Module_Id = module.Id;
-                        col.ColName = "col_" + colidx.ToString();
-                        db.GgcmsModuleColumns.Add(col);
-                        switch(col.ColType)
-                        {
-                            case "nvarchar":
-                                newTabSql.Append(",[" + col.ColName + "] nvarchar(" + (col.Length > 0 ? col.Length.ToString() : "MAX") + ") ");
-                                break;
-                            case "int":
-                                newTabSql.Append(",[" + col.ColName + "] int ");
-                                break;
-                            case "bigint":
-                                newTabSql.Append(",[" + col.ColName + "] bigint ");
-                                break;
-                            case "datetime":
-                                newTabSql.Append(",[" + col.ColName + "] datetime ");
-                                break;
-                            case "decimal":
-                                newTabSql.Append(",[" + col.ColName + "] decimal(18" + (col.ColDecimal > 0 && col.ColDecimal < 6 ? "," + col.ColDecimal.ToString() : "") + ") ");
-                                break;
-                        }
-                        colidx++;
-                    }
-                    
-                    newTabSql.Append(",PRIMARY KEY ([Id]) )");
-                    db.Database.ExecuteSqlCommand(newTabSql.ToString(), new object[] { });
-                    db.SaveChanges();
-                }
-                
+                ExtendModule.TableCreate(module);
             }
             return result;
         }
@@ -252,17 +105,7 @@ namespace GgcmsCSharp.ApiCtrls
         public ResultData Delete(int id)
         {
 
-            using (GgcmsDB db = new GgcmsDB())
-            {
-                GgcmsModule module = db.GgcmsModules.Find(id);
-                if (module != null)
-                {
-                    db.Database.ExecuteSqlCommand("DROP TABLE [dbo].[" + module.TableName + "]");
-
-                    var collist = db.GgcmsModuleColumns.Where(x => x.Module_Id == module.Id);
-                    db.GgcmsModuleColumns.RemoveRange(collist);
-                }
-            }
+            ExtendModule.TableDelete(id);
             return new ResultData
             {
                 Code = 0,
@@ -276,24 +119,13 @@ namespace GgcmsCSharp.ApiCtrls
             try
             {
                 var reqParams = InitRequestParams<GgcmsModule>();
-
+                reqParams.limit = 0;
+                reqParams.offset = 0;
                 var list = dbHelper.GetList<GgcmsModule>(reqParams);
-                using (GgcmsDB db = new GgcmsDB())
+                foreach (var item in list.List)
                 {
-                    foreach (var item in list.List)
-                    {
-                        GgcmsModule module = item as GgcmsModule;
-                        try
-                        {
-                            db.Database.ExecuteSqlCommand("DROP TABLE [dbo].[" + module.TableName + "]");
-                        }
-                        catch
-                        {
-                        }
-                        var collist = db.GgcmsModuleColumns.Where(x => x.Module_Id == module.Id);
-                        db.GgcmsModuleColumns.RemoveRange(collist);
-                    }
-                    db.SaveChanges();
+                    GgcmsModule module = item as GgcmsModule;
+                    ExtendModule.TableDelete(module.Id);
                 }
                 return new ResultData
                 {

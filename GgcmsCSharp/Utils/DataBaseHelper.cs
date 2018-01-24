@@ -203,15 +203,6 @@ namespace GgcmsCSharp.Utils
                     list = dbCxt.Set(typeof(T));
                     list = list.Where(reqParams.query, ids.ToArray());
                     count = dbCxt.Set(typeof(T)).Where(reqParams.query, ids.ToArray()).Count();
-                    if (!string.IsNullOrEmpty(reqParams.orderby))
-                    {
-                        list = list.OrderBy(reqParams.orderby);
-                    }
-                    if (!string.IsNullOrEmpty(reqParams.columns))
-                    {
-                        list = list.Select(reqParams.columns);
-                    }
-                    list = list.Skip(reqParams.offset).Take(reqParams.limit);
                 }
                 else
                 {
@@ -224,15 +215,6 @@ namespace GgcmsCSharp.Utils
                     list = dbCxt.Set(typeof(T));
                     list = list.Where(reqParams.query, ids.ToArray());
                     count = dbCxt.Set(typeof(T)).Where(reqParams.query, ids.ToArray()).Count();
-                    if (!string.IsNullOrEmpty(reqParams.orderby))
-                    {
-                        list = list.OrderBy(reqParams.orderby);
-                    }
-                    if (!string.IsNullOrEmpty(reqParams.columns))
-                    {
-                        list = list.Select(reqParams.columns);
-                    }
-                    list = list.Skip(reqParams.offset).Take(reqParams.limit);
                 }
             }
             else
@@ -247,14 +229,17 @@ namespace GgcmsCSharp.Utils
                 {
                     count = dbCxt.Set(typeof(T)).Count();
                 }
-                if (!string.IsNullOrEmpty(reqParams.orderby))
-                {
-                    list = list.OrderBy(reqParams.orderby);
-                }
-                if (!string.IsNullOrEmpty(reqParams.columns))
-                {
-                    list = list.Select(reqParams.columns);
-                }
+            }
+            if (!string.IsNullOrEmpty(reqParams.orderby))
+            {
+                list = list.OrderBy(reqParams.orderby);
+            }
+            if (!string.IsNullOrEmpty(reqParams.columns))
+            {
+                list = list.Select(reqParams.columns);
+            }
+            if (reqParams.limit > 0)
+            {
                 list = list.Skip(reqParams.offset).Take(reqParams.limit);
             }
             return new ListResult { List = list, Count = count };

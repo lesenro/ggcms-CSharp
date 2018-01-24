@@ -23,6 +23,7 @@ export class ModulesColumnsComponent implements OnInit {
   }
   deleteColumns(item){
     this.columns=this.columns.filter(x=>x.Id!=item.Id);
+    this.onChange(item);
   }
   open(content,item) {
     this.columnItem=item||{isnew:true};

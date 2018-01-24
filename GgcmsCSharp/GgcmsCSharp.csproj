@@ -175,6 +175,7 @@
   <ItemGroup>
     <Compile Include="ApiCtrls\ApiBaseController.cs" />
     <Compile Include="ApiCtrls\CommonController.cs" />
+    <Compile Include="Models\ExtendModule.cs" />
     <Compile Include="Utils\DataBaseHelper.cs" />
     <Compile Include="ApiCtrls\FileManagerController.cs" />
     <Compile Include="ApiCtrls\GgcmsAdvertsController.cs" />

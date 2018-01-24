@@ -41,6 +41,10 @@ namespace GgcmsCSharp.ApiCtrls
                     result.attachments = list.ToList();
                 }
             }
+            if (result.ExtModelId > 0)
+            {
+                result.ModuleInfo = ExtendModule.GetModuleData(result.Id, result.ExtModelId);
+            }
             return new ResultData
             {
                 Code = 0,
@@ -63,10 +67,11 @@ namespace GgcmsCSharp.ApiCtrls
                 };
                 return result;
             }
+            GgcmsArticle old;
             using (GgcmsDB db = new GgcmsDB())
             {
                 UpFileClass.FileSave<GgcmsArticle>(article, article.files);
-                GgcmsArticle old = db.GgcmsArticles.Find(article.Id);
+                old = db.GgcmsArticles.Find(article.Id);
                 if (old.Category_Id != article.Category_Id)
                 {
                     updateArticleNumber(article.Category_Id, 1);
@@ -99,12 +104,20 @@ namespace GgcmsCSharp.ApiCtrls
                         db.GgcmsAttachments.Add(attach);
                     }
                 }
-
                 db.SaveChanges();
             }
             if (article.ModuleInfo != null)
             {
-                ModuleSave(article.Id, article.ModuleInfo);
+                article.ExtModelId = article.ModuleInfo.Id;
+                if (old.ExtModelId > 0&&article.ExtModelId!=old.ExtModelId)
+                {
+                    ExtendModule.Delete(article.Id, old.ExtModelId);
+                }
+                ExtendModule.SaveData(article.Id, article.ModuleInfo);
+            }
+            else if(old.ExtModelId>0)
+            {
+                ExtendModule.Delete(article.Id, old.ExtModelId);
             }
             return new ResultData
             {
@@ -113,55 +126,7 @@ namespace GgcmsCSharp.ApiCtrls
                 Msg = ""
             };
         }
-        private void ModuleSave(int aid, GgcmsModule module)
-        {
-            var cols = dbHelper.dbCxt.GgcmsModuleColumns.Where(x => x.Module_Id == module.Id);
-            var m = dbHelper.dbCxt.GgcmsModules.Find(module.Id);
-            foreach (var col in cols)
-            {
-                var c = module.Columns.Find(x => x.Id == col.Id);
-                if (c != null)
-                {
-                    col.Value = c.Value;
-                }
-            }
-            using (GgcmsDB db = new GgcmsDB())
-            {
-                string sql = "SELECT COUNT(*) FROM "+m.TableName+" WHERE Articles_Id= "+aid.ToString();
-                //添加
-                if (db.Database.SqlQuery<int>(sql).First() == 0)
-                {
-                    List<string> colsStr = new List<string>();
-                    List<string> paramStr = new List<string>();
-                    List<object> valus = new List<object>();
-                    colsStr.Add("[Articles_Id]");
-                    paramStr.Add("Articles_Id");
-                    valus.Add(aid);
-                    foreach (var col in cols)
-                    {
-                        colsStr.Add("[" + col.ColName + "]");
-                        paramStr.Add("@" + col.ColName);
-                        valus.Add(col.Value);
-                    }
-                    sql = "INSERT INTO ["+m.TableName+"] ( "+ string.Join(",", colsStr) + " ) VALUES (  " + string.Join(",", paramStr) + " )";
-                    db.Database.ExecuteSqlCommand(sql, valus);
-                }
-                //修改
-                else
-                {
-                    List<string> colsStr = new List<string>();
-                    List<object> valus = new List<object>();
-                    foreach (var col in cols)
-                    {
-                        colsStr.Add("[" + col.ColName + "] = @" + col.ColName);
-                        valus.Add(col.Value);
-                    }
-                    valus.Add(aid);
-                    sql = "UPDATE ["+m.TableName+"] SET " + string.Join(",", colsStr)+ " Where [Articles_Id] = @Articles_Id";
-                    db.Database.ExecuteSqlCommand(sql, valus);
-                }
-            }
-        }
+
         // POST: api/GgcmsCategories
         public ResultData Add(GgcmsArticle article)
         {
@@ -174,11 +139,16 @@ namespace GgcmsCSharp.ApiCtrls
                     Data = BadRequest(ModelState)
                 }; 
             }
-            UpFileClass.FileSave<GgcmsArticle>(article, article.files);
+            UpFileClass.FileSave(article, article.files);
             article.CreateTime = DateTime.Now;
             updateArticleNumber(article.Category_Id, 1);
             CacheHelper.RemoveAllCache(CacheTypeNames.Categorys);
             article = dbHelper.Add(article);
+            if (article.ModuleInfo != null)
+            {
+                article.ExtModelId = article.ModuleInfo.Id;
+                ExtendModule.SaveData(article.Id, article.ModuleInfo);
+            }
             using (GgcmsDB db = new GgcmsDB())
             {
                 foreach (GgcmsAttachment attach in article.attachments)

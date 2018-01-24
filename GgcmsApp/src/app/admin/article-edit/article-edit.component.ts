@@ -281,7 +281,7 @@ AfterViewInit {
         });
       });
     }
-    console.log(this.moduleInfo,this.dataInfo);
+    //console.log(this.moduleInfo,this.dataInfo);
     this
       .adminServ
       .ArticleSave(this.dataInfo)

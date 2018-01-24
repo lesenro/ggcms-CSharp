@@ -134,6 +134,9 @@ export class FormInputComponent implements OnInit {
           return;
         }
         if(this.option.type=="single-select-reldict"){
+          if(!data.msgData.event){
+            return;
+          }
           this.adminServ.GetDictionaryList(1, true, "DictType:"+data.msgData.event).then(data => {
             if (data.Code == 0) {
               this.dataSource = data.Data.List;
