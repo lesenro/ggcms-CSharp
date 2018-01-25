@@ -74,7 +74,7 @@ namespace GgcmsCSharp.ApiCtrls
             GgcmsArticle old;
             using (GgcmsDB db = new GgcmsDB())
             {
-                UpFileClass.FileSave<GgcmsArticle>(article, article.files);
+                UpFileClass.FileSave(article, article.files);
                 old = db.GgcmsArticles.Find(article.Id);
                 if (old.Category_Id != article.Category_Id)
                 {

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
@@ -87,13 +88,30 @@ namespace GgcmsCSharp.Utils
                         {
                             string[] keys = qkey[0].Split(".".ToCharArray());
                             string val = qkey[1];
+                            bool isString = false;
+                            bool isAdo = false;
                             Type t = typeof(T);
-                            PropertyInfo pinfo = t.GetProperty(keys[0]);
-                            bool isString = pinfo.PropertyType.ToString().ToLower().EndsWith("string");
-                            if (isString)
+                            if (typeof(DataTable) != t)
                             {
-                                val = "\"" + val + "\"";
+                                PropertyInfo pinfo = t.GetProperty(keys[0]);
+                                isString = pinfo.PropertyType.ToString().ToLower().EndsWith("string");
+                                if (isString)
+                                {
+                                    val = "\"" + val + "\"";
+                                }
                             }
+                            else
+                            {
+                                //DataTable时为ado查询，@开头是字符串
+                                isAdo = true;
+                                if (keys[0].StartsWith("@"))
+                                {
+                                    isString = true;
+                                    keys[0] = keys[0].Replace("@", "");
+                                    val = "\'" + val + "\'";
+                                }
+                            }
+                            
                             if (keys.Length == 1)
                             {
                                 lquery.Add(keys[0] + " = " + val);
@@ -139,7 +157,14 @@ namespace GgcmsCSharp.Utils
                                         if (isString)
                                         {
                                             //lquery.Add("@" + paramIdx.ToString() + ".Contains(" + k1 + ")");
-                                            val = val.Replace("\"", "");
+                                            if (!isAdo)
+                                            {
+                                                val = val.Replace("\"", "");
+                                            }
+                                            else
+                                            {
+                                                val = val.Replace("\'", "");
+                                            }
                                             reqParams.queryParams.AddRange(val.Split("|".ToCharArray()));
                                             List<string> strParams = new List<string>();
                                             for (int i = 0; i < reqParams.queryParams.Count; i++)
@@ -400,6 +425,25 @@ namespace GgcmsCSharp.Utils
 
             reqParams.query = DataBaseHelper<DC>.DecodeOutputString(query);
             reqParams = DataBaseHelper<DC>.getQuery<DT>(reqParams);
+
+            reqParams.order = DataBaseHelper<DC>.DecodeOutputString(order);
+            reqParams.sortby = DataBaseHelper<DC>.DecodeOutputString(sortby);
+            reqParams.orderby = DataBaseHelper<DC>.OrderInit(reqParams);
+            return reqParams;
+        }
+
+        public static RequestParams AdoSqlParams<DC>(string columns, int limit, int offset, int pagenum, string order, string sortby, string query) where DC : DbContext
+        {
+            var reqParams = new RequestParams();
+
+            reqParams.columns = DataBaseHelper<DC>.DecodeOutputString(columns);
+            
+            reqParams.limit = limit;
+            reqParams.offset = offset;
+            reqParams.pagenum = pagenum;
+
+            reqParams.query = DataBaseHelper<DC>.DecodeOutputString(query);
+            reqParams = DataBaseHelper<DC>.getQuery<DataTable>(reqParams);
 
             reqParams.order = DataBaseHelper<DC>.DecodeOutputString(order);
             reqParams.sortby = DataBaseHelper<DC>.DecodeOutputString(sortby);

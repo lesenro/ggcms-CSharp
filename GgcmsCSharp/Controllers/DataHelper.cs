@@ -4,6 +4,7 @@ using GgcmsCSharp.Utils;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Data;
 using System.Linq;
 using System.Web;
 
@@ -92,6 +93,21 @@ namespace GgcmsCSharp.Controllers
             var result = dbHelper.GetList<GgcmsAdverts>(rparams);
             return result.ToList();
 
+        }
+        public DataTable Views(int mid,RequestParams rparams)
+        {
+            return ExtendModule.ViewArticles(mid, rparams);
+        }
+        public DataTable Views(int mid,string query, string columns = "", int offset = 0, int limit = 100, string orderby="Id desc")
+        {
+            RequestParams rparams = new RequestParams();
+            rparams.offset = offset;
+            rparams.limit = limit;
+
+            rparams.orderby = orderby;
+            rparams.query = query;
+
+            return Views(mid, rparams);
         }
         public ListResult Articles(RequestParams rparams)
         {

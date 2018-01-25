@@ -42,8 +42,19 @@ namespace GgcmsCSharp.ApiCtrls
             string order = Request.GetQueryString("order") ?? "";
             string sortby = Request.GetQueryString("sortby") ?? "";
             string query = Request.GetQueryString("query") ?? "";
-            var reqParams = RequestParams.GetRequestParams<GgcmsDB,T>(columns, limit, offset, pagenum, order, sortby, query);
-            return reqParams;
+            return RequestParams.GetRequestParams<GgcmsDB, T>(columns, limit, offset, pagenum, order, sortby, query);
+        }
+        [NonAction]
+        public RequestParams InitRequestParams()
+        {
+            string columns = Request.GetQueryString("columns") ?? "";
+            int limit = Tools.ConvertType<int>(Request.GetQueryString("limit"), 10);
+            int offset = Tools.ConvertType<int>(Request.GetQueryString("offset"), 0);
+            int pagenum = Tools.ConvertType<int>(Request.GetQueryString("pagenum"), 1);
+            string order = Request.GetQueryString("order") ?? "";
+            string sortby = Request.GetQueryString("sortby") ?? "";
+            string query = Request.GetQueryString("query") ?? "";
+            return RequestParams.AdoSqlParams<GgcmsDB>(columns, limit, offset, pagenum, order, sortby, query);
         }
         protected override void Dispose(bool disposing)
         {

@@ -41,9 +41,10 @@ namespace GgcmsCSharp.ApiCtrls
             return Ok(dataHelper.Article(id));
         }
         [HttpGet]
-        public IHttpActionResult views(int mid)
+        public IHttpActionResult views(int id)
         {
-            return Ok(ExtendModule.ViewArticles(mid));
+            var reqParams = InitRequestParams();
+            return Ok(ExtendModule.ViewArticles(id, reqParams));
         }
         [HttpGet]
         public IHttpActionResult addview(int id)

@@ -1,5 +1,7 @@
-﻿using System;
+﻿using GgcmsCSharp.Utils;
+using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Data;
 using System.Data.Entity;
 using System.Data.SqlClient;
@@ -153,9 +155,62 @@ namespace GgcmsCSharp.Models
                 return result;
             }
         }
-        public static DataTable ViewArticles(int mid)
+        public static DataTable ViewArticles(int mid, RequestParams reqParams)
         {
-
+            var module = GetGgcmsModule(mid);
+            StringBuilder sql = new StringBuilder();
+            if (reqParams.pagenum == 1)
+            {
+                sql.Append("select ");
+                if (reqParams.limit > 0)
+                {
+                    sql.Append("TOP " + reqParams.limit.ToString() + " ");
+                }
+                sql.Append(string.IsNullOrWhiteSpace(reqParams.columns) ? "* " : reqParams.columns);
+                sql.Append(" From " + module.ViewName);
+                if (!string.IsNullOrWhiteSpace(reqParams.query))
+                {
+                    sql.Append(" WHERE " + reqParams.query);
+                }
+                if (!string.IsNullOrWhiteSpace(reqParams.orderby))
+                {
+                    sql.Append(" ORDER BY " + reqParams.orderby);
+                }
+            }
+            else
+            {
+                reqParams.orderby = string.IsNullOrWhiteSpace(reqParams.orderby) ? "Id DESC" : reqParams.orderby;
+                reqParams.query = string.IsNullOrWhiteSpace(reqParams.query) ? "" :" WHERE" +reqParams.orderby;
+                reqParams.columns = string.IsNullOrWhiteSpace(reqParams.columns) ? "*" : reqParams.columns;
+                reqParams.offset++;
+                reqParams.limit = reqParams.offset + reqParams.limit;
+                //select t1.id,Content,Title FROM GgcmsArticles t1 INNER JOIN (select t2.Id  from(select row_number()  over (order by id DESC)r_num,Id FROM GgcmsArticles WHERE Id>23) t2 WHERE t2.r_num BETWEEN 2 and 4)t3 on t1.id=t3.id
+                sql.Append("select t1.Id, "+reqParams.columns + " FROM "+ module.ViewName+ " t1 INNER JOIN ");
+                sql.Append("(select t2.Id  from(select row_number()  over (order by " + reqParams.orderby + ")r_num,Id FROM " + module.ViewName + " " + reqParams.query + ") t2 WHERE t2.r_num BETWEEN " + reqParams.offset + " and " + reqParams.limit + ") t3 on t1.Id=t3.Id");
+            }
+            DataTable dt = new DataTable(module.ViewName);
+            using (GgcmsDB db = new GgcmsDB())
+            {
+                SqlDataAdapter da = new SqlDataAdapter(sql.ToString(), db.Database.Connection as SqlConnection);
+                da.Fill(dt);
+            }
+            if (dt.Columns.Contains("RedirectUrl"))
+            {
+                string Prefix = ConfigurationManager.AppSettings["UploadPrefix"].ToString();
+                foreach (DataRow row in dt.Rows)
+                {
+                    
+                    string rurl = row["RedirectUrl"].ToString().Trim();
+                    if (string.IsNullOrEmpty(rurl))
+                    {
+                        row.BeginEdit();
+                        row["RedirectUrl"] = Prefix + "/Article/" + row["Id"].ToString();
+                        row.EndEdit();
+                    }
+                }
+                dt.AcceptChanges();
+            }
+            return dt;
         }
 
         public static int Delete(int aid , int mid)
