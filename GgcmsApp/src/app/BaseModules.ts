@@ -61,3 +61,7 @@ export class GgcmsAttachment {
   Describe = "";
   RealName = "";
 }
+export class messageModel {
+  msgType: string;
+  msgData: any;
+}

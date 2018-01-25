@@ -38,6 +38,10 @@ namespace GgcmsCSharp.Controllers
                        select r;
             article.attachments = list.ToList();
             article.RedirectUrl = string.IsNullOrEmpty(article.RedirectUrl.Trim()) ? Prefix+"/Article/" + article.Id.ToString() : article.RedirectUrl;
+            if (article.ExtModelId > 0)
+            {
+                article.ModuleInfo = ExtendModule.GetModuleData(article.Id, article.ExtModelId);
+            }
             return article;
         }
         public int GetCategoryTopId(GgcmsCategory info)
@@ -93,7 +97,16 @@ namespace GgcmsCSharp.Controllers
         {
             DataBaseHelper<GgcmsDB> dbHelper = new DataBaseHelper<GgcmsDB>(new GgcmsDB());
             rparams = RequestParams.GetRequestParams<GgcmsDB, GgcmsArticle>(rparams.columns, rparams.limit, rparams.offset, 1, rparams.order, rparams.sortby, rparams.query);
-            return dbHelper.GetList<GgcmsArticle>(rparams);
+            var result = dbHelper.GetList<GgcmsArticle>(rparams);
+            List<GgcmsArticle> list = new List<GgcmsArticle>();
+            foreach (var ainfo in result.List)
+            {
+                GgcmsArticle ninfo = GgcmsArticle.Clone(ainfo);
+                ninfo.RedirectUrl = string.IsNullOrEmpty(ninfo.RedirectUrl.Trim()) ? Prefix + "/Article/" + ninfo.Id.ToString() : ninfo.RedirectUrl;
+                list.Add(ninfo);
+            }
+            result.List = list.AsQueryable();
+            return result;
         }
         public List<dynamic> Articles(string query, string columns="", int offset=0,int limit=100,string sortby = "Id",string order="desc")
         {

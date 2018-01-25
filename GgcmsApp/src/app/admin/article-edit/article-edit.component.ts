@@ -143,9 +143,7 @@ AfterViewInit {
       .overlayPanel
       .toggle(ev);
   }
-  test(){
-    console.log(this.moduleInfo);
-  }
+
   moduleInit(id) {
     this
       .adminServ
@@ -170,6 +168,7 @@ AfterViewInit {
           this.editFormGroup = this
             .fb
             .group({items: this.itemFormGroups});
+          this.GetModuleValue();
         }
       });
   }
@@ -294,7 +293,20 @@ AfterViewInit {
       });
   }
   constructor(private fb : FormBuilder, private route : ActivatedRoute, public appServ : AppService, private adminServ : AdminService, private _location : Location) {}
-
+  GetModuleValue(){
+    if(this.dataInfo.Id>0){
+      this.adminServ.GetGgcmsModuleValue(this.dataInfo.Id,this.dataInfo.ExtModelId)
+        .then(data => {
+          if (data.Code == 0) {
+            data.Data=data.Data||{};
+            for (let idx in this.moduleInfo.Columns) {
+              let name=this.moduleInfo.Columns[idx].ColName;
+              this.moduleInfo.Columns[idx].Value=data.Data[name]||"";
+            }
+          }
+        });
+      }
+  }
   ngOnInit() {
     this
       .route
@@ -312,7 +324,7 @@ AfterViewInit {
                 this.dataInfo.files = [];
               }
               this.CategoryLoad();
-
+              this.GetModuleValue();
               return this
                 .adminServ
                 .GetAllStylesList();

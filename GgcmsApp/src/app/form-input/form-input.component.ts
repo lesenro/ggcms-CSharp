@@ -1,7 +1,11 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core'
+import { Component, EventEmitter, Input, OnInit, Output, AfterViewInit } from '@angular/core'
 import { FormControl, FormGroup, Validators } from '@angular/forms'
 import { AppService, AdminService } from "app/services";
-import { FormInputOption } from 'app/BaseModules';
+import { FormInputOption, messageModel } from 'app/BaseModules';
+import { async } from 'q';
+import { Subscription } from 'rxjs';
+import { debounce } from 'rxjs/operators/debounce';
+import { forEach } from '@angular/router/src/utils/collection';
 
 @Component({
   selector: 'form-input',
@@ -11,7 +15,7 @@ import { FormInputOption } from 'app/BaseModules';
   outputs: ['valueChange', 'uploaded', 'inputChange'],
 })
 
-export class FormInputComponent implements OnInit {
+export class FormInputComponent implements OnInit,AfterViewInit {
 
   valueChange = new EventEmitter<any>();
   inputChange = new EventEmitter<any>();
@@ -22,6 +26,7 @@ export class FormInputComponent implements OnInit {
   name: string = "test";
   dataSource: any;
   itemFormGroup: FormGroup = new FormGroup({ test: new FormControl() });
+  inputObservable:Subscription;
   onChange(ev) {
     this.valueChange.emit(ev);
     this.inputChange.emit({
@@ -29,6 +34,7 @@ export class FormInputComponent implements OnInit {
       value: ev,
       option: this.option,
     });
+
     if (this.option.datasource == "style" && this.option.type == "select") {
       if (this.dataSource) {
         var styleinfo = this.dataSource.find(x => x.Folder == ev);
@@ -47,6 +53,7 @@ export class FormInputComponent implements OnInit {
           name: this.name,
           event: ev,
           option: this.option,
+          timeStamp:this.appServ.timeStamp()
         }
       });
     }
@@ -116,7 +123,8 @@ export class FormInputComponent implements OnInit {
       this.value = (this.value.toLowerCase() == "true");
     }
     //全局消息提醒，对话框
-    this.appServ.globalObservable.subscribe(data => {
+    this.inputObservable=this.appServ.globalObservable.subscribe((data) => {
+      
       if (data.msgType == "styleChange") {//风格修改
         if (this.option.datasource == "template" && this.option.type == "select") {
           if (data.msgData.value) {
@@ -135,16 +143,35 @@ export class FormInputComponent implements OnInit {
         }
         if(this.option.type=="single-select-reldict"){
           if(!data.msgData.event){
+            //this.value="";
+            this.onChange("");
+            this.dataSource=[];
             return;
           }
           this.adminServ.GetDictionaryList(1, true, "DictType:"+data.msgData.event).then(data => {
             if (data.Code == 0) {
               this.dataSource = data.Data.List;
+              let found=false;
+              this.dataSource.forEach(x=>{
+                if(x.Value==this.value){
+                  found=true;
+                  return;
+                }
+              });
+              if(!found){
+                this.value="";
+                this.onChange("");
+              }
             }
           });  
         }
       }
     });
+  }
+  ngAfterViewInit() {
+  }
+  ngOnDestroy(){
+   this.inputObservable.unsubscribe();
   }
   static buildItem(item: any) {
     let itemValidator: any = {};

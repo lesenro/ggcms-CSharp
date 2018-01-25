@@ -837,4 +837,14 @@ export class AdminService {
       .then(response => response.json())
       .catch(err => this.handleError(err));
   }
+  GetGgcmsModuleValue(aid,mid){
+    var url = ServerUrl + "GgcmsArticles/GetGgcmsModuleValue";
+    var data={aid:aid,mid:mid};
+    return this.http.get(url,{
+      search:this.appServ.objectToParams({aid:aid,mid:mid})
+    })
+      .toPromise()
+      .then(response => response.json())
+      .catch(err => this.handleError(err));
+  }
 }

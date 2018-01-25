@@ -25,7 +25,8 @@ namespace GgcmsCSharp.ApiCtrls
             try
             {
                 string url = actionContext.Request.RequestUri.AbsoluteUri;
-                if (url.EndsWith("PostLogin"))
+                string path = actionContext.Request.RequestUri.AbsolutePath;
+                if (url.EndsWith("PostLogin")||path.Contains("Webapi/"))
                 {
                     return true;
                 }

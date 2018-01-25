@@ -44,6 +44,11 @@ namespace GgcmsCSharp
             string adminApi = ConfigurationManager.AppSettings["AdminApi"].ToString();
             config.Routes.MapHttpRoute(
                 name: "DefaultApi",
+                routeTemplate: "Webapi/{action}/{id}",
+                defaults: new { controller = "Webapi", id = RouteParameter.Optional }
+            );
+            config.Routes.MapHttpRoute(
+                name: "ServiceApi",
                 routeTemplate: adminApi+"/{controller}/{action}/{id}",
                 defaults: new { id = RouteParameter.Optional }
             );

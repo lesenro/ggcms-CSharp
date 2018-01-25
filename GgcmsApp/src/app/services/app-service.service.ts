@@ -6,10 +6,8 @@ import { Title } from '@angular/platform-browser';
 
 import 'rxjs/Rx';
 import { Routes, Router } from "@angular/router";
-class messageModel {
-  msgType: string;
-  msgData: any;
-}
+import { messageModel } from 'app/BaseModules';
+
 @Injectable()
 export class AppService {
   routes: Routes;

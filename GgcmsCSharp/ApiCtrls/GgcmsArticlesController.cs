@@ -26,7 +26,15 @@ namespace GgcmsCSharp.ApiCtrls
                 Msg = ""
             };
         }
-
+        public ResultData GetGgcmsModuleValue(int aid, int mid)
+        {
+            return new ResultData
+            {
+                Code = 0,
+                Data = ExtendModule.GetModuleToDict(aid, mid),
+                Msg = ""
+            };
+        }
         // GET: api/GgcmsCategories/5
         public ResultData GetInfo(int id)
         {
@@ -40,10 +48,6 @@ namespace GgcmsCSharp.ApiCtrls
                                select r;
                     result.attachments = list.ToList();
                 }
-            }
-            if (result.ExtModelId > 0)
-            {
-                result.ModuleInfo = ExtendModule.GetModuleData(result.Id, result.ExtModelId);
             }
             return new ResultData
             {

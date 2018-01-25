@@ -16,14 +16,72 @@ namespace GgcmsCSharp.Models
             var module = GetGgcmsModule(mid);
             using (GgcmsDB db = new GgcmsDB())
             {
-                string sql = "SELECT * FROM [" + module.TableName + "] WHERE [Articles_Id] = @aid";
-                var mdata = db.Database.SqlQuery<Dictionary<string,dynamic>>(sql, new SqlParameter("@aid", aid)).First();
-                foreach (var col in module.Columns)
+                using (db.Database.Connection)
                 {
-                    
+                    StringBuilder sql = new StringBuilder();
+                    sql.Append("SELECT [Id] ");
+                    foreach (var col in module.Columns)
+                    {
+                        sql.Append(",[" + col.ColName + "] ");
+                    }
+                    sql.Append("FROM [" + module.TableName + "] WHERE [Articles_Id] = @aid");
+
+                    SqlCommand command = new SqlCommand(sql.ToString(), db.Database.Connection as SqlConnection);
+                    command.Parameters.Add(new SqlParameter("@aid", aid));
+                    db.Database.Connection.Open();
+
+                    SqlDataReader reader = command.ExecuteReader(CommandBehavior.CloseConnection);
+
+                    if (reader.HasRows && reader.Read())
+                    {
+                        foreach (var col in module.Columns)
+                        {
+                            col.Value = reader[col.ColName];
+                        }
+                    }
+                    reader.Close();
                 }
             }
             return module;
+        }
+        public static Dictionary<string, dynamic> GetModuleToDict(int aid , int mid){
+            var module = GetGgcmsModule(mid);
+            if (module == null)
+            {
+                return null;
+            }
+            Dictionary<string, dynamic> result = new Dictionary<string, dynamic>();
+            result.Add("Id", aid);
+            result.Add("Mid", mid);
+            using (GgcmsDB db = new GgcmsDB())
+            {
+                using (db.Database.Connection)
+                {
+                    StringBuilder sql = new StringBuilder();
+                    sql.Append("SELECT [Id] ");
+                    foreach (var col in module.Columns)
+                    {
+                        sql.Append(",[" + col.ColName + "] ");
+                    }
+                    sql.Append("FROM [" + module.TableName + "] WHERE [Articles_Id] = @aid");
+
+                    SqlCommand command = new SqlCommand(sql.ToString(), db.Database.Connection as SqlConnection);
+                    command.Parameters.Add(new SqlParameter("@aid", aid));
+                    db.Database.Connection.Open();
+
+                    SqlDataReader reader = command.ExecuteReader(CommandBehavior.CloseConnection);
+
+                    if (reader.HasRows && reader.Read())
+                    {
+                        foreach (var col in module.Columns)
+                        {
+                            result.Add(col.ColName, reader[col.ColName]);
+                        }
+                    }
+                    reader.Close();
+                }
+            }
+            return result;
         }
         public static GgcmsModule GetGgcmsModule(int id)
         {
@@ -62,17 +120,17 @@ namespace GgcmsCSharp.Models
                     List<string> colsStr = new List<string>();
                     List<string> paramStr = new List<string>();
                     colsStr.Add("[Articles_Id]");
-                    paramStr.Add("Articles_Id");
+                    paramStr.Add(aid.ToString());
 
                     List<SqlParameter> sqlParams = new List<SqlParameter>();
                     foreach (var col in cols)
                     {
                         colsStr.Add("[" + col.ColName + "]");
                         paramStr.Add("@" + col.ColName);
-                        sqlParams.Add(new SqlParameter("@" + col.ColName, col.Value));
+                        sqlParams.Add(new SqlParameter("@" + col.ColName, col.Value??""));
                     }
                     sql = "INSERT INTO [" + m.TableName + "] ( " + string.Join(",", colsStr) + " ) VALUES (  " + string.Join(",", paramStr) + " )";
-                    db.Database.ExecuteSqlCommand(sql, sqlParams);
+                    db.Database.ExecuteSqlCommand(sql, sqlParams.ToArray());
                 }
                 //修改
                 else
@@ -95,6 +153,11 @@ namespace GgcmsCSharp.Models
                 return result;
             }
         }
+        public static DataTable ViewArticles(int mid)
+        {
+
+        }
+
         public static int Delete(int aid , int mid)
         {
             using (GgcmsDB db = new GgcmsDB())
@@ -205,7 +268,7 @@ namespace GgcmsCSharp.Models
 
                 db.SaveChanges();
             }
-
+            ViewCreate(module);
         }
         public static void TableCreate(GgcmsModule module)
         {
@@ -246,7 +309,7 @@ namespace GgcmsCSharp.Models
                 db.Database.ExecuteSqlCommand(newTabSql.ToString(), new object[] { });
                 db.SaveChanges();
             }
-
+            ViewCreate(module);
         }
         public static void TableDelete(int id)
         {
@@ -261,6 +324,7 @@ namespace GgcmsCSharp.Models
         }
         public static void TableDelete(GgcmsModule module)
         {
+            ViewDelete(module);
             using (GgcmsDB db = new GgcmsDB())
             {
                 db.Database.ExecuteSqlCommand("DROP TABLE [" + module.TableName + "]");
@@ -269,6 +333,43 @@ namespace GgcmsCSharp.Models
                 db.GgcmsModuleColumns.RemoveRange(collist);
                 db.SaveChanges();
             }
+        }
+        private static void ViewCreate(GgcmsModule module)
+        {
+            string[] articleField = "Title,Hits,CreateTime,TitleImg,RedirectUrl,ExtModelId,ShowType,ShowLevel,Category_Id".Split(",".ToArray());
+            StringBuilder sql = new StringBuilder();
+            sql.Append("CREATE VIEW [" + module.ViewName + "] AS ");
+            sql.Append("SELECT GgcmsArticles.Id ");
+            foreach (string col in articleField)
+            {
+                sql.Append(",GgcmsArticles." + col + " ");
+            }
+            foreach (var col in module.Columns)
+            {
+                sql.Append("," + module.TableName + "." + col.ColName + " ");
+            }
+            sql.Append("FROM GgcmsArticles INNER JOIN " + module.TableName + " ON GgcmsArticles.Id = " + module.TableName + ".Articles_Id");
+            //dbo.moduleTab_7.col_2,
+            ViewDelete(module);
+            using (GgcmsDB db = new GgcmsDB())
+            {
+                db.Database.ExecuteSqlCommand(sql.ToString());
+                db.SaveChanges();
+            }
+            
+        }
+        private static void ViewDelete(GgcmsModule module)
+        {
+            try
+            {
+                string sql = "DROP VIEW [" + module.ViewName + "]";
+                using (GgcmsDB db = new GgcmsDB())
+                {
+                    db.Database.ExecuteSqlCommand(sql);
+                    db.SaveChanges();
+                }
+            }
+            catch { }
         }
     }
 }
