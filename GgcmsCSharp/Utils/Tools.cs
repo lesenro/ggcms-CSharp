@@ -64,6 +64,15 @@ namespace GgcmsCSharp.Utils
             }
             return sb.ToString();
         }
+        public static string getRandString(int len=0)
+        {
+            string s = getMd5Hash(getGuid());
+            if (len == 0|| len > s.Length)
+            {
+                return s;
+            }
+            return s.Substring(0, len);
+        }
         public static T ConvertType<T>(object val, T defaultValue)
         {
             if (val == null) return defaultValue;//返回类型的默认值

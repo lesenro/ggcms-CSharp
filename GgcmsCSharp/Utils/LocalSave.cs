@@ -49,7 +49,7 @@ namespace GgcmsCSharp.Utils
             string url = UploadPrefix + root + "/" + fn;
             while (File.Exists(filePath))
             {
-                fn = Path.GetFileName(Path.GetTempFileName()) + ext;
+                fn = Path.GetFileName(Tools.getRandString(8)) + ext;
                 filePath = HttpContext.Current.Server.MapPath("~" + root + "/" + fn);
                 url = UploadPrefix+root + "/" + fn;
             }

@@ -9,6 +9,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Collections.Generic;
 using System;
+using GgcmsCSharp.Utils;
 
 namespace GgcmsCSharp.ApiCtrls
 {
@@ -293,7 +294,7 @@ namespace GgcmsCSharp.ApiCtrls
 
                         while (File.Exists(filePath))
                         {
-                            fn = Path.GetFileName(Path.GetTempFileName()) + ext;
+                            fn = Path.GetFileName(Tools.getRandString(8)) + ext;
                             filePath = HttpContext.Current.Server.MapPath("~/" + path + "/" + fn);
                         }
                         postedFile.SaveAs(filePath);
@@ -411,11 +412,11 @@ namespace GgcmsCSharp.ApiCtrls
                 File.Copy(f, tmplPath + "/" + fn);
             }
             //生成的zip文件
-            string zipFilePath = staticDir + "/" + uploadDir + "/temp/" + Path.GetFileName(Path.GetTempFileName()) + ".zip";
+            string zipFilePath = staticDir + "/" + uploadDir + "/temp/" + Path.GetFileName(Tools.getRandString(8)) + ".zip";
             string zipFile = HttpContext.Current.Server.MapPath("~/" + zipFilePath);
             while (File.Exists(zipFile))
             {
-                zipFilePath = staticDir + "/" + uploadDir + "/temp/" + Path.GetFileName(Path.GetTempFileName()) + ".zip";
+                zipFilePath = staticDir + "/" + uploadDir + "/temp/" + Path.GetFileName(Tools.getRandString(8)) + ".zip";
                 zipFile = HttpContext.Current.Server.MapPath("~/" + zipFilePath);
             }
             string extDir = Path.GetDirectoryName(zipFile);

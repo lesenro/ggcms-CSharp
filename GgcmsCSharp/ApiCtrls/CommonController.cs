@@ -11,6 +11,7 @@ using System.IO;
 using System.Web.Http;
 using System.Reflection;
 using System.Collections;
+using GgcmsCSharp.Utils;
 
 namespace GgcmsCSharp.ApiCtrls
 {
@@ -55,7 +56,7 @@ namespace GgcmsCSharp.ApiCtrls
 
                     while (File.Exists(filePath))
                     {
-                        fn = Path.GetFileName(Path.GetTempFileName()) + ext;
+                        fn = Path.GetFileName(Tools.getRandString(8)) + ext;
                         filePath = HttpContext.Current.Server.MapPath("~" + root + "/" + fn);
                     }
                     postedFile.SaveAs(filePath);
