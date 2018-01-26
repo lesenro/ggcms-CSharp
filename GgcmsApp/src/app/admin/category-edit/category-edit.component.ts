@@ -35,6 +35,7 @@ export class CategoryEditComponent implements OnInit {
     ImgWidth: 0,
     ImgHeight: 0,
     CategoryType: 0,
+    ExtModelId:0,
     files: [],
   };
 

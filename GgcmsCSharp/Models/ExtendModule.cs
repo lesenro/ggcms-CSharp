@@ -46,15 +46,20 @@ namespace GgcmsCSharp.Models
             }
             return module;
         }
-        public static Dictionary<string, dynamic> GetModuleToDict(int aid , int mid){
+        public static Dictionary<string, dynamic> GetModuleToDict(int aid, int mid)
+        {
             var module = GetGgcmsModule(mid);
             if (module == null)
             {
                 return null;
             }
+            return GetModuleToDict(aid, module);
+        }
+        public static Dictionary<string, dynamic> GetModuleToDict(int aid , GgcmsModule module){
+            
             Dictionary<string, dynamic> result = new Dictionary<string, dynamic>();
             result.Add("Id", aid);
-            result.Add("Mid", mid);
+            result.Add("Mid", module.Id);
             using (GgcmsDB db = new GgcmsDB())
             {
                 using (db.Database.Connection)

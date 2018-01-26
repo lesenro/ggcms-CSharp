@@ -82,7 +82,8 @@ namespace GgcmsCSharp.Models
         public List<GgcmsAttachment> attachments { get; set; }
         [NotMapped]
         public GgcmsModule ModuleInfo { get; set; }
-
+        [NotMapped]
+        public Dictionary<string,dynamic> ModuleData { get; set; }
         public GgcmsArticle Clone()
         {
             var info = new GgcmsArticle

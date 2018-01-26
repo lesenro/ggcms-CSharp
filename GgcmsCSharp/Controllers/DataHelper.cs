@@ -41,7 +41,8 @@ namespace GgcmsCSharp.Controllers
             article.RedirectUrl = string.IsNullOrEmpty(article.RedirectUrl.Trim()) ? Prefix+"/Article/" + article.Id.ToString() : article.RedirectUrl;
             if (article.ExtModelId > 0)
             {
-                article.ModuleInfo = ExtendModule.GetModuleData(article.Id, article.ExtModelId);
+                article.ModuleInfo = ExtendModule.GetGgcmsModule(article.ExtModelId);
+                article.ModuleData = ExtendModule.GetModuleToDict(article.Id, article.ModuleInfo);
             }
             return article;
         }
