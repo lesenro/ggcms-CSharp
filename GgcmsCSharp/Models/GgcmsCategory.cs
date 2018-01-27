@@ -76,7 +76,7 @@ namespace GgcmsCSharp.Models
             foreach(var item in list)
             {
                 item.RedirectUrl = string.IsNullOrEmpty(item.RedirectUrl.Trim()) ? prefix+"/Category/" + item.Id.ToString() : item.RedirectUrl;
-                item.subCategory = GgcmsCategory.GetCategoryList(item.Id, categorys, prefix);
+                item.subCategory = GetCategoryList(item.Id, categorys, prefix);
             }
             return list as List<GgcmsCategory>;
         }
@@ -88,7 +88,7 @@ namespace GgcmsCSharp.Models
                 {
                     return item;
                 }
-                var info = GgcmsCategory.GetCategoryById(id, item.subCategory);
+                var info = GetCategoryById(id, item.subCategory);
                 if (info != null)
                 {
                     return info;

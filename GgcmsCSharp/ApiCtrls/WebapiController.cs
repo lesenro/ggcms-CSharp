@@ -73,5 +73,11 @@ namespace GgcmsCSharp.ApiCtrls
             var reqParams = InitRequestParams<GgcmsAdverts>();
             return Ok(dataHelper.Adverts(reqParams.query, reqParams.columns, reqParams.offset, reqParams.offset, reqParams.sortby, reqParams.order));
         }
+
+        [HttpGet]
+        public IHttpActionResult configs()
+        {
+            return Ok(dataHelper.SysConfigs());
+        }
     }
 }

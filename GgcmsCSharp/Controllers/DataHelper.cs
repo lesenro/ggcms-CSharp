@@ -24,6 +24,22 @@ namespace GgcmsCSharp.Controllers
             List<GgcmsCategory> list = CacheHelper.GetCategorys(Prefix);
             return list;
         }
+        //获取分类列表
+        public List<GgcmsCategory> Categories(params int[] values)
+        {
+            List<GgcmsCategory> all = Categories();
+
+            List<GgcmsCategory> list = new List<GgcmsCategory>();
+            foreach(int cid in values)
+            {
+                var item = GgcmsCategory.GetCategoryById(cid,all);
+                if (item != null)
+                {
+                    list.Add(item);
+                }
+            }
+            return list;
+        }
         //获取单个分类
         public GgcmsCategory Categories(int id)
         {
@@ -152,6 +168,15 @@ namespace GgcmsCSharp.Controllers
 
             pagination.setMaxSize(rlist.Count);
             return rlist.ToList();
+        }
+        public Dictionary<string, string> SysConfigs()
+        {
+
+            Dictionary<string, string> cfgs = CacheHelper.GetSysConfigs();
+            cfgs["cfg_access_key"] = "";
+            cfgs["cfg_secret_key"] = "";
+            cfgs["cfg_bucket"] = "";
+            return cfgs;
         }
     }
 }

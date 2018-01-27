@@ -26,7 +26,7 @@ namespace GgcmsCSharp.Controllers
         {
             base.Initialize(requestContext);
             dataHelper = new DataHelper();
-            sysConfigs = CacheHelper.GetSysConfigs();
+            sysConfigs = dataHelper.SysConfigs();
         }
         protected override void OnActionExecuting(ActionExecutingContext filterContext)
         {

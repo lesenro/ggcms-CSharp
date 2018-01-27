@@ -148,7 +148,7 @@ namespace GgcmsCSharp.ApiCtrls
             updateArticleNumber(article.Category_Id, 1);
             CacheHelper.RemoveAllCache(CacheTypeNames.Categorys);
             article = dbHelper.Add(article);
-            if (article.ModuleInfo != null)
+            if (article.ModuleInfo != null && article.ModuleInfo.Id > 0)
             {
                 article.ExtModelId = article.ModuleInfo.Id;
                 ExtendModule.SaveData(article.Id, article.ModuleInfo);
