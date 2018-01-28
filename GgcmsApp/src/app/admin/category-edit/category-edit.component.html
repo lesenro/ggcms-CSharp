@@ -94,7 +94,7 @@
             <div class="form-group row">
                 <label class="col-2 col-form-label">分类说明:</label>
                 <div class="col-10">
-                    <tiny-editor [elementId]="'my-editor-id'" [(value)]="dataInfo.Content">
+                    <tiny-editor *ngIf="dataReady" [elementId]="'my-editor-id'" [(value)]="dataInfo.Content">
                     </tiny-editor>
                 </div>
             </div>

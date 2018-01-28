@@ -106,6 +106,7 @@ AfterViewInit {
   };
   editFormGroup : FormGroup = new FormGroup({});
   itemFormGroups : FormArray;
+  dataReady=false;
   CategorysInit(pid : any, mlist : any[]) : any[] {
     let menus : any[] = [];
     for (let item of mlist) {
@@ -209,7 +210,15 @@ AfterViewInit {
         }
       });
   }
-  moduleUpload(ev) {}
+  moduleUpload(ev) {
+    if (ev.fileType == 3) {
+      var idx = this.dataInfo.files.findIndex(item => item.propertyName == ev.propertyName);
+      if (idx != -1) {
+        this.dataInfo.files.splice(idx, 1);
+      }
+    }
+    this.dataInfo.files.push(ev);
+  }
   editUpload(ev, name) {
     if (ev.Code == 0) {
       this
@@ -274,9 +283,9 @@ AfterViewInit {
         Columns:[],
       };
       this.moduleInfo.Columns.forEach(item => {
-        let { Id, Value } = item;
+        let { Id, Value,ColName } = item;
         this.dataInfo.ModuleInfo.Columns.push({
-          Id,Value
+          Id,Value,ColName
         });
       });
     }
@@ -323,6 +332,7 @@ AfterViewInit {
                 this.dataInfo = data.Data;
                 this.dataInfo.files = [];
               }
+              this.dataReady=true;
               this.CategoryLoad();
               this.GetModuleValue();
               return this
@@ -336,6 +346,7 @@ AfterViewInit {
               }
             });
         } else {
+          this.dataReady=true;
           this.CategoryLoad();
           this
             .adminServ

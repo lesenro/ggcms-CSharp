@@ -74,7 +74,7 @@ namespace GgcmsCSharp.ApiCtrls
             GgcmsArticle old;
             using (GgcmsDB db = new GgcmsDB())
             {
-                UpFileClass.FileSave(article, article.files);
+                UpFileClass.FileSave(article, article.files.FindAll(x=>x.fileType != 3));
                 old = db.GgcmsArticles.Find(article.Id);
                 if (old.Category_Id != article.Category_Id)
                 {
@@ -117,6 +117,16 @@ namespace GgcmsCSharp.ApiCtrls
                 {
                     ExtendModule.Delete(article.Id, old.ExtModelId);
                 }
+                foreach (var file in article.files.FindAll(x => x.fileType == 3))
+                {
+                    foreach (var item in article.ModuleInfo.Columns)
+                    {
+                        if (item.ColName == file.propertyName)
+                        {
+                            item.Value = UpFileClass.FileSave(file.filePath.ToString(), item.Value.ToString(), (int)file.fileType);
+                        }
+                    }
+                }
                 ExtendModule.SaveData(article.Id, article.ModuleInfo);
             }
             else if(old.ExtModelId>0)
@@ -143,14 +153,28 @@ namespace GgcmsCSharp.ApiCtrls
                     Data = BadRequest(ModelState)
                 }; 
             }
-            UpFileClass.FileSave(article, article.files);
+            //提交除附加模型外的文件-标题图，内容中的图
+            UpFileClass.FileSave(article, article.files.FindAll(x => x.fileType != 3));
             article.CreateTime = DateTime.Now;
             updateArticleNumber(article.Category_Id, 1);
             CacheHelper.RemoveAllCache(CacheTypeNames.Categorys);
-            article = dbHelper.Add(article);
             if (article.ModuleInfo != null && article.ModuleInfo.Id > 0)
             {
                 article.ExtModelId = article.ModuleInfo.Id;
+            }
+            article = dbHelper.Add(article);
+            if (article.ModuleInfo != null && article.ModuleInfo.Id >0)
+            {
+                foreach (var file in article.files.FindAll(x=>x.fileType == 3))
+                {
+                    foreach (var item in article.ModuleInfo.Columns)
+                    {
+                        if (item.ColName == file.propertyName)
+                        {
+                            item.Value = UpFileClass.FileSave(file.filePath.ToString(), item.Value.ToString(), (int)file.fileType);
+                        }
+                    }
+                }
                 ExtendModule.SaveData(article.Id, article.ModuleInfo);
             }
             using (GgcmsDB db = new GgcmsDB())

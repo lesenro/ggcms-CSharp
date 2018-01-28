@@ -24,6 +24,9 @@ const inputTypes = [
   }, {
     name: "单选联动字典",
     key: "single-select-reldict"
+  }, {
+    name: "文件上传",
+    key: "file"
   }
 ];
 @Component({

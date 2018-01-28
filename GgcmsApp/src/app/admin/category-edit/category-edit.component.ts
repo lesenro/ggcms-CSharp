@@ -15,6 +15,7 @@ export class CategoryEditComponent implements OnInit {
   mobListTmpl: any[] = [];
   mobArticleTmpl: any[] = [];
   modulesList:any[]=[];
+  dataReady:boolean=false;
   dataInfo = {
     Id: 0,
     ParentId: 0,
@@ -143,6 +144,7 @@ export class CategoryEditComponent implements OnInit {
               this.dataInfo = data.Data;
               this.dataInfo.files = [];
             }
+            this.dataReady=true;
             this.CategoryLoad();
             return this.adminServ.GetAllStylesList();
           }).then(data => {
@@ -152,6 +154,7 @@ export class CategoryEditComponent implements OnInit {
             }
           });
         } else {
+          this.dataReady=true;
           this.CategoryLoad();
           this.adminServ.GetAllStylesList().then(data => {
             if (data.Code == 0) {

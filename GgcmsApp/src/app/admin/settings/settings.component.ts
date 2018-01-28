@@ -17,7 +17,7 @@ export class SettingsComponent implements OnInit {
   public editFormGroup: FormGroup = new FormGroup({});
 
   uploaded(ev) {
-    if (ev.fileType == 0) {
+    if (ev.fileType == 3) {
       var idx = this.files.findIndex(item => item.propertyName == ev.propertyName);
       if (idx != -1) {
         this.files.splice(idx, 1);

@@ -75,7 +75,7 @@
                         <div class="form-group row">
                             <label class="col-2 col-form-label">文章内容:</label>
                             <div class="col-10">
-                                <tiny-editor [elementId]="'my-editor-id'" [(value)]="dataInfo.Content" (fileUploaded)="editUpload($event,'Content')">
+                                <tiny-editor *ngIf="dataReady" [elementId]="'my-editor-id'" [(value)]="dataInfo.Content" (fileUploaded)="editUpload($event,'Content')">
                                 </tiny-editor>
                             </div>
                         </div>
@@ -159,7 +159,7 @@
                         <div class="col-8">
                             <form-input (uploaded)="moduleUpload($event)" [name]="item.ColName" [itemFormGroup]="item.formGroup" [option]="item.option" [placeholder]="item.ColTitle" [(value)]="item.Value"></form-input>
                         </div>
-                       
+
                     </div>
                 </ng-template>
             </ngb-tab>

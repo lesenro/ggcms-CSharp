@@ -13,7 +13,7 @@
             <button type="button" class="btn green" name="btnPreview" (click)="imgPreview.toggle($event)" *ngIf="value&&option.preview"> <i class="icon-eye"></i> 预览 </button>
             <button type="button" class="btn btn-danger" name="btnClear" *ngIf="value" (click)="onChange('')"> <i class="icon-trash"></i> 清除 </button>
             <p-overlayPanel #imgPreview appendTo="body">
-                <img [src]="value" />
+                <img [src]="value" *ngIf="value" />
             </p-overlayPanel>
         </div>
     </div>
@@ -68,7 +68,7 @@
     <select (ngModelChange)="onChange($event)" [formControlName]="name" class="form-control input-inline" [id]="name" [name]="name" [(ngModel)]="value" *ngIf="option.type=='single-select-reldict'">
         <option value="" selected>---请选择---</option> 
         <option [value]="item.Value" *ngFor="let item of dataSource" >{{item.Title}}</option>
-    </select>    
+    </select>
     <!--风格-->
     <select (ngModelChange)="onChange($event)" [formControlName]="name" class="form-control input-inline" [id]="name" [name]="name" [(ngModel)]="value" *ngIf="',select,'.indexOf(','+option.type+',')!=-1&&!option.multiple&&option.datasource=='style'">
         <option value="" selected>---请选择---</option> 

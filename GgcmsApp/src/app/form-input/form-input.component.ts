@@ -67,7 +67,7 @@ export class FormInputComponent implements OnInit,AfterViewInit {
           this.value = data.link;
           this.uploaded.emit({
             "filePath": data.Data[0].url,
-            "fileType": 0,
+            "fileType": 3,
             "propertyName": this.name,
           });
           this.valueChange.emit(data.link);
