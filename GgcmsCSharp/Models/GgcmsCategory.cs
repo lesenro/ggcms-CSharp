@@ -41,6 +41,9 @@ namespace GgcmsCSharp.Models
         [StringLength(255)]
         public string RedirectUrl { get; set; } = "";
 
+        [StringLength(255)]
+        public string RouteKey { get; set; } = "";
+
         public int PageSize { get; set; } = 0;
 
         public int ImgWidth { get; set; } = 0;
@@ -75,7 +78,8 @@ namespace GgcmsCSharp.Models
                        select c).ToList();
             foreach(var item in list)
             {
-                item.RedirectUrl = string.IsNullOrEmpty(item.RedirectUrl.Trim()) ? prefix+"/Category/" + item.Id.ToString() : item.RedirectUrl;
+                string key = string.IsNullOrWhiteSpace(item.RouteKey) ? item.Id.ToString() : item.RouteKey.Trim();
+                item.RedirectUrl = string.IsNullOrEmpty(item.RedirectUrl.Trim()) ? prefix+"/Category/" + key : item.RedirectUrl;
                 item.subCategory = GetCategoryList(item.Id, categorys, prefix);
             }
             return list as List<GgcmsCategory>;
@@ -89,6 +93,22 @@ namespace GgcmsCSharp.Models
                     return item;
                 }
                 var info = GetCategoryById(id, item.subCategory);
+                if (info != null)
+                {
+                    return info;
+                }
+            }
+            return null;
+        }
+        public static GgcmsCategory GetCategoryByKey(string key, List<GgcmsCategory> list)
+        {
+            foreach (var item in list)
+            {
+                if (item.RouteKey == key)
+                {
+                    return item;
+                }
+                var info = GetCategoryByKey(key, item.subCategory);
                 if (info != null)
                 {
                     return info;

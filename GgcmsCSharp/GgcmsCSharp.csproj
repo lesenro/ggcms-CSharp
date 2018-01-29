@@ -176,6 +176,10 @@
     <Compile Include="ApiCtrls\ApiBaseController.cs" />
     <Compile Include="ApiCtrls\CommonController.cs" />
     <Compile Include="ApiCtrls\WebapiController.cs" />
+    <Compile Include="Migrations\201801290335440_GgcmsCategory-add-RouteKey.cs" />
+    <Compile Include="Migrations\201801290335440_GgcmsCategory-add-RouteKey.Designer.cs">
+      <DependentUpon>201801290335440_GgcmsCategory-add-RouteKey.cs</DependentUpon>
+    </Compile>
     <Compile Include="Models\ExtendModule.cs" />
     <Compile Include="Utils\DataBaseHelper.cs" />
     <Compile Include="ApiCtrls\FileManagerController.cs" />
@@ -353,6 +357,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201708300131572_修改字典类型DictType为字符型.resx">
       <DependentUpon>201708300131572_修改字典类型DictType为字符型.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201801290335440_GgcmsCategory-add-RouteKey.resx">
+      <DependentUpon>201801290335440_GgcmsCategory-add-RouteKey.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

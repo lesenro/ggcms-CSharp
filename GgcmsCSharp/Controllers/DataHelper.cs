@@ -46,6 +46,12 @@ namespace GgcmsCSharp.Controllers
             List<GgcmsCategory> list = Categories();
             return GgcmsCategory.GetCategoryById(id, list);
         }
+        //获取单个分类
+        public GgcmsCategory Categories(string id)
+        {
+            List<GgcmsCategory> list = Categories();
+            return GgcmsCategory.GetCategoryByKey(id, list);
+        }
         //获取文章列表
         public GgcmsArticle Article(int id)
         {

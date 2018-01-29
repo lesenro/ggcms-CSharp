@@ -31,6 +31,7 @@ export class CategoryEditComponent implements OnInit {
     Description: "",
     Content: "",
     ExtAttrib: "",
+    RouteKey:"",
     OrderId: 0,
     PageSize: 10,
     ImgWidth: 0,

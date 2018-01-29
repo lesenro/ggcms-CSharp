@@ -4,6 +4,7 @@ using System.Web.Http.Controllers;
 using System.Web.Http.Description;
 using System.Linq;
 using System;
+using System.Web;
 
 namespace GgcmsCSharp.ApiCtrls
 {
@@ -50,7 +51,8 @@ namespace GgcmsCSharp.ApiCtrls
                 };
                 return result;
             }
-            UpFileClass.FileSave<GgcmsCategory>(category, category.files);
+            category.RouteKey = HttpUtility.UrlEncode(category.RouteKey);
+            UpFileClass.FileSave(category, category.files);
             CacheHelper.RemoveAllCache(CacheTypeNames.Categorys);
             return new ResultData
             {

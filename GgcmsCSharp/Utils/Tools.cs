@@ -7,6 +7,7 @@ using System.Net;
 using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.Script.Serialization;
 using System.Web.Security;
@@ -36,6 +37,10 @@ namespace GgcmsCSharp.Utils
             byte[] result = md5.ComputeHash(textToHash);
             //Convert result back to string.
             return System.BitConverter.ToString(result).Replace("-", "").ToLower();
+        }
+        public static bool IsInt(string val)
+        {
+            return Regex.IsMatch(val, "^(\\-|\\+)?\\d+$", RegexOptions.Singleline);
         }
         public static int parseInt(string s, int defaultVal = 0)
         {

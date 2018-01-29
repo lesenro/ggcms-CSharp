@@ -51,12 +51,26 @@ namespace GgcmsCSharp.Controllers
 
         }
         [OutputCache(CacheProfile = "ListCache")]
-        public ActionResult Category(int id, int page = 1)
+        public ActionResult Category(string id, int page = 1)
         {
-            GgcmsCategory category = dataHelper.Categories(id);
+
+            GgcmsCategory category;
+            if (Tools.IsInt(id))
+            {
+                int intid = Tools.parseInt(id);
+                category = dataHelper.Categories(intid);
+            }
+            else
+            {
+                category = dataHelper.Categories(id);
+            }
+            if (category == null)
+            {
+                return HttpNotFound();
+            }
             Pagination pagination = new Pagination();
             pagination.page = page;
-            pagination.baseLink = dataHelper.Prefix+"/Category/" + id.ToString() + "/{page}";
+            pagination.baseLink = dataHelper.Prefix + "/Category/" + id + "/{page}";
             pagination.pageSize = Tools.parseInt(sysConfigs["cfg_page_size"], 10);
             if (category.PageSize > 0)
             {
