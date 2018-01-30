@@ -79,5 +79,15 @@ namespace GgcmsCSharp.ApiCtrls
         {
             return Ok(dataHelper.SysConfigs());
         }
+        [HttpGet]
+        public IHttpActionResult dictionary()
+        {
+            var reqParams = InitRequestParams<GgcmsDictionary>();
+            if (string.IsNullOrWhiteSpace(reqParams.orderby))
+            {
+                reqParams.orderby = "OrderID asc";
+            }
+            return Ok(dbHelper.GetList<GgcmsDictionary>(reqParams));
+        }
     }
 }

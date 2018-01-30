@@ -184,5 +184,16 @@ namespace GgcmsCSharp.Controllers
             cfgs["cfg_bucket"] = "";
             return cfgs;
         }
+        public ListResult DictionaryList(string query, string columns = "", int offset = 0, int limit = 100, string sortby = "OrderID", string order = "asc")
+        {
+            RequestParams rparams = RequestParams.GetRequestParams<GgcmsDB, GgcmsDictionary>(columns, limit, offset, 1, order, sortby, query);
+            return DictionaryList(rparams);
+        }
+        public ListResult DictionaryList(RequestParams rparams)
+        {
+            DataBaseHelper<GgcmsDB> dbHelper = new DataBaseHelper<GgcmsDB>(new GgcmsDB());
+            var result = dbHelper.GetList<GgcmsDictionary>(rparams);
+            return result;
+        }
     }
 }
