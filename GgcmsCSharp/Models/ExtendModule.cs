@@ -185,7 +185,7 @@ namespace GgcmsCSharp.Models
             else
             {
                 reqParams.orderby = string.IsNullOrWhiteSpace(reqParams.orderby) ? "Id DESC" : reqParams.orderby;
-                reqParams.query = string.IsNullOrWhiteSpace(reqParams.query) ? "" :" WHERE" +reqParams.orderby;
+                reqParams.query = string.IsNullOrWhiteSpace(reqParams.query) ? "" :" WHERE " +reqParams.query;
                 reqParams.columns = string.IsNullOrWhiteSpace(reqParams.columns) ? "*" : reqParams.columns;
                 reqParams.offset++;
                 reqParams.limit = reqParams.offset + reqParams.limit;
