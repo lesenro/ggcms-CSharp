@@ -1,6 +1,6 @@
 import { forEach } from '@angular/router/src/utils/collection';
 import { Component, OnInit, OnChanges, HostBinding, EventEmitter } from '@angular/core';
-import { AppService } from "app/services";
+import { AppService } from "../../services";
 
 @Component({
   selector: 'side-menus',

@@ -1,4 +1,4 @@
-import { NgArrayPipesModule } from 'angular-pipes/src';
+import { NgArrayPipesModule } from 'angular-pipes';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgModule } from '@angular/core';
@@ -6,8 +6,8 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpModule } from '@angular/http';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { AppComponent } from './app.component';
-import { NgpModule } from "app/ngp-module/ngp-module.module";
-import { AdminService, AppService, LocalStorageService } from "app/services";
+import { NgpModule } from "./ngp-module/ngp-module.module";
+import { AdminService, AppService, LocalStorageService } from "./services";
 import { HashLocationStrategy, LocationStrategy } from '@angular/common';
 import { AppRoutingModule } from './app-routing.module';
 import { FileUploadComponent } from './file-upload/file-upload.component';
@@ -16,7 +16,7 @@ import { FooterComponent } from './admin/footer/footer.component';
 import { SidebarComponent } from './admin/sidebar/sidebar.component';
 import { PageHeaderComponent } from './admin/page-header/page-header.component';
 import { SideMenusComponent } from './admin/side-menus/side-menus.component';
-import { ModulesEditComponent,ModulesComponent,AdvertsComponent,AdvertsEditComponent,LoginComponent, ArticleEditComponent, ArticleComponent, HomeComponent, IndexComponent, CategoryComponent, CategoryEditComponent } from "app/admin";
+import { ModulesEditComponent,ModulesComponent,AdvertsComponent,AdvertsEditComponent,LoginComponent, ArticleEditComponent, ArticleComponent, HomeComponent, IndexComponent, CategoryComponent, CategoryEditComponent } from "./admin";
 import { TreeModule } from 'angular-tree-component';
 
 import { DictionaryComponent } from './admin/dictionary/dictionary.component';

@@ -1,6 +1,6 @@
 import {Component, OnInit, EventEmitter} from '@angular/core';
-import {AppService, AdminService} from 'app/services';
-import {GgcmsDictionary, FormInputOption, GgcmsModuleColumn} from 'app/BaseModules';
+import {AppService, AdminService} from '../../../services';
+import {GgcmsDictionary, FormInputOption, GgcmsModuleColumn} from '../../../BaseModules';
 
 const inputTypes = [
   {

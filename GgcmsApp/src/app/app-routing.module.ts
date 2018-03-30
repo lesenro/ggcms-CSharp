@@ -1,8 +1,8 @@
 import { NgModule, Inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Routes, Router, NavigationEnd, NavigationStart, ActivatedRoute } from '@angular/router';
-import { AppService } from "app/services";
-import {ModulesEditComponent, ModulesComponent,AdvertsEditComponent, AdvertsComponent, TemplateComponent, FriendLinksEditComponent, FriendLinksComponent, TemplateEditComponent, LoginComponent, ArticleEditComponent, ArticleComponent, HomeComponent, IndexComponent, CategoryComponent, CategoryEditComponent, DictionaryComponent, DictionaryEditComponent, SettingsComponent, StylesComponent, StylesEditComponent, StaticFileComponent, StaticFileEditComponent, ModifyPasswordComponent } from "app/admin";
+import { AppService } from "./services";
+import {ModulesEditComponent, ModulesComponent,AdvertsEditComponent, AdvertsComponent, TemplateComponent, FriendLinksEditComponent, FriendLinksComponent, TemplateEditComponent, LoginComponent, ArticleEditComponent, ArticleComponent, HomeComponent, IndexComponent, CategoryComponent, CategoryEditComponent, DictionaryComponent, DictionaryEditComponent, SettingsComponent, StylesComponent, StylesEditComponent, StaticFileComponent, StaticFileEditComponent, ModifyPasswordComponent } from "./admin";
 import { Observable } from 'rxjs/Rx';
 
 let routes: Routes = [

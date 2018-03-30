@@ -2,7 +2,7 @@ import { Component, OnInit, EventEmitter, ViewChild } from '@angular/core';
 
 import {NgbModal, ModalDismissReasons} from '@ng-bootstrap/ng-bootstrap';
 import { ModulesOptionsComponent } from '../modules-options/modules-options.component';
-import { AppService } from 'app/services';
+import { AppService } from '../../../services';
 @Component({
   selector: 'modules-columns',
   templateUrl: './modules-columns.component.html',

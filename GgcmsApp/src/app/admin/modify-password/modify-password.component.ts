@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Md5 } from 'ts-md5/dist/md5';
-import { AppService, AdminService } from "app/services";
+import { AppService, AdminService } from "../../services";
 
 @Component({
   selector: 'app-modify-password',

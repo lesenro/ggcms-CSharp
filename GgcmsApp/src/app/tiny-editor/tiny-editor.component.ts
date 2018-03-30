@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, AfterViewInit, EventEmitter } from '@angular/core';
-import { AdminService } from "app/services";
+import { AdminService } from "../services";
 import 'tinymce/plugins/advlist';
 import 'tinymce/plugins/autolink';
 import 'tinymce/plugins/lists';

@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output, AfterViewInit } from '@angular/core'
 import { FormControl, FormGroup, Validators } from '@angular/forms'
-import { AppService, AdminService } from "app/services";
-import { FormInputOption, messageModel } from 'app/BaseModules';
+import { AppService, AdminService } from "../services";
+import { FormInputOption, messageModel } from '../BaseModules';
 import { async } from 'q';
 import { Subscription } from 'rxjs';
 import { debounce } from 'rxjs/operators/debounce';

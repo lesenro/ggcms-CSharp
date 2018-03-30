@@ -6,7 +6,7 @@ import { Title } from '@angular/platform-browser';
 
 import 'rxjs/Rx';
 import { Routes, Router } from "@angular/router";
-import { messageModel } from 'app/BaseModules';
+import { messageModel } from '../BaseModules';
 
 @Injectable()
 export class AppService {

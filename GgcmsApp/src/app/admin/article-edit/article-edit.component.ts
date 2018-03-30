@@ -1,12 +1,12 @@
 import {Component, OnInit, AfterViewInit, ViewChild, ElementRef} from '@angular/core';
 import {ActivatedRoute} from "@angular/router";
-import {AppService, AdminService} from "app/services";
+import {AppService, AdminService} from "../../services";
 import {Location} from '@angular/common';
 import {OverlayPanel} from 'primeng/primeng';
 import {NgbTabset, NgbTab} from '@ng-bootstrap/ng-bootstrap';
 import {FormGroup, FormArray, FormBuilder} from '@angular/forms';
-import {FormInputOption, GgcmsAttachment} from 'app/BaseModules';
-import {FormInputComponent} from 'app/form-input/form-input.component';
+import {FormInputOption, GgcmsAttachment} from '../../BaseModules';
+import {FormInputComponent} from '../../form-input/form-input.component';
 import { forEach } from '@angular/router/src/utils/collection';
 @Component({selector: 'app-article-edit', templateUrl: './article-edit.component.html', styleUrls: ['./article-edit.component.css']})
 

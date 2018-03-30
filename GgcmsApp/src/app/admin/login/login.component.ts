@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Md5 } from 'ts-md5/dist/md5';
-import { AdminService, AppService, LocalStorageService } from "app/services";
+import { AdminService, AppService, LocalStorageService } from "../../services";
 @Component({
   selector: 'admin-login',
   templateUrl: './login.component.html',

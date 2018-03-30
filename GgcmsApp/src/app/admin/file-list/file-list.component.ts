@@ -1,7 +1,7 @@
 import { Component, EventEmitter, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { forEach } from '@angular/router/src/utils/collection';
-import { AdminService, AppService } from 'app/services';
+import { AdminService, AppService } from '../../services';
 import { OverlayPanel } from 'primeng/primeng';
 
 @Component({

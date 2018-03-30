@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { TreeNode } from "primeng/primeng";
-import { AdminService } from "app/services";
+import { AdminService } from "../../services";
 
 @Component({
   selector: 'app-home',

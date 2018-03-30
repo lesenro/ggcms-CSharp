@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from "@angular/router";
-import { PageData, AppService, AdminService } from "app/services";
+import { PageData, AppService, AdminService } from "../../services";
 
 @Component({
   selector: 'app-dictionary',

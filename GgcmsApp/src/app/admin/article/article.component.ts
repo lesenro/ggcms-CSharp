@@ -1,6 +1,6 @@
 import { forEach } from '@angular/router/src/utils/collection';
 import { Component, OnInit } from '@angular/core';
-import { AppService, AdminService, PageData } from "app/services";
+import { AppService, AdminService, PageData } from "../../services";
 import { ActivatedRoute } from "@angular/router";
 
 @Component({

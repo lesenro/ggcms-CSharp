@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from "@angular/router";
-import { AppService, AdminService } from "app/services";
+import { AppService, AdminService } from "../../services";
 import { Location } from '@angular/common';
-import { GgcmsDictionary } from 'app/BaseModules';
+import { GgcmsDictionary } from '../../BaseModules';
 @Component({
   selector: 'app-dictionary-edit',
   templateUrl: './dictionary-edit.component.html',

@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from "@angular/router";
-import { AppService, AdminService, PageData } from "app/services";
+import { AppService, AdminService, PageData } from "../../services";
 @Component({
   selector: 'app-friend-links',
   templateUrl: './friend-links.component.html',

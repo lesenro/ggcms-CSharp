@@ -1,6 +1,6 @@
 import { Component, HostBinding } from '@angular/core';
 import { Observable, BehaviorSubject } from "rxjs/Rx";
-import { AppService, AdminService, LocalStorageService } from "app/services";
+import { AppService, AdminService, LocalStorageService } from "./services";
 import { ConfirmationService } from "primeng/primeng";
 
 @Component({

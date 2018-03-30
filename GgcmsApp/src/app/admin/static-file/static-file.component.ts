@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { AppService, AdminService } from "app/services";
-import { FileListComponent } from "app/admin/file-list/file-list.component";
+import { AppService, AdminService } from "../../services";
+import { FileListComponent } from "../../admin/file-list/file-list.component";
 
 @Component({
   selector: 'app-static-file',
