@@ -1,27 +1,95 @@
-# AdminAntd
+English | [简体中文](./README.zh-CN.md)
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 1.4.9.
+# Ant Design Pro
 
-## Development server
+[![](https://img.shields.io/travis/ant-design/ant-design-pro/master.svg?style=flat-square)](https://travis-ci.org/ant-design/ant-design-pro) [![Build status](https://ci.appveyor.com/api/projects/status/67fxu2by3ibvqtat/branch/master?svg=true)](https://ci.appveyor.com/project/afc163/ant-design-pro/branch/master)  [![Gitter](https://badges.gitter.im/ant-design/ant-design-pro.svg)](https://gitter.im/ant-design/ant-design-pro?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+An out-of-box UI solution for enterprise applications as a React boilerplate.
 
-## Code scaffolding
+![](https://gw.alipayobjects.com/zos/rmsportal/xEdBqwSzvoSapmnSnYjU.png)
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+- Preview: http://preview.pro.ant.design
+- Home Page: http://pro.ant.design
+- Documentation: http://pro.ant.design/docs/getting-started
+- ChangeLog: http://pro.ant.design/docs/changelog
+- FAQ: http://pro.ant.design/docs/faq
+- Mirror Site in China: http://ant-design-pro.gitee.io
 
-## Build
+## Translation Recruitment :loudspeaker:
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `-prod` flag for a production build.
+We need your help: https://github.com/ant-design/ant-design-pro/issues/120
 
-## Running unit tests
+## Features
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+- :gem: **Neat Design**: Follow [Ant Design specification](http://ant.design/)
+- :triangular_ruler: **Common Templates**: Typical templates for enterprise applications
+- :rocket: **State of The Art Development**: Newest development stack of React/dva/antd
+- :iphone: **Responsive**: Designed for varies of screen size
+- :art: **Theming**: Customizable theme with simple config
+- :globe_with_meridians: **International**: Built-in i18n solution
+- :gear: **Best Practice**: Solid workflow make your code health
+- :1234: **Mock development**: Easy to use mock development solution
+- :white_check_mark: **UI Test**: Fly safely with unit test and e2e test
 
-## Running end-to-end tests
+## Templates
 
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
+```
+- Dashboard
+  - Analytic
+  - Monitor
+  - Workspace
+- Form
+  - Basic Form
+  - Step Form
+  - Advanced From
+- List
+  - Standard Table
+  - Standard List
+  - Card List
+  - Search List (Project/Applications/Article)
+- Profile
+  - Simple Profile
+  - Advanced Profile
+- Result
+  - Success
+  - Failed
+- Exception
+  - 403
+  - 404
+  - 500
+- User
+  - Login
+  - Register
+  - Register Result
+```
 
-## Further help
+## Usage
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
+```bash
+$ git clone https://github.com/ant-design/ant-design-pro.git --depth=1
+$ cd ant-design-pro
+$ npm install
+$ npm start         # visit http://localhost:8000
+```
+
+Or you can use the command tool: [ant-design-pro-cli](https://github.com/ant-design/ant-design-pro-cli)
+
+```bash
+$ npm install ant-design-pro-cli -g
+$ mkdir pro-demo && cd pro-demo
+$ pro new
+```
+
+More instruction at [documentation](http://pro.ant.design/docs/getting-started).
+
+## Compatibility
+
+Modern browsers and IE11.
+
+## Contributing
+
+Any Contribution of following ways will be welcome:
+
+- Use Ant Design Pro in your daily work.
+- Submit [issue](http://github.com/ant-design/ant-design-pro/issues) to report bug or ask questions.
+- Propose [pull request](http://github.com/ant-design/ant-design-pro/pulls) to improve our code.

@@ -14,47 +14,26 @@ namespace GgcmsCSharp.ApiCtrls
     {
         private GgcmsDB ggcmsDb = new GgcmsDB();
 
-        public class loginInfo
-        {
-            public string username { get; set; }
-            public string password { get; set; }
-            public string captcha { get; set; }
 
-        }
         [HttpPost]
         //[GgcmsAuthorizeAttribute("vip")]
-        public ResultData PostLogin([FromBody] loginInfo linfo)
+        public ResultData PostLogin(dynamic linfo)
         {
             ResultData result = new ResultData
             {
                 Code = 0,
                 Msg = ""
             };
-            /*
-            GgcmsDB db = new GgcmsDB();
-            int count = db.GgcmsMembers.Count();
-            if (count == 0)
-            {
-                db.GgcmsMembers.Add(new GgcmsMember
-                {
-                    UserName = "admin",
-                    PassWord = Tools.getMd5Hash("123456"),
-                    JoinTime = DateTime.Now,
-                });
-                try {
-                    db.SaveChanges();
-                }
-                catch (Exception ex) {
-
-                }
-            }*/
+            string username = linfo.username;
+            string password = linfo.password;
+            string captcha = linfo.captcha;
             var session = HttpContext.Current.Session;
             if (session != null)
             {
                 if (session["ggcms_code"] != null)
                 {
                     string sn_captcha = session["ggcms_code"].ToString();
-                    if (sn_captcha.ToLower() != linfo.captcha.ToLower())
+                    if (sn_captcha.ToLower() != captcha.ToLower())
                     {
                         result.Code = 101;
                         result.Msg = "验证码不正确";
@@ -67,14 +46,14 @@ namespace GgcmsCSharp.ApiCtrls
                     return result;
                 }
             }
-            if (string.IsNullOrEmpty(linfo.username) || string.IsNullOrEmpty(linfo.password))
+            if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
             {
                 result.Code = 102;
                 result.Msg = "用户名和密码不能为空";
                 return result;
             }
             var member = from c in ggcmsDb.GgcmsMembers
-                         where c.UserName == linfo.username
+                         where c.UserName == username
                          select c;
             GgcmsMember m = member.FirstOrDefault<GgcmsMember>();
             if (m == null)
@@ -85,8 +64,8 @@ namespace GgcmsCSharp.ApiCtrls
             }
             else
             {
-                string md5pass = Tools.getMd5Hash(m.PassWord + linfo.captcha);
-                if (md5pass != linfo.password)
+                string md5pass = Tools.getMd5Hash(m.PassWord + captcha);
+                if (md5pass != password)
                 {
                     result.Code = 104;
                     result.Msg = "用户名或密码错误，请检查...";
