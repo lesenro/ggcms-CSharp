@@ -259,6 +259,10 @@ namespace GgcmsCSharp.Utils
             {
                 list = list.OrderBy(reqParams.orderby);
             }
+            else
+            {
+                list = list.OrderBy("Id asc");
+            }
             if (!string.IsNullOrEmpty(reqParams.columns))
             {
                 list = list.Select(reqParams.columns);
