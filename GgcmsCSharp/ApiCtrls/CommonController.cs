@@ -101,7 +101,11 @@ namespace GgcmsCSharp.ApiCtrls
                 //必须放后面
                 CacheHelper.RemoveAllCache();
 
-                return Ok();
+                return Ok(new ResultInfo
+                {
+                    Code = 0,
+                    Msg = "",
+                });
 
             }
             catch (Exception ex)
@@ -116,7 +120,11 @@ namespace GgcmsCSharp.ApiCtrls
             try
             {
                 HttpRuntime.UnloadAppDomain();
-                return Ok();
+                return Ok(new ResultInfo
+                {
+                    Code = 0,
+                    Msg = "",
+                });
             }
             catch (Exception ex)
             {

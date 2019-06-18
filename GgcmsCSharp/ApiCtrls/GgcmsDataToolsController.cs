@@ -892,7 +892,111 @@ namespace GgcmsCSharp.ApiCtrls
                      DictType=0,
                      ParentKey="",
                      OtherProperty=""
-                }
+                },
+                new GgcmsDictionaries()
+                {
+                     DictName="一级",
+                     DictKey="l_1",
+                     DictValue="1",
+                     GroupKey="top_level",
+                     DictDescribe="置顶一级",
+                     OrderId=order++,
+                     DictStatus=1,
+                     DictType=0,
+                     ParentKey="",
+                     OtherProperty=""
+                },
+                new GgcmsDictionaries()
+                {
+                     DictName="二级",
+                     DictKey="l_2",
+                     DictValue="2",
+                     GroupKey="top_level",
+                     DictDescribe="置顶二级",
+                     OrderId=order++,
+                     DictStatus=1,
+                     DictType=0,
+                     ParentKey="",
+                     OtherProperty=""
+                },
+                new GgcmsDictionaries()
+                {
+                     DictName="三级",
+                     DictKey="l_3",
+                     DictValue="3",
+                     GroupKey="top_level",
+                     DictDescribe="置顶三级",
+                     OrderId=order++,
+                     DictStatus=1,
+                     DictType=0,
+                     ParentKey="",
+                     OtherProperty=""
+                },
+                new GgcmsDictionaries()
+                {
+                     DictName="四级",
+                     DictKey="l_4",
+                     DictValue="4",
+                     GroupKey="top_level",
+                     DictDescribe="置顶四级",
+                     OrderId=order++,
+                     DictStatus=1,
+                     DictType=0,
+                     ParentKey="",
+                     OtherProperty=""
+                },
+                new GgcmsDictionaries()
+                {
+                     DictName="五级",
+                     DictKey="l_5",
+                     DictValue="5",
+                     GroupKey="top_level",
+                     DictDescribe="置顶五级",
+                     OrderId=order++,
+                     DictStatus=1,
+                     DictType=0,
+                     ParentKey="",
+                     OtherProperty=""
+                },
+                new GgcmsDictionaries()
+                {
+                     DictName="首页推荐",
+                     DictKey="disp_home",
+                     DictValue="1",
+                     GroupKey="display_mode",
+                     DictDescribe="首页显示",
+                     OrderId=order++,
+                     DictStatus=1,
+                     DictType=0,
+                     ParentKey="",
+                     OtherProperty=""
+                },
+                new GgcmsDictionaries()
+                {
+                     DictName="分类推荐",
+                     DictKey="disp_category",
+                     DictValue="2",
+                     GroupKey="display_mode",
+                     DictDescribe="分类推荐",
+                     OrderId=order++,
+                     DictStatus=1,
+                     DictType=0,
+                     ParentKey="",
+                     OtherProperty=""
+                },
+                new GgcmsDictionaries()
+                {
+                     DictName="内容页推荐",
+                     DictKey="disp_content",
+                     DictValue="3",
+                     GroupKey="display_mode",
+                     DictDescribe="内容页推荐",
+                     OrderId=order++,
+                     DictStatus=1,
+                     DictType=0,
+                     ParentKey="",
+                     OtherProperty=""
+                },
             });
             Dbctx.SaveChanges();
         }

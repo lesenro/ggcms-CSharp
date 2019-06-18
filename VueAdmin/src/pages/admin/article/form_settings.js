@@ -2,26 +2,29 @@ import imageUpload from "@/components/imageUpload";
 
 export const defaultValue = {
     Id: 0,
-    ParentId: 0,
-    CategoryName: "",
-    LogoImg: "",
-    StyleName: "",
-    TmplName: "",
-    ArticleTmplName: "",
-    MobileTmplName: "",
-    ArticleMobileTmplName: "",
+    Content: "",
+    Title: "",
+    TitleImg: "",
     RedirectUrl: "",
+    Source: "",
+    SourceUrl: "",
     Keywords: "",
     Description: "",
-    Content: "",
-    ExtAttrib: "",
-    RouteKey: "",
-    OrderId: 0,
-    PageSize: 10,
-    ImgWidth: 0,
-    ImgHeight: 0,
-    CategoryType: 0,
+    TmplName: "",
+    StyleName: "",
+    PageTitle: "",
     ExtModelId: 0,
+    MobileTmplName: "",
+    ShowType: 0,
+    ShowLevel: 0,
+    Author: "",
+    CategoryId: [],
+    attachments: [],
+    files: [],
+    ModuleInfo: {
+        Id: 0,
+        Columns: [],
+    }
 };
 export default {
     props: {
@@ -46,12 +49,12 @@ export default {
                     type: "tab",
                     controls: [
                         {
-                            key: "CategoryName",
-                            name: "分类名称",
+                            key: "Title",
+                            name: "文章标题",
                             type: "text",
                             itemProps: {
                                 rules: [
-                                    { required: true, message: "请输入网站名称", trigger: "blur" },
+                                    { required: true, message: "请输入文章标题", trigger: "blur" },
                                     { min: 1, max: 100, message: "长度在 1 到 100 个字符", trigger: "blur" }
                                 ],
 
@@ -60,20 +63,24 @@ export default {
 
                             }
                         },
+
                         {
-                            key: "RedirectUrl",
-                            name: "跳转地址",
-                            type: "text",
-                            component: imageUpload,
+                            key: "CategoryId",
+                            name: "所属分类",
+                            type: "cascader",
                             itemProps: {
                                 rules: [
+                                    { required: true, message: "请选择所属分类", trigger: "blur" },
                                 ],
                             },
                             controlProps: {
+                                props: {
+                                    checkStrictly: true
+                                }
                             }
                         },
                         {
-                            key: "LogoImg",
+                            key: "TitleImg",
                             name: "图片上传",
                             type: "upload",
                             component: imageUpload,
@@ -86,10 +93,9 @@ export default {
                             }
                         },
                         {
-                            key: "RouteKey",
-                            name: "路由关键词",
+                            key: "RedirectUrl",
+                            name: "跳转地址",
                             type: "text",
-                            component: imageUpload,
                             itemProps: {
                                 rules: [
                                 ],
@@ -97,15 +103,26 @@ export default {
                             controlProps: {
                             }
                         },
+
+                    ]
+                },
+                {
+                    key: "tab-4",
+                    name: "文章内容",
+                    type: "tab",
+                    controls: [
                         {
-                            key: "ExtAttrib",
-                            name: "扩展属性",
-                            type: "textarea",
+                            key: "Content",
+                            name: "文章内容",
+                            type: "editor",
                             itemProps: {
-                                rules: [
-                                ],
+                                labelHidden: true
                             },
                             controlProps: {
+                                style: {
+                                    height: "310px",
+                                    marginBottom: "70px",
+                                }
                             }
                         },
                     ]
@@ -124,33 +141,32 @@ export default {
                         },
                         {
                             key: "TmplName",
-                            name: "分类模板",
-                            type: "select",
-                            itemProps: {
-                            },
-                        },
-                        {
-                            key: "ArticleTmplName",
-                            name: "文章模板",
+                            name: "显示模板",
                             type: "select",
                             itemProps: {
                             },
                         },
                         {
                             key: "MobileTmplName",
-                            name: "移动分类模板",
+                            name: "移动端模板",
                             type: "select",
                             itemProps: {
                             },
                         },
                         {
-                            key: "ArticleMobileTmplName",
-                            name: "移动文章模板",
+                            key: "ShowType",
+                            name: "显示类型",
                             type: "select",
                             itemProps: {
                             },
                         },
-
+                        {
+                            key: "ShowLevel",
+                            name: "置顶级别",
+                            type: "select",
+                            itemProps: {
+                            },
+                        },
                     ]
                 },
                 {
@@ -158,13 +174,6 @@ export default {
                     name: "其他设置",
                     type: "tab",
                     controls: [
-                        {
-                            key: "PageSize",
-                            name: "每页显示记录数",
-                            type: "number",
-                            itemProps: {
-                            },
-                        },
                         {
                             key: "Keywords",
                             name: "Keywords",
@@ -180,43 +189,38 @@ export default {
                             },
                         },
                         {
-                            key: "ImgWidth",
-                            name: "标题图宽",
-                            type: "number",
+                            key: "Author",
+                            name: "作者",
+                            type: "text",
                             itemProps: {
                             },
                         },
                         {
-                            key: "ImgHeight",
-                            name: "标题图高",
-                            type: "number",
+                            key: "Source",
+                            name: "来源",
+                            type: "text",
                             itemProps: {
+                                rules: [
+                                ],
                             },
+                            controlProps: {
+                            }
+                        },
+                        {
+                            key: "SourceUrl",
+                            name: "来源地址",
+                            type: "text",
+                            itemProps: {
+                                rules: [
+                                ],
+                            },
+                            controlProps: {
+                            }
                         },
 
                     ]
                 },
-                {
-                    key: "tab-4",
-                    name: "自定义内容",
-                    type: "tab",
-                    controls: [
-                        {
-                            key: "Content",
-                            name: "自定义内容",
-                            type: "editor",
-                            itemProps: {
-                                labelHidden: true
-                            },
-                            controlProps: {
-                                style: {
-                                    height: "320px",
-                                    marginBottom: "50px",
-                                }
-                            }
-                        },
-                    ]
-                }
+
             ],
         },
     ],

@@ -79,7 +79,7 @@ export async function categorySortSave(params) {
 
 //删除分类信息
 export async function categoryDel(id) {
-    return request(`${apiUrl}/GgcmsCategories/Delete/${id}`, {
+    return request(`${apiUrl}/GgcmsCategories/Delete?id=${id}`, {
         method: 'Get'
     });
 }
@@ -383,15 +383,15 @@ export async function modifyPassword(params) {
     });
 }
 //清理缓存
-export async function clearCache(params) {
-    return request(`${apiUrl}/Common/ClearCache`, {
+export async function clearCache() {
+    return request(`${apiUrl}/Common/ClearAllCache`, {
         method: 'Get',
     });
 }
 
 
 //应用重置
-export async function appRestart(params) {
+export async function appRestart() {
     return request(`${apiUrl}/Common/AppRestart`, {
         method: 'Get',
     });

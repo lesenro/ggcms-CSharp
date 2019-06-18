@@ -76,7 +76,10 @@ namespace GgcmsCSharp.ApiCtrls
 
             Session.RemoveAll();
 
-            return Ok("退出成功");
+            return Ok(new ResultInfo {
+                Code=0,
+                Msg = "退出成功"
+            });
         }
 
     }

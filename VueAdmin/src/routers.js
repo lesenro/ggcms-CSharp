@@ -542,36 +542,6 @@ const routes = [
             ]
           },
           {
-            icon: 'el-icon-tickets',
-            path: 'single',
-            iconColor: "#ff8a65",
-            component: Building,
-            sideHidden: true,
-            name: "单页文章",
-            powers: [
-              {
-                name: "查询",
-                keys: ["menu_20", "/companyDepart/getByPid"],
-                isMenu: true,
-              },
-              {
-                name: "添加",
-                keys: ["/companyDepart/add"],
-                isMenu: false,
-              },
-              {
-                name: "修改",
-                keys: ["/companyDepart/update", "/companyDepart/getById"],
-                isMenu: false,
-              },
-              {
-                name: "删除",
-                keys: ["/companyDepart/del"],
-                isMenu: false,
-              },
-            ]
-          },
-          {
             icon: 'el-icon-document-copy',
             path: 'article',
             iconColor: "#ffeb3b",
@@ -600,7 +570,66 @@ const routes = [
               },
             ]
           },
-
+          {
+            icon: 'el-icon-tickets',
+            path: 'single',
+            iconColor: "#ff8a65",
+            component: Article,
+            sideHidden: true,
+            name: "单页文章",
+            powers: [
+              {
+                name: "查询",
+                keys: ["menu_20", "/companyDepart/getByPid"],
+                isMenu: true,
+              },
+              {
+                name: "添加",
+                keys: ["/companyDepart/add"],
+                isMenu: false,
+              },
+              {
+                name: "修改",
+                keys: ["/companyDepart/update", "/companyDepart/getById"],
+                isMenu: false,
+              },
+              {
+                name: "删除",
+                keys: ["/companyDepart/del"],
+                isMenu: false,
+              },
+            ]
+          },
+          {
+            icon: 'el-icon-circle-check',
+            path: 'review',
+            iconColor: "rgb(247, 186, 42)",
+            component: Article,
+            sideHidden: true,
+            name: "待审核文章",
+            powers: [
+              {
+                name: "查询",
+                keys: ["menu_20", "/companyDepart/getByPid"],
+                isMenu: true,
+              },
+              {
+                name: "添加",
+                keys: ["/companyDepart/add"],
+                isMenu: false,
+              },
+              {
+                name: "修改",
+                keys: ["/companyDepart/update", "/companyDepart/getById"],
+                isMenu: false,
+              },
+              {
+                name: "删除",
+                keys: ["/companyDepart/del"],
+                isMenu: false,
+              },
+            ]
+          },
         ]
 
       },

@@ -293,16 +293,8 @@ export default {
         value: list
       });
     },
-    editorImageAdded(file, Editor, cursorLocation, resetUploader) {
-      this.$emit("editorImageAdded", {
-        file,
-        Editor,
-        cursorLocation,
-        resetUploader
-      });
-    },
+
     onFileUploadSuccess(ev) {
-      console.log(ev);
     },
     getControl() {
       return this.$refs["ctrl"];

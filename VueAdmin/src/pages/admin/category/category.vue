@@ -1,5 +1,5 @@
 <template>
-  <div class="page-panel" v-loading="loading"  :style="{flex:'1 0'}">
+  <div class="page-panel" v-loading="loading" :style="{flex:'1 0'}">
     <div class="toolbar">
       <el-button-group>
         <el-button size="mini" type="primary" icon="el-icon-plus" @click="handleAdd">添加</el-button>
@@ -7,13 +7,13 @@
         <el-button size="mini" type="success" icon="el-icon-refresh" @click="refresh">刷新</el-button>
       </el-button-group>
     </div>
-    <el-scrollbar ref="scrollbar" :style="{height:'100%'}">
+    <el-scrollbar class="tree-scrollbar" ref="scrollbar">
       <div class="tree-view" padding-vertical>
         <el-tree
           :data="treeData"
           :props="props"
           default-expand-all
-          node-key="id"
+          node-key="Id"
           :expand-on-click-node="false"
           ref="treeView"
           draggable
@@ -102,7 +102,7 @@ export default {
     let upload = settings.layouts[0].layouts[0].controls.find(
       x => x.key == "LogoImg"
     );
-    upload.controlProps.httpRequest = ev => this.onFileSelect(ev, "LogoImg");
+    upload.controlProps.httpRequest = ev => this.imageUpload(ev, "LogoImg");
     this.formSettings = settings;
   },
   activated() {
@@ -139,17 +139,12 @@ export default {
       })
         .then(() => {
           this.del(row.Id).then(x => {
-            if (x.code == 10000) {
+            if (x.Id > 0) {
               let tree = this.$refs["treeView"];
               tree.remove(row.Id);
               this.$message({
                 type: "success",
                 message: "删除成功!"
-              });
-            } else {
-              this.$message({
-                type: "error",
-                message: x.msg
               });
             }
           });
@@ -182,20 +177,25 @@ export default {
         resetUploader();
       }
     },
-    onFileSelect(ev, key, ftype = 0) {
+    async imageUpload(ev, key) {
       const form = this.$refs["form"];
       let ctrl = form.getControl(key);
+      ctrl.clearFiles();
+      let result = await this.onFileSelect(ev, key);
+      form.setValue(key, result.link);
+    },
+    onFileSelect(ev, key, ftype = 0) {
+      const form = this.$refs["form"];
       if (ev.file) {
         if (!ev.file.type.startsWith("image")) {
           this.$message({
             type: "error",
             message: "必须上传图片"
           });
-          ctrl.clearFiles();
           return;
         }
         return this.fileUpload({
-          type: "link",
+          type: "category",
           file: ev.file
         }).then(x => {
           let file = this.files.find(f => f.propertyName == key);
@@ -376,4 +376,10 @@ export default {
 </script>
 
 <style lang="scss">
+.tree-scrollbar {
+  height: 100%;
+  .el-scrollbar__wrap {
+    overflow-x: hidden;
+  }
+}
 </style>

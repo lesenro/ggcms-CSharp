@@ -235,6 +235,10 @@ namespace GgcmsCSharp.Models
 
                         }
                     }
+                    else if (t.FullName.Contains("System.Int32[]"))
+                    {
+                        list = list.Where(sParams.QueryString, sParams.WhereParams);
+                    }
                 }
                 else
                 {

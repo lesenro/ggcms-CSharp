@@ -2,6 +2,8 @@
 import localForage from "localforage";
 import {
     fileUpload,
+    clearCache,
+    appRestart
 } from '../platformApi';
 
 const language_key = "language";
@@ -120,6 +122,14 @@ const globalModule = {
         },
         async fileUpload(ctx, params) {
             let result = await fileUpload(params);
+            return result;
+        },
+        async clearCache(ctx, params) {
+            let result = await clearCache(params);
+            return result;
+        },
+        async appRestart(ctx, params) {
+            let result = await appRestart(params);
             return result;
         },
     }

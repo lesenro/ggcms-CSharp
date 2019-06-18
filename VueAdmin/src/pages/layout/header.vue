@@ -10,11 +10,13 @@
       <el-col :span="20" text-right>
         <el-dropdown @command="handleCommand">
           <span class="el-dropdown-link">
-            用户 : {{login_user.userName}}
+            用户 : {{login_user.UserName}}
             <i class="el-icon-arrow-down el-icon--right"></i>
           </span>
           <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item command="logout" icon="el-icon-circle-check-outline">退出</el-dropdown-item>
+            <el-dropdown-item command="clear_cache">清理缓存</el-dropdown-item>
+            <el-dropdown-item command="app_restart">应用重启</el-dropdown-item>
+            <el-dropdown-item command="logout" divided icon="el-icon-circle-check-outline">退出</el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
       </el-col>
@@ -33,11 +35,9 @@
             @click="go_route(item.fullpath)"
             @close="tag_tab_close(item.fullpath)"
           >
-          <i
-            :style="{color:active_window==item.fullpath?item.iconColor:''}"
-            :class="item.icon"
-          ></i>
-          {{ item.name }}</el-tag>
+            <i :style="{color:active_window==item.fullpath?item.iconColor:''}" :class="item.icon"></i>
+            {{ item.name }}
+          </el-tag>
         </el-scrollbar>
       </div>
       <div class="action">
@@ -107,6 +107,7 @@ export default {
   },
   methods: {
     ...mapActions("login", ["logout"]),
+    ...mapActions("global", ["clearCache", "appRestart"]),
     collapseChange() {
       this.$emit("on-collapse");
     },
@@ -129,10 +130,52 @@ export default {
         case "logout":
           this.user_logout();
           break;
+        case "clear_cache":
+          this.clear_cache();
+          break;
+        case "app_restart":
+          this.app_restart();
+          break;
 
         default:
           break;
       }
+    },
+    clear_cache() {
+      this.$confirm(`确定要清理缓存吗?`, "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      }).then(() => {
+        this.clearCache().then(x => {
+          if (x.Code == 0) {
+            this.$message({
+              type: "success",
+              message: "清理成功!"
+            });
+          }
+        });
+      });
+    },
+    app_restart() {
+      this.$confirm(`确定要重启应用吗?`, "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      }).then(() => {
+        this.appRestart().then(x => {
+          if (x.Code == 0) {
+            this.$store.commit("global/setMyPowers", null);
+            this.$store.commit("global/setOpenWindows", []);
+            this.$store.commit("global/setLoginUser", null);
+            this.login_name.then(n => {
+              if (n) {
+                this.$router.push("/login/" + n);
+              }
+            });
+          }
+        });
+      });
     },
     getHomePath() {
       let home = this.open_windows.find(x => !x.closable);
@@ -151,7 +194,7 @@ export default {
         type: "warning"
       }).then(() => {
         this.logout().then(x => {
-          if (x.code == 10000) {
+          if (x.Code == 0) {
             this.$store.commit("global/setMyPowers", null);
             this.$store.commit("global/setOpenWindows", []);
             this.$store.commit("global/setLoginUser", null);
@@ -186,7 +229,7 @@ export default {
   display: flex;
   .menus {
     flex-grow: 1;
-    white-space:nowrap;
+    white-space: nowrap;
     overflow: hidden;
   }
   .action {

@@ -11,6 +11,7 @@ import stylesModule from './styles'
 import advModule from './adverts'
 import linkModule from './links'
 import categoryModule from './category'
+import articleModule from './article'
 const store = new Vuex.Store({
     modules: {
         global: globalModule,
@@ -20,6 +21,7 @@ const store = new Vuex.Store({
         advert: advModule,
         link: linkModule,
         category: categoryModule,
+        article: articleModule,
     }
 })
 export default store;
