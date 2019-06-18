@@ -9,6 +9,7 @@ using Qiniu.IO.Model;
 using Qiniu.Http;
 using System.IO;
 using Qiniu.RS;
+using GgcmsCSharp.Models;
 
 namespace GgcmsCSharp.Utils
 {
@@ -39,13 +40,13 @@ namespace GgcmsCSharp.Utils
             putPolicy.SetExpires(3600);
 
         }
-        public ResultData Delete(string key)
+        public ResultInfo Delete(string key)
         {
             BucketManager bm = new BucketManager(mac);
 
             HttpResult result = bm.Delete(bucket, key);
 
-            return new ResultData
+            return new ResultInfo
             {
                 Code = result.Code == 200 ? 0 : result.Code,
                 Msg = result.RefText,
@@ -53,7 +54,7 @@ namespace GgcmsCSharp.Utils
             };
         }
 
-        public ResultData UploadFile(string file)
+        public ResultInfo UploadFile(string file)
         {
             string jstr = putPolicy.ToJsonString();
             string token = Auth.CreateUploadToken(mac, jstr);
@@ -61,7 +62,7 @@ namespace GgcmsCSharp.Utils
             string fname = Path.GetFileName(tempFile);
             HttpResult result = uploader.UploadFile(tempFile, fname, token);
             string url = this.linkTemplate.Replace("{fn}", fname);
-            return new ResultData
+            return new ResultInfo
             {
                 Code = result.Code == 200 ? 0 : result.Code,
                 Msg = result.RefText,

@@ -54,7 +54,7 @@ namespace GgcmsCSharp.Controllers
         public ActionResult Category(string id, int page = 1)
         {
 
-            GgcmsCategory category;
+            GgcmsCategories category;
             if (Tools.IsInt(id))
             {
                 int intid = Tools.parseInt(id);
@@ -81,11 +81,11 @@ namespace GgcmsCSharp.Controllers
             {
 
             }
-            int[] ids = GgcmsCategory.GetCategoryIds(category);
+            int[] ids = GgcmsCategories.GetCategoryIds(category);
             ViewBag.pagination = pagination;
             ViewBag.Title = category.CategoryName;
             ViewBag.category = category;
-            ViewBag.articles = dataHelper.Articles(ids, pagination);
+            ViewBag.articles = dataHelper.Articles(ids, pagination).Records;
             ViewBag.topId = dataHelper.GetCategoryTopId(category);
             var pt = getTemplate(PageType.category, category);
             ViewBag.pageTmpl = pt;
@@ -94,14 +94,14 @@ namespace GgcmsCSharp.Controllers
         [OutputCache(CacheProfile = "ViewCache")]
         public ActionResult Article(int id)
         {
-            GgcmsArticle article = dataHelper.Article(id);
+            GgcmsArticles article = dataHelper.Article(id);
             //跳转到错误页
             if (article == null)
             {
 
             }
 
-            GgcmsCategory category = dataHelper.Categories(article.Category_Id);
+            GgcmsCategories category = dataHelper.Categories(article.Category_Id);
             ViewBag.Title = article.Title;
             ViewBag.article = article;
             ViewBag.category = category;
@@ -119,7 +119,7 @@ namespace GgcmsCSharp.Controllers
             string styleDir = ConfigurationManager.AppSettings["StyleDir"].ToString();
             string stylePath = "/" + staticDir + "/" + styleDir + "/" + cfgStyle;
             bool isMobile = getIsMobile();
-            GgcmsCategory category;
+            GgcmsCategories category;
             string tmplName;
             switch (ptype)
             {
@@ -138,7 +138,7 @@ namespace GgcmsCSharp.Controllers
                     };
                 case PageType.category:
                     tmplName = sysConfigs["cfg_template_list"];
-                    category = info as GgcmsCategory;
+                    category = info as GgcmsCategories;
 
                     if (!string.IsNullOrEmpty(category.StyleName.Trim()))
                     {
@@ -162,7 +162,7 @@ namespace GgcmsCSharp.Controllers
                     };
                 case PageType.article:
                     tmplName = sysConfigs["cfg_template_view"];
-                    GgcmsArticle article = info as GgcmsArticle;
+                    GgcmsArticles article = info as GgcmsArticles;
                     category = dataHelper.Categories(article.Category_Id);
                     if (!string.IsNullOrEmpty(article.StyleName.Trim()))
                     {

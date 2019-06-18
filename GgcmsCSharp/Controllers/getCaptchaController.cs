@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GgcmsCSharp.Models;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -54,7 +55,8 @@ namespace GgcmsCSharp.Controllers
                 code += str[r.Next(0, str.Length)].ToString();
             }
             var session = System.Web.HttpContext.Current.Session;
-            session.Add("ggcms_code", code);
+            string sessionKey = SystemEnums.captcha.ToString();
+            session.Add(sessionKey, code);
             return code;
         }
         private Image CreateImage(string checkCode)

@@ -12,13 +12,15 @@ using System.Web.Http;
 using System.Reflection;
 using System.Collections;
 using GgcmsCSharp.Utils;
+using GgcmsCSharp.Models;
+using System.ComponentModel;
 
 namespace GgcmsCSharp.ApiCtrls
 {
-    public class CommonController : ApiController
+    public class CommonController : ApiBaseController
     {
-        [HttpPost]
-        public dynamic fileUpload()
+        [HttpPost, DisplayName("ddddd")]
+        public IHttpActionResult fileUpload()
         {
             // Check if the request contains multipart/form-data.
             if (!Request.Content.IsMimeMultipartContent())
@@ -27,6 +29,7 @@ namespace GgcmsCSharp.ApiCtrls
             }
             string staticDir = ConfigurationManager.AppSettings["StaticDir"].ToString();
             string uploadDir = ConfigurationManager.AppSettings["UploadDir"].ToString();
+            string serverurl = ConfigurationManager.AppSettings["UploadPrefix"].ToString();
 
             string root = "/" + staticDir + "/" + uploadDir + "/temp";
             string rootpath = HttpContext.Current.Server.MapPath("~" + root);
@@ -35,14 +38,13 @@ namespace GgcmsCSharp.ApiCtrls
                 Directory.CreateDirectory(rootpath);
             }
 
-            ResultData result = new ResultData
+            ResultInfo result = new ResultInfo
             {
                 Code = 0,
                 Msg = "",
             };
             string link = "";
             var httpRequest = HttpContext.Current.Request;
-            string serverurl = httpRequest.Form["serverUrl"];
             if (httpRequest.Files.Count > 0)
             {
 
@@ -78,16 +80,16 @@ namespace GgcmsCSharp.ApiCtrls
             }
             link = serverurl + link;
             link = link.Replace("//", "/").Replace(":/", "://");
-            return new
+            return Ok( new
             {
                 Code = result.Code,
                 Msg = result.Code,
                 Data = result.Data,
                 link = link,
-            };
+            });
         }
         [HttpGet]
-        public ResultData ClearCache()
+        public IHttpActionResult ClearAllCache()
         {
             try
             {
@@ -99,42 +101,26 @@ namespace GgcmsCSharp.ApiCtrls
                 //必须放后面
                 CacheHelper.RemoveAllCache();
 
-                return new ResultData
-                {
-                    Code = 0,
-                    Msg = "ok"
-                };
+                return Ok();
+
             }
             catch (Exception ex)
             {
-                return new ResultData
-                {
-                    Code = 1,
-                    Msg = ex.Message,
+                return BadRequest(ex.Message);
 
-                };
             }
         }
         [HttpGet]
-        public ResultData AppRestart()
+        public IHttpActionResult AppRestart()
         {
             try
             {
                 HttpRuntime.UnloadAppDomain();
-                return new ResultData
-                {
-                    Code = 0,
-                    Msg = "ok"
-                };
+                return Ok();
             }
             catch (Exception ex)
             {
-                return new ResultData
-                {
-                    Code = 1,
-                    Msg = ex.Message,
-
-                };
+                return BadRequest(ex.Message);
             }
         }
     }

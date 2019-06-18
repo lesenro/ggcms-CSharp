@@ -10,6 +10,7 @@ using System.IO.Compression;
 using System.Collections.Generic;
 using System;
 using GgcmsCSharp.Utils;
+using System.Data.Entity;
 
 namespace GgcmsCSharp.ApiCtrls
 {
@@ -24,71 +25,47 @@ namespace GgcmsCSharp.ApiCtrls
         }
         // GET: api/GgcmsCategories
         [HttpGet]
-        public ResultData GetList()
+        public IHttpActionResult GetList(string query)
         {
-            var reqParams = InitRequestParams<GgcmsStyle>();
-            var result = dbHelper.GetList<GgcmsStyle>(reqParams);
-            return new ResultData
-            {
-                Code = 0,
-                Data = result,
-                Msg = ""
-            };
+            string json = HttpUtility.UrlDecode(query);
+            SearchParams sParams = Tools.JsonDeserialize<SearchParams>(json);
+
+            return Ok(GetRecords<GgcmsStyles>(sParams));
         }
 
         // GET: api/GgcmsCategories/5
-        public ResultData GetInfo(int id)
+        public IHttpActionResult GetInfo(int id)
         {
-            var result = dbHelper.GetById<GgcmsStyle>(id);
-            return new ResultData
-            {
-                Code = 0,
-                Data = result,
-                Msg = ""
-            };
+            return Ok(Dbctx.GgcmsStyles.Find(id));
+
         }
 
         // PUT: api/GgcmsCategories/5
-        public ResultData Edit(GgcmsStyle styleInfo)
+        public IHttpActionResult Edit(GgcmsStyles info)
         {
-
-            if (!ModelState.IsValid)
+            if (Dbctx.GgcmsStyles.Where(x => x.Id == info.Id).Count() == 0)
             {
-                ResultData result = new ResultData
-                {
-                    Code = 3,
-                    Msg = "",
-                    Data = BadRequest(ModelState)
-                };
-                return result;
+                return BadRequest("信息不存在");
             }
-            GgcmsDB db = new GgcmsDB();
-            var qlist = from r in db.GgcmsStyles
-                        where r.Id == styleInfo.Id
+            //Dbctx.Entry(info).Property("goods_name").IsModified = true;
+            var qlist = from r in Dbctx.GgcmsStyles
+                        where r.Id == info.Id
                         select r;
-            GgcmsStyle oldinfo = qlist.First();
-            styleInfo.Folder = oldinfo.Folder;
-            return new ResultData
-            {
-                Code = 0,
-                Data = dbHelper.Edit(styleInfo.Id, styleInfo),
-                Msg = ""
-            };
+            GgcmsStyles oldinfo = qlist.First();
+            info.Folder = oldinfo.Folder;
+            //Dbctx.GgcmsStyles.Attach(info);
+            var ent = Dbctx.Entry(info);
+            ent.State = EntityState.Modified;
+            Dbctx.SaveChanges();
+            ClearCache();
+            return Ok(info);
         }
 
         // POST: api/GgcmsCategories
-        public ResultData Add(GgcmsStyle styleInfo)
+        public IHttpActionResult Add(GgcmsStyles styleInfo)
         {
-            if (!ModelState.IsValid)
-            {
-                ResultData result = new ResultData
-                {
-                    Code = 3,
-                    Msg = "",
-                    Data = BadRequest(ModelState)
-                };
-                return result;
-            }
+
+
             string staticDir = ConfigurationManager.AppSettings["StaticDir"].ToString();
             string styleDir = ConfigurationManager.AppSettings["StyleDir"].ToString();
             string root = "/" + staticDir + "/" + styleDir + "/" + styleInfo.Folder;
@@ -99,187 +76,176 @@ namespace GgcmsCSharp.ApiCtrls
             string templatePath = HttpContext.Current.Server.MapPath("~" + templateDir);
             if (Directory.Exists(rootpath) || Directory.Exists(templatePath))
             {
-                return new ResultData
-                {
-                    Code = 1,
-                    Msg = "文件夹已经存在",
-                };
+                BadRequest("文件夹已经存在");
             }
             else
             {
                 Directory.CreateDirectory(rootpath);
                 Directory.CreateDirectory(templatePath);
             }
-            return new ResultData
-            {
-                Code = 0,
-                Msg = "",
-                Data = dbHelper.Add(styleInfo)
-            };
+            var result = Dbctx.GgcmsStyles.Add(styleInfo);
+
+            Dbctx.SaveChanges();
+            ClearCache();
+            return Ok(result);
         }
 
         // DELETE: api/GgcmsCategories/5
-        public ResultData Delete(int id)
+        public IHttpActionResult Delete(int id)
         {
-            return new ResultData
+            GgcmsStyles oldinfo = Dbctx.GgcmsStyles.Find(id);
+            if (oldinfo == null)
             {
-                Code = 0,
-                Msg = "",
-                Data = dbHelper.Delete<GgcmsStyle>(id)
-            };
+                return BadRequest("信息不存在");
+            }
+
+            //List<int> idlist = GetDeleteIds(oldinfo.ticket_key);
+
+            //var query = Dbctx.ticket_information.Where(x => idlist.Contains(x.id));
+            Dbctx.GgcmsStyles.Remove(oldinfo);
+            Dbctx.SaveChanges();
+            ClearCache();
+            return Ok(oldinfo);
         }
-        [HttpGet]
-        public ResultData MultDelete()
+        [HttpPost]
+        public IHttpActionResult MultDelete(int[] ids)
         {
+
+
             string staticDir = ConfigurationManager.AppSettings["StaticDir"].ToString();
             string styleDir = ConfigurationManager.AppSettings["StyleDir"].ToString();
             styleDir = "/" + staticDir + "/" + styleDir + "/";
             string templateDir = ConfigurationManager.AppSettings["TemplateDir"].ToString();
             templateDir = "/Views/" + templateDir + "/";
-            var reqParams = InitRequestParams<GgcmsStyle>();
+
             try
             {
-                var result = dbHelper.GetList<GgcmsStyle>(reqParams);
-                foreach (var item in result.List)
+                var query = Dbctx.GgcmsStyles.Where(x => ids.Contains(x.Id));
+                foreach (var item in query.ToList())
                 {
-                    GgcmsStyle styleInfo = item as GgcmsStyle;
+                    GgcmsStyles styleInfo = item as GgcmsStyles;
                     string stylePath = HttpContext.Current.Server.MapPath("~" + styleDir + styleInfo.Folder);
                     string templatePath = HttpContext.Current.Server.MapPath("~" + templateDir + styleInfo.Folder);
                     Directory.Delete(stylePath, true);
                     Directory.Delete(templatePath, true);
                 }
+                Dbctx.GgcmsStyles.RemoveRange(query);
+                int c = Dbctx.SaveChanges();
+                ClearCache();
+                return Ok(c);
             }
             catch (Exception ex)
             {
-                return new ResultData
-                {
-                    Code = 1,
-                    Msg = ex.Message,
-                    Data = ex
-                };
+                return BadRequest(ex.Message);
             }
-            
-            return new ResultData
-            {
-                Code = 0,
-                Msg = "",
-                Data = dbHelper.MultDelete<GgcmsStyle>(reqParams)
-            };
+
+
+
         }
 
 
-        public ResultData Exists(int id)
+        public IHttpActionResult Exists(int id)
         {
-            return new ResultData
-            {
-                Code = 0,
-                Msg = "",
-                Data = dbHelper.Exists<GgcmsStyle>(id)
-            };
+            return Ok(Dbctx.GgcmsAdverts.Where(x => x.Id == id).Count() > 0);
         }
         [HttpGet]
-        public ResultData GetStaticFile(int id, string path)
+        public IHttpActionResult GetStaticFile(int id, string path)
         {
             path = HttpUtility.UrlDecode(path);
-            GgcmsStyle oldinfo = dbHelper.GetById<GgcmsStyle>(id);
+            GgcmsStyles oldinfo = Dbctx.GgcmsStyles.Where(x=>x.Id==id).FirstOrDefault();
             string staticDir = ConfigurationManager.AppSettings["StaticDir"].ToString();
             string styleDir = ConfigurationManager.AppSettings["StyleDir"].ToString();
             string root = staticDir + "/" + styleDir + "/" + oldinfo.Folder + "/" + path;
-            return fman.GetList(root);
+            return Ok(fman.GetList(root));
         }
         [HttpGet]
-        public ResultData GetStaticFileInfo(int id, string path)
+        public IHttpActionResult GetStaticFileInfo(int id, string path)
         {
             path = HttpUtility.UrlDecode(path);
-            GgcmsStyle sinfo = dbHelper.GetById<GgcmsStyle>(id); 
+            GgcmsStyles sinfo = Dbctx.GgcmsStyles.Where(x => x.Id == id).FirstOrDefault();
             string staticDir = ConfigurationManager.AppSettings["StaticDir"].ToString();
             string styleDir = ConfigurationManager.AppSettings["StyleDir"].ToString();
             string root = staticDir + "/" + styleDir + "/" + sinfo.Folder + "/" + path;
-            return fman.GetInfo(root);
+            return Ok( fman.GetInfo(root));
 
         }
-        public ResultData StaticFileSave(dynamic dataInfo)
+        public IHttpActionResult StaticFileSave(dynamic dataInfo)
         {
             int id = (int)dataInfo.id;
             string path = dataInfo.path.ToString();
             path = HttpUtility.UrlDecode(path);
             string content = dataInfo.content.ToString();
-            GgcmsStyle sinfo = dbHelper.GetById<GgcmsStyle>(id); 
+            GgcmsStyles sinfo = Dbctx.GgcmsStyles.Where(x => x.Id == id).FirstOrDefault();
             string staticDir = ConfigurationManager.AppSettings["StaticDir"].ToString();
             string styleDir = ConfigurationManager.AppSettings["StyleDir"].ToString();
             string fullname = staticDir + "/" + styleDir + "/" + sinfo.Folder + "/" + path;
-            return fman.Save(fullname, content);
+            return Ok(fman.Save(fullname, content));
 
         }
 
-        public ResultData StaticFileDelete(dynamic dataInfo)
+        public IHttpActionResult StaticFileDelete(dynamic dataInfo)
         {
             int id = (int)dataInfo.id;
             string path = dataInfo.path.ToString();
             path = HttpUtility.UrlDecode(path);
             dynamic files = dataInfo.files;
 
-            GgcmsStyle sinfo = dbHelper.GetById<GgcmsStyle>(id);
+            GgcmsStyles sinfo = Dbctx.GgcmsStyles.Where(x => x.Id == id).FirstOrDefault();
             string staticDir = ConfigurationManager.AppSettings["StaticDir"].ToString();
             string styleDir = ConfigurationManager.AppSettings["StyleDir"].ToString();
             string fullname = staticDir + "/" + styleDir + "/" + sinfo.Folder + "/" + path;
-            return fman.Delete(fullname, files);
+            return Ok( fman.Delete(fullname, files));
 
         }
         //新建文件夹
-        public ResultData StaticFileNewDir(dynamic dataInfo)
+        public IHttpActionResult StaticFileNewDir(dynamic dataInfo)
         {
             int id = (int)dataInfo.id;
             string path = dataInfo.path.ToString();
             string newName = dataInfo.newName.ToString();
             path = HttpUtility.UrlDecode(path);
 
-            GgcmsStyle sinfo = dbHelper.GetById<GgcmsStyle>(id);
+            GgcmsStyles sinfo = Dbctx.GgcmsStyles.Where(x => x.Id == id).FirstOrDefault();
             string staticDir = ConfigurationManager.AppSettings["StaticDir"].ToString();
             string styleDir = ConfigurationManager.AppSettings["StyleDir"].ToString();
             string fullname = staticDir + "/" + styleDir + "/" + sinfo.Folder + "/" + path + "/" + newName;
-            return fman.NewDir(fullname);
+            return Ok( fman.NewDir(fullname));
 
         }
         //重命名
-        public ResultData StaticFileReName(dynamic dataInfo)
+        public IHttpActionResult StaticFileReName(dynamic dataInfo)
         {
             int id = (int)dataInfo.id;
             string path = dataInfo.path.ToString();
             string newName = dataInfo.newName.ToString();
             string oldName = dataInfo.oldName.ToString();
-            GgcmsStyle sinfo = dbHelper.GetById<GgcmsStyle>(id);
+            GgcmsStyles sinfo = Dbctx.GgcmsStyles.Where(x => x.Id == id).FirstOrDefault();
             string staticDir = ConfigurationManager.AppSettings["StaticDir"].ToString();
             string styleDir = ConfigurationManager.AppSettings["StyleDir"].ToString();
             string nname = staticDir + "/" + styleDir + "/" + sinfo.Folder + "/" + path + "/" + newName;
             string oname = staticDir + "/" + styleDir + "/" + sinfo.Folder + "/" + path + "/" + oldName;
             nname = HttpUtility.UrlDecode(nname);
             oname = HttpUtility.UrlDecode(oname);
-            return fman.StaticFileReName(oname, nname);
+            return Ok( fman.StaticFileReName(oname, nname));
 
         }
         //上传
-        public ResultData StaticFileUpload()
+        public IHttpActionResult StaticFileUpload()
         {
             var httpRequest = HttpContext.Current.Request;
             int id = int.Parse(httpRequest.Form["id"]);
             string path = httpRequest.Form["path"];
             path = HttpUtility.UrlDecode(path);
-            GgcmsStyle sinfo = dbHelper.GetById<GgcmsStyle>(id);
+            GgcmsStyles sinfo = Dbctx.GgcmsStyles.Where(x => x.Id == id).FirstOrDefault();
             string staticDir = ConfigurationManager.AppSettings["StaticDir"].ToString();
             string styleDir = ConfigurationManager.AppSettings["StyleDir"].ToString();
             string fullname = staticDir + "/" + styleDir + "/" + sinfo.Folder + "/" + path;
 
-            return FileUpload(httpRequest, fullname);
+            return Ok( FileUpload(httpRequest, fullname));
 
         }
-        private ResultData FileUpload(HttpRequest httpRequest, string path)
+        private ResultInfo FileUpload(HttpRequest httpRequest, string path)
         {
-            ResultData result = new ResultData
-            {
-                Code = 0,
-                Msg = "",
-            };
             try
             {
                 if (httpRequest.Files.Count > 0)
@@ -300,88 +266,97 @@ namespace GgcmsCSharp.ApiCtrls
                         postedFile.SaveAs(filePath);
                         fs.Add(filePath);
                     }
-                    result.Msg = "ok";
-                    result.Data = fs;
+                    return new ResultInfo {
+                        Code = 0,
+                        Msg = "上传成功",
+                        Data = fs
+                    };
                 }
+                return new ResultInfo
+                {
+                    Code = 1,
+                    Msg = "上传文件为空",
+                };
             }
             catch (Exception ex)
             {
-                result.Code = 1;
-                result.Msg = ex.Message;
-                result.Data = ex;
+                return new ResultInfo
+                {
+                    Code = 1,
+                    Msg = ex.Message,
+                };
             }
-            return result;
 
         }
 
         [HttpGet]
-        public ResultData GetTemplateList(int id)
+        public IHttpActionResult GetTemplateList(int id)
         {
-            GgcmsStyle styleInfo = dbHelper.GetById<GgcmsStyle>(id);
+            GgcmsStyles styleInfo = Dbctx.GgcmsStyles.Where(x => x.Id == id).FirstOrDefault();
             string templateDir = ConfigurationManager.AppSettings["TemplateDir"].ToString();
             templateDir = "Views/" + templateDir + "/" + styleInfo.Folder;
-            return fman.GetList(templateDir);
+            return Ok( fman.GetList(templateDir));
         }
         [HttpGet]
-        public ResultData GetTemplateInfo(int id, string filename)
+        public IHttpActionResult GetTemplateInfo(int id, string filename)
         {
             filename = HttpUtility.UrlDecode(filename);
-            GgcmsStyle styleInfo = dbHelper.GetById<GgcmsStyle>(id);
+            GgcmsStyles styleInfo = Dbctx.GgcmsStyles.Where(x => x.Id == id).FirstOrDefault();
             string templateDir = ConfigurationManager.AppSettings["TemplateDir"].ToString();
             templateDir = "Views/" + templateDir + "/" + styleInfo.Folder + "/" + filename;
 
-            return fman.GetInfo(templateDir);
+            return Ok( fman.GetInfo(templateDir));
         }
-        public ResultData TemplateFileSave(dynamic dataInfo)
+        public IHttpActionResult TemplateFileSave(dynamic dataInfo)
         {
             int id = (int)dataInfo.id;
             string filename = dataInfo.filename.ToString();
             string content = dataInfo.content.ToString();
-            GgcmsStyle sinfo = dbHelper.GetById<GgcmsStyle>(id);
+            GgcmsStyles sinfo = Dbctx.GgcmsStyles.Where(x => x.Id == id).FirstOrDefault();
             string templateDir = ConfigurationManager.AppSettings["TemplateDir"].ToString();
             string fullname = "Views/" + templateDir + "/" + sinfo.Folder + "/" + filename;
-            return fman.Save(fullname, content);
+            return Ok(fman.Save(fullname, content));
         }
-        public ResultData TemplateFileDelete(dynamic dataInfo)
+        public IHttpActionResult TemplateFileDelete(dynamic dataInfo)
         {
             int id = (int)dataInfo.id;
             dynamic files = dataInfo.files;
-            GgcmsStyle sinfo = dbHelper.GetById<GgcmsStyle>(id);
+            GgcmsStyles sinfo = Dbctx.GgcmsStyles.Where(x => x.Id == id).FirstOrDefault();
             string templateDir = ConfigurationManager.AppSettings["TemplateDir"].ToString();
             string fullname = "Views/" + templateDir + "/" + sinfo.Folder;
-            return fman.Delete(fullname, files);
+            return Ok(fman.Delete(fullname, files));
 
         }
-        public ResultData TemplateFileUpload()
+        public IHttpActionResult TemplateFileUpload()
         {
             var httpRequest = HttpContext.Current.Request;
             int id = int.Parse(httpRequest.Form["id"]);
-            GgcmsStyle sinfo = dbHelper.GetById<GgcmsStyle>(id);
+            GgcmsStyles sinfo = Dbctx.GgcmsStyles.Where(x => x.Id == id).FirstOrDefault();
             string templateDir = ConfigurationManager.AppSettings["TemplateDir"].ToString();
             string fullname = "Views/" + templateDir + "/" + sinfo.Folder;
 
-            return FileUpload(httpRequest, fullname);
+            return Ok( FileUpload(httpRequest, fullname));
 
         }
-        public ResultData TemplateFileReName(dynamic dataInfo)
+        public IHttpActionResult TemplateFileReName(dynamic dataInfo)
         {
             int id = (int)dataInfo.id;
             string newName = dataInfo.newName.ToString();
             string oldName = dataInfo.oldName.ToString();
-            GgcmsStyle sinfo = dbHelper.GetById<GgcmsStyle>(id);
+            GgcmsStyles sinfo = Dbctx.GgcmsStyles.Where(x => x.Id == id).FirstOrDefault();
             string templateDir = ConfigurationManager.AppSettings["TemplateDir"].ToString();
 
             string nname = "Views/" + templateDir + "/" + sinfo.Folder + "/" + newName;
             string oname = "Views/" + templateDir + "/" + sinfo.Folder + "/" + oldName;
             nname = HttpUtility.UrlDecode(nname);
             oname = HttpUtility.UrlDecode(oname);
-            return fman.StaticFileReName(oname, nname);
+            return Ok( fman.StaticFileReName(oname, nname));
 
         }
         [HttpGet]
         public void StyleExport(int id)
         {
-            GgcmsStyle sinfo = dbHelper.GetById<GgcmsStyle>(id);
+            GgcmsStyles sinfo = Dbctx.GgcmsStyles.Where(x => x.Id == id).FirstOrDefault();
             string templateDir = ConfigurationManager.AppSettings["TemplateDir"].ToString();
             string staticDir = ConfigurationManager.AppSettings["StaticDir"].ToString();
             string styleDir = ConfigurationManager.AppSettings["StyleDir"].ToString();
@@ -438,7 +413,7 @@ namespace GgcmsCSharp.ApiCtrls
             Response.TransmitFile(zipFile);
             Response.End();
         }
-        public ResultData StyleImport()
+        public IHttpActionResult StyleImport()
         {
             string templateDir = ConfigurationManager.AppSettings["TemplateDir"].ToString();
             string staticDir = ConfigurationManager.AppSettings["StaticDir"].ToString();
@@ -448,11 +423,10 @@ namespace GgcmsCSharp.ApiCtrls
 
             string zipFilePath = staticDir + "/" + uploadDir + "/temp";
             var httpRequest = HttpContext.Current.Request;
-            ResultData rdata = FileUpload(httpRequest, zipFilePath);
+            ResultInfo rdata = FileUpload(httpRequest, zipFilePath);
             if (rdata.Code != 0)
             {
-                return rdata;
-            }
+                return Ok( rdata);            }
             List<string> fs = rdata.Data as List<string>;
             string zipfile = fs[0];
             string fn = Path.GetFileNameWithoutExtension(zipfile);
@@ -466,11 +440,7 @@ namespace GgcmsCSharp.ApiCtrls
 
             if (Directory.Exists(viewDir) || Directory.Exists(sDir))
             {
-                return new ResultData
-                {
-                    Code = 1,
-                    Msg = "文件夹已存在"
-                };
+                return BadRequest("文件夹已存在");
             }
             try
             {
@@ -486,28 +456,19 @@ namespace GgcmsCSharp.ApiCtrls
                 {
                     Directory.CreateDirectory(viewDir);
                 }
-                GgcmsStyle sinfo = new GgcmsStyle
+                GgcmsStyles sinfo = new GgcmsStyles
                 {
                     Folder = fn,
                     StyleName = fn,
                     Descrip = fn,
                 };
-                return new ResultData
-                {
-                    Code = 0,
-                    Msg = "",
-                    Data = dbHelper.Add(sinfo)
-                };
+                sinfo= Dbctx.GgcmsStyles.Add(sinfo);
+                return Ok(sinfo);
 
             }
             catch (Exception ex)
             {
-                return new ResultData
-                {
-                    Code = 1,
-                    Msg = ex.Message,
-                    Data = ex
-                };
+                return BadRequest(ex.Message);
             }
         }
     }

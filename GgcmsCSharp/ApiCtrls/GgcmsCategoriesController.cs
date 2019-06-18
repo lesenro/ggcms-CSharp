@@ -5,6 +5,8 @@ using System.Web.Http.Description;
 using System.Linq;
 using System;
 using System.Web;
+using GgcmsCSharp.Utils;
+using System.Data.Entity;
 
 namespace GgcmsCSharp.ApiCtrls
 {
@@ -13,88 +15,59 @@ namespace GgcmsCSharp.ApiCtrls
 
         // GET: api/GgcmsCategories
         [HttpGet]
-        public ResultData GetList()
+        [WebApiCache(20)]
+        public IHttpActionResult GetList(string query)
         {
-            var reqParams = InitRequestParams<GgcmsCategory>();
-            var result = dbHelper.GetList<GgcmsCategory>(reqParams);
-            return new ResultData
-            {
-                Code = 0,
-                Data = result,
-                Msg = ""
-            };
+            string json = HttpUtility.UrlDecode(query);
+            SearchParams sParams = Tools.JsonDeserialize<SearchParams>(json);
+
+            return Ok(GetRecords<GgcmsCategories>(sParams));
         }
 
         // GET: api/GgcmsCategories/5
-        public ResultData GetInfo(int id)
+        [HttpGet]
+        [WebApiCache(20)]
+        public IHttpActionResult GetInfo(int id)
         {
-            var result = dbHelper.GetById<GgcmsCategory>(id);
-            return new ResultData
-            {
-                Code = 0,
-                Data = result,
-                Msg = ""
-            };
+            return Ok(Dbctx.GgcmsCategories.Find(id));
         }
 
         // PUT: api/GgcmsCategories/5
-        public ResultData Edit(GgcmsCategory category)
+        public IHttpActionResult Edit(GgcmsCategories info)
         {
-
-            if (!ModelState.IsValid)
+            if (Dbctx.GgcmsCategories.Where(x => x.Id == info.Id).Count() == 0)
             {
-                ResultData result = new ResultData
-                {
-                    Code = 3,
-                    Msg = "",
-                    Data = BadRequest(ModelState)
-                };
-                return result;
+                return BadRequest("信息不存在");
             }
-            category.RouteKey = HttpUtility.UrlEncode(category.RouteKey);
-            UpFileClass.FileSave(category, category.files);
-            CacheHelper.RemoveAllCache(CacheTypeNames.Categorys);
-            return new ResultData
-            {
-                Code = 0,
-                Data = dbHelper.Edit(category.Id, category),
-                Msg = ""
-            };
+            info.RouteKey = HttpUtility.UrlEncode(info.RouteKey);
+            UpFileClass.FileSave(info, info.files);
+
+            //Dbctx.GgcmsCategories.Attach(info);
+            //Dbctx.Entry(info).Property("goods_name").IsModified = true;
+            var ent = Dbctx.Entry(info);
+            ent.State = EntityState.Modified;
+            Dbctx.SaveChanges();
+            ClearCache();
+            return Ok(info);
+
+
         }
 
         // POST: api/GgcmsCategories
-        public ResultData Add(GgcmsCategory category)
+        public IHttpActionResult Add(GgcmsCategories info)
         {
-            if (!ModelState.IsValid)
-            {
-                ResultData result = new ResultData
-                {
-                    Code = 3,
-                    Msg = "",
-                    Data = BadRequest(ModelState)
-                };
-                return result;
-            }
-            UpFileClass.FileSave(category, category.files);
+            var result = Dbctx.GgcmsCategories.Add(info);
+            UpFileClass.FileSave(info, info.files);
             CacheHelper.RemoveAllCache(CacheTypeNames.Categorys);
-            return new ResultData
-            {
-                Code = 0,
-                Msg = "",
-                Data = dbHelper.Add(category)
-            };
-        }
-        public ResultData CategorySortSave(dynamic[] list)
-        {
 
-            ResultData result = new ResultData
-            {
-                Code = 0,
-                Msg = "",
-                Data = 0,
-                };
+            Dbctx.SaveChanges();
+            ClearCache();
+            return Ok(result);
+        }
+        public IHttpActionResult CategorySortSave(dynamic[] list)
+        {
             try {
-                dbHelper.dbCxt.GgcmsCategories
+                Dbctx.GgcmsCategories
                    .ToList()
                    .ForEach(x => {
                        foreach (var item in list)
@@ -107,50 +80,51 @@ namespace GgcmsCSharp.ApiCtrls
                        }
                    });
 
-                result.Data = dbHelper.dbCxt.SaveChanges();
-            }catch(Exception ex)
-            {
-                result.Data = ex;
-                result.Code = 1;
-                result.Msg = ex.Message;
+                int c = Dbctx.SaveChanges();
+                ClearCache();
+                CacheHelper.RemoveAllCache(CacheTypeNames.Categorys);
+                return Ok(c);
             }
-            CacheHelper.RemoveAllCache(CacheTypeNames.Categorys);
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
 
-            return result;
+            }
         }
         // DELETE: api/GgcmsCategories/5
-        public ResultData Delete(int id)
-        {
-            CacheHelper.RemoveAllCache(CacheTypeNames.Categorys);
-            return new ResultData
-            {
-                Code = 0,
-                Msg = "",
-                Data = dbHelper.Delete<GgcmsCategory>(id)
-            };
-        }
         [HttpGet]
-        public ResultData MultDelete()
+        public IHttpActionResult Delete(int id)
         {
-            CacheHelper.RemoveAllCache(CacheTypeNames.Categorys);
-            var reqParams = InitRequestParams<GgcmsCategory>();
-            return new ResultData
+
+            GgcmsCategories oldinfo = Dbctx.GgcmsCategories.Find(id);
+            if (oldinfo == null)
             {
-                Code = 0,
-                Msg = "",
-                Data = dbHelper.MultDelete<GgcmsCategory>(reqParams)
-            };
+                return BadRequest("信息不存在");
+            }
+
+            //List<int> idlist = GetDeleteIds(oldinfo.ticket_key);
+
+            //var query = Dbctx.ticket_information.Where(x => idlist.Contains(x.id));
+            Dbctx.GgcmsCategories.Remove(oldinfo);
+            Dbctx.SaveChanges();
+            ClearCache();
+            return Ok(oldinfo);
+        }
+        [HttpPost]
+        public IHttpActionResult MultDelete(int[] ids)
+        {
+            var query = Dbctx.GgcmsCategories.Where(x => ids.Contains(x.Id));
+
+            Dbctx.GgcmsCategories.RemoveRange(query);
+            int c = Dbctx.SaveChanges();
+            ClearCache();
+            return Ok(c);
         }
 
 
-        public ResultData Exists(int id)
+        public IHttpActionResult Exists(int id)
         {
-            return new ResultData
-            {
-                Code = 0,
-                Msg = "",
-                Data = dbHelper.Exists<GgcmsCategory>(id)
-            };
+            return Ok(Dbctx.GgcmsCategories.Where(x => x.Id == id).Count() > 0);
         }
     }
 }

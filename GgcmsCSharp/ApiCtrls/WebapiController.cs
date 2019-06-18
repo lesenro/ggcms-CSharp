@@ -1,10 +1,12 @@
 ﻿using GgcmsCSharp.Controllers;
 using GgcmsCSharp.Models;
+using GgcmsCSharp.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Web;
 using System.Web.Http;
 using System.Web.Http.Controllers;
 
@@ -19,9 +21,10 @@ namespace GgcmsCSharp.ApiCtrls
             dataHelper = new DataHelper();
         }
         [HttpGet]
-        public IHttpActionResult articles()
+        public IHttpActionResult articles(string query)
         {
-            var reqParams = InitRequestParams<GgcmsArticle>();
+            string json = HttpUtility.UrlDecode(query);
+            SearchParams reqParams = Tools.JsonDeserialize<SearchParams>(json);
             return Ok(dataHelper.Articles(reqParams));
         }
         [HttpGet]
@@ -41,19 +44,20 @@ namespace GgcmsCSharp.ApiCtrls
             return Ok(dataHelper.Article(id));
         }
         [HttpGet]
-        public IHttpActionResult views(int id)
+        public IHttpActionResult views(int id, string query)
         {
-            var reqParams = InitRequestParams();
+            string json = HttpUtility.UrlDecode(query);
+            SearchParams reqParams = Tools.JsonDeserialize<SearchParams>(json);
             return Ok(ExtendModule.ViewArticles(id, reqParams));
         }
         [HttpGet]
         public IHttpActionResult addview(int id)
         {
-            var info = dbHelper.dbCxt.GgcmsArticles.Find(id);
+            var info = Dbctx.GgcmsArticles.Find(id);
             if (info != null)
             {
                 info.Hits++;
-                dbHelper.dbCxt.SaveChanges();
+                Dbctx.SaveChanges();
                 return Ok(info.Hits);
             }
             else
@@ -62,16 +66,18 @@ namespace GgcmsCSharp.ApiCtrls
             }
         }
         [HttpGet]
-        public IHttpActionResult friendlinks()
+        public IHttpActionResult friendlinks(string query)
         {
-            var reqParams = InitRequestParams<GgcmsFriendLink>();
-            return Ok(dataHelper.FriendLinks(reqParams.query, reqParams.columns, reqParams.offset, reqParams.offset, reqParams.sortby, reqParams.order));
+            string json = HttpUtility.UrlDecode(query);
+            SearchParams reqParams = Tools.JsonDeserialize<SearchParams>(json);
+            return Ok(dataHelper.FriendLinks(reqParams.QueryString, reqParams.Columns, reqParams.PageNum, reqParams.PageSize, reqParams.OrderBy));
         }
         [HttpGet]
-        public IHttpActionResult adverts()
+        public IHttpActionResult adverts(string query)
         {
-            var reqParams = InitRequestParams<GgcmsAdverts>();
-            return Ok(dataHelper.Adverts(reqParams.query, reqParams.columns, reqParams.offset, reqParams.offset, reqParams.sortby, reqParams.order));
+            string json = HttpUtility.UrlDecode(query);
+            SearchParams reqParams = Tools.JsonDeserialize<SearchParams>(json);
+            return Ok(dataHelper.Adverts(reqParams.QueryString, reqParams.Columns, reqParams.PageNum, reqParams.PageSize, reqParams.OrderBy));
         }
 
         [HttpGet]
@@ -80,14 +86,15 @@ namespace GgcmsCSharp.ApiCtrls
             return Ok(dataHelper.SysConfigs());
         }
         [HttpGet]
-        public IHttpActionResult dictionary()
+        public IHttpActionResult dictionary(string query)
         {
-            var reqParams = InitRequestParams<GgcmsDictionary>();
-            if (string.IsNullOrWhiteSpace(reqParams.orderby))
+            string json = HttpUtility.UrlDecode(query);
+            SearchParams reqParams = Tools.JsonDeserialize<SearchParams>(json);
+            if (string.IsNullOrWhiteSpace(reqParams.OrderBy))
             {
-                reqParams.orderby = "OrderID asc";
+                reqParams.OrderBy = "OrderID asc";
             }
-            return Ok(dbHelper.GetList<GgcmsDictionary>(reqParams));
+            return Ok(GetRecords<GgcmsDictionaries>(reqParams));
         }
     }
 }

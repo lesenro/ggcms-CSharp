@@ -1,0 +1,334 @@
+<template>
+  <el-form-item :prop="d_settings.key" v-bind="itemProps" v-if="d_settings.type=='text'">
+    <el-input ref="ctrl" @change="onChange" v-bind="controlProps" v-model="value[d_settings.key]"></el-input>
+  </el-form-item>
+  <el-form-item :prop="d_settings.key" v-bind="itemProps" v-else-if="d_settings.type=='password'">
+    <el-input
+      ref="ctrl"
+      @change="onChange"
+      v-bind="controlProps"
+      v-model="value[d_settings.key]"
+      show-password
+    ></el-input>
+  </el-form-item>
+  <el-form-item :prop="d_settings.key" v-bind="itemProps" v-else-if="d_settings.type=='textarea'">
+    <el-input
+      ref="ctrl"
+      @change="onChange"
+      type="textarea"
+      v-bind="controlProps"
+      v-model="value[d_settings.key]"
+    ></el-input>
+  </el-form-item>
+  <el-form-item
+    :prop="d_settings.key"
+    v-bind="itemProps"
+    v-else-if="d_settings.type=='datetime-picker'"
+  >
+    <el-date-picker
+      ref="ctrl"
+      @change="onChange"
+      type="datetime"
+      v-bind="controlProps"
+      v-model="value[d_settings.key]"
+    ></el-date-picker>
+  </el-form-item>
+  <el-form-item
+    :prop="d_settings.key"
+    v-bind="itemProps"
+    v-else-if="d_settings.type=='date-picker'"
+  >
+    <el-date-picker
+      ref="ctrl"
+      @change="onChange"
+      type="date"
+      v-bind="controlProps"
+      v-model="value[d_settings.key]"
+    ></el-date-picker>
+  </el-form-item>
+  <el-form-item
+    :prop="d_settings.key"
+    v-bind="itemProps"
+    v-else-if="d_settings.type=='time-picker'"
+  >
+    <el-time-picker
+      ref="ctrl"
+      @change="onChange"
+      v-bind="controlProps"
+      v-model="value[d_settings.key]"
+    ></el-time-picker>
+  </el-form-item>
+  <el-form-item :prop="d_settings.key" v-bind="itemProps" v-else-if="d_settings.type=='number'">
+    <el-input-number
+      ref="ctrl"
+      @change="onChange"
+      v-bind="controlProps"
+      v-model="value[d_settings.key]"
+    ></el-input-number>
+  </el-form-item>
+  <el-form-item :prop="d_settings.key" v-bind="itemProps" v-else-if="d_settings.type=='switch'">
+    <el-switch ref="ctrl" @change="onChange" v-bind="controlProps" v-model="value[d_settings.key]"></el-switch>
+  </el-form-item>
+  <el-form-item :prop="d_settings.key" v-bind="itemProps" v-else-if="d_settings.type=='checkbox'">
+    <el-checkbox
+      ref="ctrl"
+      @change="onChange"
+      v-bind="controlProps"
+      v-model="value[d_settings.key]"
+    >{{d_settings.name}}</el-checkbox>
+  </el-form-item>
+  <el-form-item
+    :prop="d_settings.key"
+    v-bind="itemProps"
+    v-else-if="d_settings.type=='checkbox-group'"
+  >
+    <el-checkbox-group
+      ref="ctrl"
+      @change="onChangeArray"
+      v-bind="controlProps"
+      v-model="value[d_settings.key]"
+    >
+      <el-checkbox
+        v-for="item in options||[]"
+        :key="item.value"
+        :label="item.label"
+        :value="item.value"
+      ></el-checkbox>
+    </el-checkbox-group>
+  </el-form-item>
+  <el-form-item
+    :prop="d_settings.key"
+    v-bind="itemProps"
+    v-else-if="d_settings.type=='radio-group'"
+  >
+    <el-radio-group
+      ref="ctrl"
+      @change="onChange"
+      v-bind="controlProps"
+      v-model="value[d_settings.key]"
+    >
+      <el-radio v-for="item in options||[]" :key="item.value" :label="item.value">{{item.label}}</el-radio>
+    </el-radio-group>
+  </el-form-item>
+  <el-form-item :prop="d_settings.key" v-bind="itemProps" v-else-if="d_settings.type=='select'">
+    <el-select ref="ctrl" @change="onChange" v-bind="controlProps" v-model="value[d_settings.key]">
+      <el-option
+        v-for="item in options||[]"
+        :key="item.value"
+        :label="item.label"
+        :value="item.value"
+        v-bind="optionProps"
+      ></el-option>
+    </el-select>
+  </el-form-item>
+  <el-form-item :prop="d_settings.key" v-bind="itemProps" v-else-if="d_settings.type=='slider'">
+    <el-slider ref="ctrl" @change="onChange" v-bind="controlProps" v-model="value[d_settings.key]"></el-slider>
+  </el-form-item>
+  <el-form-item :prop="d_settings.key" v-bind="itemProps" v-else-if="d_settings.type=='rate'">
+    <el-rate ref="ctrl" @change="onChange" v-bind="controlProps" v-model="value[d_settings.key]"></el-rate>
+  </el-form-item>
+  <el-form-item :prop="d_settings.key" v-bind="itemProps" v-else-if="d_settings.type=='address'">
+    <address-select
+      ref="ctrl"
+      @change="onChange"
+      v-bind="controlProps"
+      v-model="value[d_settings.key]"
+    ></address-select>
+  </el-form-item>
+  <el-form-item :prop="d_settings.key" v-bind="itemProps" v-else-if="d_settings.type=='cascader'">
+    <el-cascader
+      ref="ctrl"
+      @change="onChange"
+      :options="options||[]"
+      v-bind="controlProps"
+      v-model="value[d_settings.key]"
+    ></el-cascader>
+  </el-form-item>
+  <el-form-item :prop="d_settings.key" v-bind="itemProps" v-else-if="d_settings.type=='upload'">
+    <el-upload ref="ctrl" v-bind="controlProps" :on-success="onFileUploadSuccess">
+      <sub-component ref="subCtrl" :image="value[d_settings.key]"/>
+    </el-upload>
+  </el-form-item>
+  <el-form-item :prop="d_settings.key" v-bind="itemProps" v-else-if="d_settings.type=='button'">
+    <el-button ref="ctrl" @click="onChange" v-bind="controlProps">{{d_settings.name}}</el-button>
+  </el-form-item>
+  <el-form-item :prop="d_settings.key" v-bind="itemProps" v-else-if="d_settings.type=='message'">
+    <el-alert ref="ctrl" v-bind="controlProps"></el-alert>
+  </el-form-item>
+  <el-form-item :prop="d_settings.key" v-bind="itemProps" v-else-if="d_settings.type=='editor'">
+    <vue-editor
+      useCustomImageHandler
+      ref="ctrl"
+      v-bind="controlProps"
+      v-model="value[d_settings.key]"
+      @text-change="onEditorChange"
+    ></vue-editor>
+  </el-form-item>
+  <el-form-item :prop="d_settings.key" v-bind="itemProps" v-else-if="d_settings.type=='code'">
+    <codemirror
+      :name="'code_'+d_settings.key"
+      v-model="value[d_settings.key]"
+      v-bind="controlProps"
+      @input="onChange"
+    ></codemirror>
+  </el-form-item>
+  <sub-component
+    v-bind="itemProps"
+    :prop="d_settings.key"
+    ref="ctrl"
+    v-else-if="d_settings.type=='component'"
+  />
+  <el-form-item :prop="d_settings.key" v-bind="itemProps" v-else-if="d_settings.type=='position'">
+    <get-positon
+      ref="ctrl"
+      @change="onChange"
+      :value="value[d_settings.key]"
+      v-bind="controlProps"
+      v-model="value[d_settings.key]"
+    />
+  </el-form-item>
+</template>
+
+<script>
+// language js
+// import "codemirror/mode/javascript/javascript.js";
+// import "codemirror/mode/xml/xml.js";
+// theme css
+import { mapState, mapActions } from "vuex";
+import { VueEditor } from "vue2-editor";
+export default {
+  name: "form-control",
+  created() {
+    if (this.settings.component) {
+      this.$options.components[this.vueName] = this.settings.component;
+    }
+  },
+  updated() {
+    if (this.d_settings.type == "code") {
+      // console.log(this.value[this.d_settings.key]);
+    }
+  },
+  props: ["settings", "value"],
+  data() {
+    return {
+      vueName: "sub-component",
+      d_settings: this.settings,
+      d_options: (this.settings.options || []).map(x => x),
+      d_itemProps: this.settings.itemProps || {},
+      d_controlProps: this.settings.controlProps || {}
+    };
+  },
+  computed: {
+    ...mapState("global", ["appcfg"]),
+    options() {
+      return this.d_options;
+    },
+    optionProps() {
+      return this.settings.optionProps || {};
+    },
+    itemProps() {
+      let itemProps = this.d_itemProps;
+      itemProps.label = itemProps.label || this.settings.name;
+      if (itemProps.labelHidden) {
+        itemProps.label = "";
+        itemProps["label-width"] = "0";
+      }
+      return itemProps;
+    },
+    controlProps() {
+      return this.d_controlProps;
+    }
+  },
+  methods: {
+    setOptions(key, opts) {
+      if (key != this.settings.key) {
+        return false;
+      }
+      this.d_options = opts;
+      return true;
+    },
+    setItemProps(key, prop) {
+      if (key != this.settings.key) {
+        return false;
+      }
+      this.d_itemProps = Object.assign({}, this.d_itemProps, prop);
+      return true;
+    },
+    setControlProps(key, prop) {
+      if (key != this.settings.key) {
+        return false;
+      }
+      this.d_controlProps = Object.assign({}, this.d_controlProps, prop);
+      if (["number", "select"].indexOf(this.d_settings.type) != -1) {
+        this.d_controlProps.disabled = prop.readonly;
+      }
+      return true;
+    },
+    onChange(ev) {
+      if (this.d_settings.type == "button") {
+        ev.preventDefault();
+      }
+      this.$emit("change", {
+        key: this.d_settings.key,
+        value: ev
+      });
+    },
+    onEditorChange(delta, oldDelta, source) {
+      this.$emit("change", {
+        key: this.d_settings.key,
+        value: this.value[this.d_settings.key],
+        event: {
+          delta,
+          oldDelta,
+          source
+        }
+      });
+    },
+    onChangeArray(ev) {
+      let list = this.options
+        .filter(x => ev.find(l => l == x.label))
+        .map(x => x.value);
+      this.$emit("change", {
+        key: this.d_settings.key,
+        value: list
+      });
+    },
+    editorImageAdded(file, Editor, cursorLocation, resetUploader) {
+      this.$emit("editorImageAdded", {
+        file,
+        Editor,
+        cursorLocation,
+        resetUploader
+      });
+    },
+    onFileUploadSuccess(ev) {
+      console.log(ev);
+    },
+    getControl() {
+      return this.$refs["ctrl"];
+    },
+    getValue() {
+      return this.value[this.d_settings.key];
+    },
+    setRules(key, rule) {
+      if (key != this.settings.key) {
+        return false;
+      }
+      let rules = this.d_itemProps.rules || [];
+      rule.forEach(r => {
+        let item = rules.find(x => x.name == r.name);
+        if (item) {
+          for (let n in r) {
+            item[n] = r[n];
+          }
+        }
+      });
+      this.d_itemProps.rules = rules;
+    }
+  },
+  components: { VueEditor }
+};
+</script>
+
+<style>
+</style>

@@ -8,6 +8,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Data.SqlClient;
 using System.Text;
+using GgcmsCSharp.Utils;
+using System.Web;
+using System.Data.Entity;
 
 namespace GgcmsCSharp.ApiCtrls
 {
@@ -15,111 +18,85 @@ namespace GgcmsCSharp.ApiCtrls
     {
         // GET: api/GgcmsCategories
         [HttpGet]
-        public ResultData GetList()
+        public IHttpActionResult GetList(string query)
         {
-            var reqParams = InitRequestParams<GgcmsArticle>();
-            var result = dbHelper.GetList<GgcmsArticle>(reqParams);
-            return new ResultData
-            {
-                Code = 0,
-                Data = result,
-                Msg = ""
-            };
+            string json = HttpUtility.UrlDecode(query);
+            SearchParams sParams = Tools.JsonDeserialize<SearchParams>(json);
+
+            return Ok(GetRecords<GgcmsArticles>(sParams));
         }
-        public ResultData GetGgcmsModuleValue(int aid, int mid)
+        public IHttpActionResult GetGgcmsModuleValue(int aid, int mid)
         {
-            return new ResultData
-            {
-                Code = 0,
-                Data = ExtendModule.GetModuleToDict(aid, mid),
-                Msg = ""
-            };
+            return Ok(ExtendModule.GetModuleToDict(aid, mid));
         }
         // GET: api/GgcmsCategories/5
-        public ResultData GetInfo(int id)
+        public IHttpActionResult GetInfo(int id)
         {
-            var result = dbHelper.GetById<GgcmsArticle>(id);
-            if (result !=null)
-            {
-                using (GgcmsDB db = new GgcmsDB())
-                {
-                    var list = from r in db.GgcmsAttachments
-                               where r.Articles_Id == result.Id
-                               select r;
-                    result.attachments = list.ToList();
-                }
-            }
-            return new ResultData
-            {
-                Code = 0,
-                Data = result,
-                Msg = ""
-            };
+            var info= Dbctx.GgcmsArticles.Find(id);
+            var list = from r in Dbctx.GgcmsAttachments
+                       where r.Articles_Id == id
+                       select r;
+            info.attachments = list.ToList();
+            return Ok(info);
+           
         }
 
         // PUT: api/GgcmsCategories/5
-        public ResultData Edit(GgcmsArticle article)
+        public IHttpActionResult Edit(GgcmsArticles info)
         {
+            if (Dbctx.GgcmsArticles.Where(x => x.Id == info.Id).Count() == 0)
+            {
+                return BadRequest("信息不存在");
+            }
+            //Dbctx.GgcmsArticles.Attach(info);
+            //Dbctx.Entry(info).Property("goods_name").IsModified = true;
+            var ent = Dbctx.Entry(info);
+            ent.State = EntityState.Modified;
 
-            if (!ModelState.IsValid)
+            UpFileClass.FileSave(info, info.files.FindAll(x => x.fileType != 3));
+            var old = Dbctx.GgcmsArticles.Find(info.Id);
+            if (old.Category_Id != info.Category_Id)
             {
-                ResultData result = new ResultData
-                {
-                    Code = 3,
-                    Msg = "",
-                    Data = BadRequest(ModelState)
-                };
-                return result;
+                updateArticleNumber(info.Category_Id, 1);
+                updateArticleNumber(old.Category_Id, -1);
+                CacheHelper.RemoveAllCache(CacheTypeNames.Categorys);
             }
-            GgcmsArticle old;
-            using (GgcmsDB db = new GgcmsDB())
+            var list = Dbctx.GgcmsAttachments.Where(x => x.Articles_Id == info.Id).ToList();
+            foreach (GgcmsAttachments attach in list)
             {
-                UpFileClass.FileSave(article, article.files.FindAll(x=>x.fileType != 3));
-                old = db.GgcmsArticles.Find(article.Id);
-                if (old.Category_Id != article.Category_Id)
+                var item = info.attachments.Find(x => x.Id == attach.Id);
+                if (item == null)
                 {
-                    updateArticleNumber(article.Category_Id, 1);
-                    updateArticleNumber(old.Category_Id, -1);
-                    CacheHelper.RemoveAllCache(CacheTypeNames.Categorys);
+                    Dbctx.GgcmsAttachments.Remove(attach);
                 }
-                var list = db.GgcmsAttachments.Where(x => x.Articles_Id == article.Id).ToList();
-                foreach (GgcmsAttachment attach in list)
+                else
                 {
-                    var item = article.attachments.Find(x => x.Id == attach.Id);
-                    if (item == null)
-                    {
-                        db.GgcmsAttachments.Remove(attach);
-                    }
-                    else
-                    {
-                        attach.AttaUrl = item.AttaUrl;
-                        attach.AttaTitle = item.AttaTitle;
-                        attach.Describe = item.Describe;
-                        attach.CreateTime = DateTime.Now;
-                        attach.RealName = item.RealName;
-                    }
+                    attach.AttaUrl = item.AttaUrl;
+                    attach.AttaTitle = item.AttaTitle;
+                    attach.Describe = item.Describe;
+                    attach.CreateTime = DateTime.Now;
+                    attach.RealName = item.RealName;
                 }
-                foreach (GgcmsAttachment attach in article.attachments)
-                {
-                    if (attach.Id == 0)
-                    {
-                        attach.Articles_Id = article.Id;
-                        attach.CreateTime = DateTime.Now;
-                        db.GgcmsAttachments.Add(attach);
-                    }
-                }
-                db.SaveChanges();
             }
-            if (article.ModuleInfo != null)
+            foreach (GgcmsAttachments attach in info.attachments)
             {
-                article.ExtModelId = article.ModuleInfo.Id;
-                if (old.ExtModelId > 0&&article.ExtModelId!=old.ExtModelId)
+                if (attach.Id == 0)
                 {
-                    ExtendModule.Delete(article.Id, old.ExtModelId);
+                    attach.Articles_Id = info.Id;
+                    attach.CreateTime = DateTime.Now;
+                    Dbctx.GgcmsAttachments.Add(attach);
                 }
-                foreach (var file in article.files.FindAll(x => x.fileType == 3))
+            }
+            if (info.ModuleInfo != null)
+            {
+                info.ExtModelId = info.ModuleInfo.Id;
+                if (old.ExtModelId > 0 && info.ExtModelId != old.ExtModelId)
                 {
-                    foreach (var item in article.ModuleInfo.Columns)
+                    ExtendModule.Delete(info.Id, old.ExtModelId);
+                }
+                foreach (var file in info.files.FindAll(x => x.fileType == 3))
+                {
+                    foreach (var item in info.ModuleInfo.Columns)
                     {
                         if (item.ColName == file.propertyName)
                         {
@@ -127,47 +104,38 @@ namespace GgcmsCSharp.ApiCtrls
                         }
                     }
                 }
-                ExtendModule.SaveData(article.Id, article.ModuleInfo);
+                ExtendModule.SaveData(info.Id, info.ModuleInfo);
             }
-            else if(old.ExtModelId>0)
+            else if (old.ExtModelId > 0)
             {
-                ExtendModule.Delete(article.Id, old.ExtModelId);
+                ExtendModule.Delete(info.Id, old.ExtModelId);
             }
-            return new ResultData
-            {
-                Code = 0,
-                Data = dbHelper.Edit(article.Id, article),
-                Msg = ""
-            };
+
+            Dbctx.SaveChanges();
+            ClearCache();
+            return Ok(info);
         }
 
         // POST: api/GgcmsCategories
-        public ResultData Add(GgcmsArticle article)
+        public IHttpActionResult Add(GgcmsArticles info)
         {
-            if (!ModelState.IsValid)
-            {
-                return new ResultData
-                {
-                    Code = 3,
-                    Msg = "",
-                    Data = BadRequest(ModelState)
-                }; 
-            }
+
+
             //提交除附加模型外的文件-标题图，内容中的图
-            UpFileClass.FileSave(article, article.files.FindAll(x => x.fileType != 3));
-            article.CreateTime = DateTime.Now;
-            updateArticleNumber(article.Category_Id, 1);
+            UpFileClass.FileSave(info, info.files.FindAll(x => x.fileType != 3));
+            info.CreateTime = DateTime.Now;
+            updateArticleNumber(info.Category_Id, 1);
             CacheHelper.RemoveAllCache(CacheTypeNames.Categorys);
-            if (article.ModuleInfo != null && article.ModuleInfo.Id > 0)
+            if (info.ModuleInfo != null && info.ModuleInfo.Id > 0)
             {
-                article.ExtModelId = article.ModuleInfo.Id;
+                info.ExtModelId = info.ModuleInfo.Id;
             }
-            article = dbHelper.Add(article);
-            if (article.ModuleInfo != null && article.ModuleInfo.Id >0)
+           var result = Dbctx.GgcmsArticles.Add(info);
+            if (info.ModuleInfo != null && info.ModuleInfo.Id >0)
             {
-                foreach (var file in article.files.FindAll(x=>x.fileType == 3))
+                foreach (var file in info.files.FindAll(x=>x.fileType == 3))
                 {
-                    foreach (var item in article.ModuleInfo.Columns)
+                    foreach (var item in info.ModuleInfo.Columns)
                     {
                         if (item.ColName == file.propertyName)
                         {
@@ -175,107 +143,67 @@ namespace GgcmsCSharp.ApiCtrls
                         }
                     }
                 }
-                ExtendModule.SaveData(article.Id, article.ModuleInfo);
+                ExtendModule.SaveData(info.Id, info.ModuleInfo);
             }
             using (GgcmsDB db = new GgcmsDB())
             {
-                foreach (GgcmsAttachment attach in article.attachments)
+                foreach (GgcmsAttachments attach in info.attachments)
                 {
-                    attach.Articles_Id = article.Id;
+                    attach.Articles_Id = info.Id;
                     attach.CreateTime = DateTime.Now;
                     db.GgcmsAttachments.Add(attach);
                 }
                 db.SaveChanges();
             }
 
-            return new ResultData
-            {
-                Code = 0,
-                Msg = "",
-                Data = article
-            }; ;
+            Dbctx.SaveChanges();
+            ClearCache();
+            return Ok(result);
+
         }
 
         // DELETE: api/GgcmsCategories/5
-        public ResultData Delete(int id)
+        public IHttpActionResult Delete(int id)
         {
-            GgcmsArticle info = dbHelper.dbCxt.GgcmsArticles.Find(id);
+
+            GgcmsArticles info = Dbctx.GgcmsArticles.Find(id);
             if (info == null)
             {
-                return new ResultData
-                {
-                    Code = 1,
-                    Msg = "not found "
-                };
+                return BadRequest("信息不存在");
             }
             updateArticleNumber(info.Category_Id, -1);
-            CacheHelper.RemoveAllCache(CacheTypeNames.Categorys);
-            try
-            {
-                using (GgcmsDB db = new GgcmsDB())
-                {
-                    db.GgcmsArticles.Remove(info);
-                    var list = db.GgcmsAttachments.Where(x => x.Articles_Id == info.Id).ToList();
-                    foreach (GgcmsAttachment attach in list)
-                    {
-                        db.GgcmsAttachments.Remove(attach);
-                    }
-                    db.SaveChanges();
-                    return new ResultData
-                    {
-                        Code = 0,
-                        Msg = "ok"
-                    };
-                }
-            }
-            catch (Exception ex)
-            {
-                return new ResultData
-                {
-                    Code = 2,
-                    Msg = ex.Message,
-                    Data = ex
-                };
-            }
-        }
-        [HttpGet]
-        public ResultData MultDelete()
-        {
-            var reqParams = InitRequestParams<GgcmsArticle>();
-            var articleList = dbHelper.GetList<GgcmsArticle>(reqParams);
-            using (GgcmsDB db = new GgcmsDB())
-            {
-                foreach (var item in articleList.List)
-                {
-                    GgcmsArticle info = item as GgcmsArticle;
 
-                    if (info != null)
-                    {
-                        updateArticleNumber(info.Category_Id, -1);
-                    }
-                    var attalist = db.GgcmsAttachments.Where(x => x.Articles_Id == info.Id);
-                    db.GgcmsAttachments.RemoveRange(attalist);
-                }
-                db.SaveChanges();
-            }
-            CacheHelper.RemoveAllCache(CacheTypeNames.Categorys);
-            return new ResultData
+            Dbctx.GgcmsArticles.Remove(info);
+            var list = Dbctx.GgcmsAttachments.Where(x => x.Articles_Id == info.Id).ToList();
+            foreach (GgcmsAttachments attach in list)
             {
-                Code = 0,
-                Msg = "",
-                Data = dbHelper.MultDelete<GgcmsArticle>(reqParams)
-            };
+                Dbctx.GgcmsAttachments.Remove(attach);
+            }
+            Dbctx.SaveChanges();
+            ClearCache();
+            return Ok(info);
+        }
+        [HttpPost]
+        public IHttpActionResult MultDelete(int[] ids)
+        {
+            var query = Dbctx.GgcmsArticles.Where(x => ids.Contains(x.Id));
+            foreach (GgcmsArticles item in query.ToList())
+            {
+                updateArticleNumber(item.Category_Id, -1);
+                var attalist = Dbctx.GgcmsAttachments.Where(x => x.Articles_Id == item.Id);
+                Dbctx.GgcmsAttachments.RemoveRange(attalist);
+            }
+            Dbctx.GgcmsArticles.RemoveRange(query);
+            int c = Dbctx.SaveChanges();
+            ClearCache();
+            return Ok(c);
         }
 
 
-        public ResultData Exists(int id)
+        public IHttpActionResult Exists(int id)
         {
-            return new ResultData
-            {
-                Code = 0,
-                Msg = "",
-                Data = dbHelper.Exists<GgcmsArticle>(id)
-            };
+            return Ok(Dbctx.GgcmsArticles.Where(x => x.Id == id).Count() > 0);
+
         }
         private void updateArticleNumber(int id, int num)
         {
@@ -284,7 +212,7 @@ namespace GgcmsCSharp.ApiCtrls
             {
                 using (GgcmsDB db = new GgcmsDB())
                 {
-                    GgcmsCategory cinfo = db.GgcmsCategories.Find(id);
+                    GgcmsCategories cinfo = db.GgcmsCategories.Find(id);
                     if (cinfo == null)
                     {
                         return;

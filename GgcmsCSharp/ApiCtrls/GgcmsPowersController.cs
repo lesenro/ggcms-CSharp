@@ -1,4 +1,8 @@
 ﻿using GgcmsCSharp.Models;
+using GgcmsCSharp.Utils;
+using System.Data.Entity;
+using System.Linq;
+using System.Web;
 using System.Web.Http;
 using System.Web.Http.Controllers;
 using System.Web.Http.Description;
@@ -10,105 +14,79 @@ namespace GgcmsCSharp.ApiCtrls
 
         // GET: api/GgcmsCategories
         [HttpGet]
-        public ResultData GetList()
+        public IHttpActionResult GetList(string query)
         {
-            var reqParams = InitRequestParams<GgcmsPower>();
-            var result = dbHelper.GetList<GgcmsPower>(reqParams);
-            return new ResultData
-            {
-                Code = 0,
-                Data = result,
-                Msg = ""
-            };
+            string json = HttpUtility.UrlDecode(query);
+            SearchParams sParams = Tools.JsonDeserialize<SearchParams>(json);
+
+            return Ok(GetRecords<GgcmsPowers>(sParams));
         }
 
         // GET: api/GgcmsCategories/5
-        public ResultData GetInfo(int id)
+        public IHttpActionResult GetInfo(int id)
         {
-            var result = dbHelper.GetById<GgcmsPower>(id);
-            return new ResultData
-            {
-                Code = 0,
-                Data = result,
-                Msg = ""
-            };
+            return Ok(Dbctx.GgcmsPowers.Find(id));
+
         }
 
         // PUT: api/GgcmsCategories/5
-        public ResultData Edit(int id, GgcmsPower power)
+        public IHttpActionResult Edit(GgcmsPowers info)
         {
-
-            if (!ModelState.IsValid)
+            if (Dbctx.GgcmsPowers.Where(x => x.Id == info.Id).Count() == 0)
             {
-                ResultData result = new ResultData
-                {
-                    Code = 3,
-                    Msg = "",
-                    Data = BadRequest(ModelState)
-                };
-                return result;
+                return BadRequest("信息不存在");
             }
-
-            return new ResultData
-            {
-                Code = 0,
-                Data = dbHelper.Edit(power.Id, power),
-                Msg = ""
-            };
+            //Dbctx.GgcmsPowers.Attach(info);
+            //Dbctx.Entry(info).Property("goods_name").IsModified = true;
+            var ent = Dbctx.Entry(info);
+            ent.State = EntityState.Modified;
+            Dbctx.SaveChanges();
+            ClearCache();
+            return Ok(info);
         }
 
         // POST: api/GgcmsCategories
-        public ResultData Add(GgcmsPower power)
+        public IHttpActionResult Add(GgcmsPowers info)
         {
-            if (!ModelState.IsValid)
-            {
-                ResultData result = new ResultData
-                {
-                    Code = 3,
-                    Msg = "",
-                    Data = BadRequest(ModelState)
-                };
-                return result;
-            }
-            return new ResultData
-            {
-                Code = 0,
-                Msg = "",
-                Data = dbHelper.Add(power)
-            };
+            var result = Dbctx.GgcmsPowers.Add(info);
+            Dbctx.SaveChanges();
+            ClearCache();
+            return Ok(result);
         }
 
         // DELETE: api/GgcmsCategories/5
-        public ResultData Delete(int id)
+        public IHttpActionResult Delete(int id)
         {
-            return new ResultData
+            GgcmsPowers oldinfo = Dbctx.GgcmsPowers.Find(id);
+            if (oldinfo == null)
             {
-                Code = 0,
-                Msg = "",
-                Data = dbHelper.Delete<GgcmsPower>(id)
-            };
+                return BadRequest("信息不存在");
+            }
+
+            //List<int> idlist = GetDeleteIds(oldinfo.ticket_key);
+
+            //var query = Dbctx.ticket_information.Where(x => idlist.Contains(x.id));
+            Dbctx.GgcmsPowers.Remove(oldinfo);
+            Dbctx.SaveChanges();
+            ClearCache();
+            return Ok(oldinfo);
         }
-        [HttpGet]
-        public ResultData MultDelete()
+        [HttpPost]
+        public IHttpActionResult MultDelete(int[] ids)
         {
-            var reqParams = InitRequestParams<GgcmsPower>();
-            return new ResultData
-            {
-                Code = 0,
-                Msg = "",
-                Data = dbHelper.MultDelete<GgcmsPower>(reqParams)
-            };
+            var query = Dbctx.GgcmsPowers.Where(x => ids.Contains(x.Id));
+
+            Dbctx.GgcmsPowers.RemoveRange(query);
+            int c = Dbctx.SaveChanges();
+            ClearCache();
+            return Ok(c);
         }
 
 
-        public ResultData Exists(int id)
+        public IHttpActionResult Exists(int id)
         {
-            return new ResultData
-            {
-                Code = 0,
-                Msg = "",
-                Data = dbHelper.Exists<GgcmsPower>(id)
-            };
+            return Ok(Dbctx.GgcmsPowers.Where(x => x.Id == id).Count() > 0);
+
         }
     }
 }

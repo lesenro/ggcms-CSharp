@@ -13,7 +13,7 @@ namespace GgcmsCSharp.Models
 {
     public class ExtendModule
     {
-        public static GgcmsModule GetModuleData(int aid, int mid)
+        public static GgcmsModules GetModuleData(int aid, int mid)
         {
             var module = GetGgcmsModule(mid);
             using (GgcmsDB db = new GgcmsDB())
@@ -55,7 +55,7 @@ namespace GgcmsCSharp.Models
             }
             return GetModuleToDict(aid, module);
         }
-        public static Dictionary<string, dynamic> GetModuleToDict(int aid , GgcmsModule module){
+        public static Dictionary<string, dynamic> GetModuleToDict(int aid , GgcmsModules module){
             
             Dictionary<string, dynamic> result = new Dictionary<string, dynamic>();
             result.Add("Id", aid);
@@ -90,11 +90,11 @@ namespace GgcmsCSharp.Models
             }
             return result;
         }
-        public static GgcmsModule GetGgcmsModule(int id)
+        public static GgcmsModules GetGgcmsModule(int id)
         {
             using (GgcmsDB db = new GgcmsDB())
             {
-                GgcmsModule module = db.GgcmsModules.Find(id);
+                GgcmsModules module = db.GgcmsModules.Find(id);
                 if (module != null)
                 {
                     module.Columns = db.GgcmsModuleColumns.Where(x => x.Module_Id == id).ToList();
@@ -102,7 +102,7 @@ namespace GgcmsCSharp.Models
                 return module;
             }
         }
-        public static Dictionary<string, dynamic> SaveData(int aid , GgcmsModule module)
+        public static Dictionary<string, dynamic> SaveData(int aid , GgcmsModules module)
         {
             using (GgcmsDB db = new GgcmsDB())
             {
@@ -160,38 +160,38 @@ namespace GgcmsCSharp.Models
                 return result;
             }
         }
-        public static DataTable ViewArticles(int mid, RequestParams reqParams)
+        public static DataTable ViewArticles(int mid, SearchParams reqParams)
         {
             var module = GetGgcmsModule(mid);
             StringBuilder sql = new StringBuilder();
-            if (reqParams.pagenum == 1)
+            if (reqParams.PageNum == 1)
             {
                 sql.Append("select ");
-                if (reqParams.limit > 0)
+                if (reqParams.PageSize > 0)
                 {
-                    sql.Append("TOP " + reqParams.limit.ToString() + " ");
+                    sql.Append("TOP " + reqParams.PageSize.ToString() + " ");
                 }
-                sql.Append(string.IsNullOrWhiteSpace(reqParams.columns) ? "* " : reqParams.columns);
+                sql.Append(string.IsNullOrWhiteSpace(reqParams.Columns) ? "* " : reqParams.Columns);
                 sql.Append(" From " + module.ViewName);
-                if (!string.IsNullOrWhiteSpace(reqParams.query))
+                if (!string.IsNullOrWhiteSpace(reqParams.QueryString))
                 {
-                    sql.Append(" WHERE " + reqParams.query);
+                    sql.Append(" WHERE " + reqParams.QueryString);
                 }
-                if (!string.IsNullOrWhiteSpace(reqParams.orderby))
+                if (!string.IsNullOrWhiteSpace(reqParams.OrderBy))
                 {
-                    sql.Append(" ORDER BY " + reqParams.orderby);
+                    sql.Append(" ORDER BY " + reqParams.OrderBy);
                 }
             }
             else
             {
-                reqParams.orderby = string.IsNullOrWhiteSpace(reqParams.orderby) ? "Id DESC" : reqParams.orderby;
-                reqParams.query = string.IsNullOrWhiteSpace(reqParams.query) ? "" :" WHERE " +reqParams.query;
-                reqParams.columns = string.IsNullOrWhiteSpace(reqParams.columns) ? "*" : reqParams.columns;
-                reqParams.offset++;
-                reqParams.limit = reqParams.offset + reqParams.limit;
+                reqParams.OrderBy = string.IsNullOrWhiteSpace(reqParams.OrderBy) ? "Id DESC" : reqParams.OrderBy;
+                reqParams.QueryString = string.IsNullOrWhiteSpace(reqParams.QueryString) ? "" :" WHERE " +reqParams.QueryString;
+                reqParams.Columns = string.IsNullOrWhiteSpace(reqParams.Columns) ? "*" : reqParams.Columns;
+                int limit = reqParams.PageSize;
+                int offset = (reqParams.PageNum - 1) * reqParams.PageSize;
                 //select t1.id,Content,Title FROM GgcmsArticles t1 INNER JOIN (select t2.Id  from(select row_number()  over (order by id DESC)r_num,Id FROM GgcmsArticles WHERE Id>23) t2 WHERE t2.r_num BETWEEN 2 and 4)t3 on t1.id=t3.id
-                sql.Append("select t1.Id, "+reqParams.columns + " FROM "+ module.ViewName+ " t1 INNER JOIN ");
-                sql.Append("(select t2.Id  from(select row_number()  over (order by " + reqParams.orderby + ")r_num,Id FROM " + module.ViewName + " " + reqParams.query + ") t2 WHERE t2.r_num BETWEEN " + reqParams.offset + " and " + reqParams.limit + ") t3 on t1.Id=t3.Id");
+                sql.Append("select t1.Id, "+reqParams.Columns + " FROM "+ module.ViewName+ " t1 INNER JOIN ");
+                sql.Append("(select t2.Id  from(select row_number()  over (order by " + reqParams.OrderBy + ")r_num,Id FROM " + module.ViewName + " " + reqParams.QueryString + ") t2 WHERE t2.r_num BETWEEN " + offset + " and " + limit + ") t3 on t1.Id=t3.Id");
             }
             DataTable dt = new DataTable(module.ViewName);
             using (GgcmsDB db = new GgcmsDB())
@@ -230,7 +230,7 @@ namespace GgcmsCSharp.Models
             }
             
         }
-        public static void TableChange(GgcmsModule module, GgcmsModule oldModule)
+        public static void TableChange(GgcmsModules module, GgcmsModules oldModule)
         {
             using (GgcmsDB db = new GgcmsDB())
             {
@@ -258,7 +258,7 @@ namespace GgcmsCSharp.Models
                             colidx = idx + 1;
                         }
                     }
-                    GgcmsModuleColumn newcol = module.Columns.Find(x => x.Id == col.Id);
+                    GgcmsModuleColumns newcol = module.Columns.Find(x => x.Id == col.Id);
 
                     if (newcol == null)
                     {
@@ -269,7 +269,7 @@ namespace GgcmsCSharp.Models
                 }
                 foreach (var col in module.Columns)
                 {
-                    GgcmsModuleColumn oldcol = oldModule.Columns.Find(x => x.Id == col.Id);
+                    GgcmsModuleColumns oldcol = oldModule.Columns.Find(x => x.Id == col.Id);
                     if (oldcol == null)
                     {
                         col.Module_Id = module.Id;
@@ -330,7 +330,7 @@ namespace GgcmsCSharp.Models
             }
             ViewCreate(module);
         }
-        public static void TableCreate(GgcmsModule module)
+        public static void TableCreate(GgcmsModules module)
         {
             using (GgcmsDB db = new GgcmsDB())
             {
@@ -375,14 +375,14 @@ namespace GgcmsCSharp.Models
         {
             using (GgcmsDB db = new GgcmsDB())
             {
-                GgcmsModule module = db.GgcmsModules.Find(id);
+                GgcmsModules module = db.GgcmsModules.Find(id);
                 if (module != null)
                 {
                     TableDelete(module);
                 }
             }
         }
-        public static void TableDelete(GgcmsModule module)
+        public static void TableDelete(GgcmsModules module)
         {
             ViewDelete(module);
             using (GgcmsDB db = new GgcmsDB())
@@ -394,7 +394,7 @@ namespace GgcmsCSharp.Models
                 db.SaveChanges();
             }
         }
-        private static void ViewCreate(GgcmsModule module)
+        private static void ViewCreate(GgcmsModules module)
         {
             string[] articleField = "Title,Hits,CreateTime,TitleImg,RedirectUrl,ExtModelId,ShowType,ShowLevel,Category_Id".Split(",".ToArray());
             StringBuilder sql = new StringBuilder();
@@ -418,7 +418,7 @@ namespace GgcmsCSharp.Models
             }
             
         }
-        private static void ViewDelete(GgcmsModule module)
+        private static void ViewDelete(GgcmsModules module)
         {
             try
             {

@@ -7,6 +7,8 @@ using System.Web.Http.Description;
 using System.Linq;
 using System;
 using System.Data.Entity;
+using System.Web;
+using GgcmsCSharp.Utils;
 
 namespace GgcmsCSharp.ApiCtrls
 {
@@ -15,144 +17,91 @@ namespace GgcmsCSharp.ApiCtrls
 
         // GET: api/GgcmsCategories
         [HttpGet]
-        public ResultData GetList()
+        public IHttpActionResult GetList(string query)
         {
-            var reqParams = InitRequestParams<GgcmsModule>();
-            var result = dbHelper.GetList<GgcmsModule>(reqParams);
-            return new ResultData
-            {
-                Code = 0,
-                Data = result,
-                Msg = ""
-            };
+            string json = HttpUtility.UrlDecode(query);
+            SearchParams sParams = Tools.JsonDeserialize<SearchParams>(json);
+
+            return Ok(GetRecords<GgcmsModules>(sParams));
         }
 
         // GET: api/GgcmsCategories/5
-        public ResultData GetInfo(int id)
+        public IHttpActionResult GetInfo(int id)
         {
 
-            ResultData result = new ResultData
-            {
-                Code = 0,
-                Msg = ""
-            };
-            GgcmsModule module = ExtendModule.GetGgcmsModule(id);
+            GgcmsModules module = ExtendModule.GetGgcmsModule(id);
             if (module != null)
             {
-                result.Data = module;
+                return Ok(module);
             }
-            else
-            {
-                result.Code = 1;
-                result.Msg = "not found";
-            }
-            
-            return result;
+
+            return BadRequest("信息不存在");
+
         }
         
         // PUT: api/GgcmsCategories/5
-        public ResultData Edit(GgcmsModule module)
+        public IHttpActionResult Edit(GgcmsModules module)
         {
 
-            if (!ModelState.IsValid)
-            {
-                ResultData result = new ResultData
-                {
-                    Code = 3,
-                    Msg = "",
-                    Data = BadRequest(ModelState)
-                };
-                return result;
-            }
             if (module.Columns != null)
             {
-                GgcmsModule oldModule = ExtendModule.GetGgcmsModule(module.Id);
+                GgcmsModules oldModule = ExtendModule.GetGgcmsModule(module.Id);
                 module.TableName = oldModule.TableName;
                 module.ViewName = oldModule.ViewName;
-                ExtendModule.TableChange(module,oldModule);
+                ExtendModule.TableChange(module, oldModule);
             }
-            return new ResultData
-            {
-                Code = 0,
-                Data = dbHelper.Edit(module.Id, module),
-                Msg = ""
-            };
-
+            Dbctx.SaveChanges();
+            ClearCache();
+            return Ok(module);
         }
 
         // POST: api/GgcmsCategories
-        public ResultData Add(GgcmsModule module)
+        public IHttpActionResult Add(GgcmsModules module)
         {
-            ResultData result = new ResultData();
-            if (!ModelState.IsValid)
-            {
-                result.Code = 3;
-                result.Data = BadRequest(ModelState);
-                return result;
-            }
-            module = dbHelper.Add(module);
-            module.TableName = "moduleTab_" + module.Id.ToString();
-            module.ViewName = "moduleView_" + module.Id.ToString();
-            module = dbHelper.Edit(module.Id, module);
-            if (module.Columns!=null)
-            {
-                ExtendModule.TableCreate(module);
-            }
-            return result;
+            var result = Dbctx.GgcmsModules.Add(module);
+            Dbctx.SaveChanges();
+            result.TableName = "moduleTab_" + result.Id.ToString();
+            result.ViewName = "moduleView_" + result.Id.ToString();
+            Dbctx.SaveChanges();
+            ClearCache();
+            return Ok(result);
+
         }
 
         // DELETE: api/GgcmsCategories/5
-        public ResultData Delete(int id)
+        public IHttpActionResult Delete(int id)
         {
 
             ExtendModule.TableDelete(id);
-            return new ResultData
-            {
-                Code = 0,
-                Msg = "",
-                Data = dbHelper.Delete<GgcmsModule>(id)
-            };
+            return Ok(id);
+
         }
-        [HttpGet]
-        public ResultData MultDelete()
+        [HttpPost]
+        public IHttpActionResult MultDelete(int[] ids)
         {
             try
             {
-                var reqParams = InitRequestParams<GgcmsModule>();
-                reqParams.limit = 0;
-                reqParams.offset = 0;
-                var list = dbHelper.GetList<GgcmsModule>(reqParams);
-                foreach (var item in list.List)
+                var query = Dbctx.GgcmsModules.Where(x => ids.Contains(x.Id));
+                foreach (var item in query.ToList())
                 {
-                    GgcmsModule module = item as GgcmsModule;
+                    GgcmsModules module = item as GgcmsModules;
                     ExtendModule.TableDelete(module.Id);
                 }
-                return new ResultData
-                {
-                    Code = 0,
-                    Msg = "",
-                    Data = dbHelper.MultDelete<GgcmsModule>(reqParams)
-                };
+                Dbctx.GgcmsModules.RemoveRange(query);
+                int c = Dbctx.SaveChanges();
+                ClearCache();
+                return Ok(c);
+
             } catch (Exception ex)
             {
-                return new ResultData
-                {
-                    Code = 4,
-                    Msg = ex.Message,
-                    Data = ex
-                };
+                return BadRequest(ex.Message);
             }
         }
 
 
-        public ResultData Exists(int id)
+        public IHttpActionResult Exists(int id)
         {
-            return new ResultData
-            {
-                Code = 0,
-                Msg = "",
-                Data = dbHelper.Exists<GgcmsModule>(id)
-            };
+            return Ok(Dbctx.GgcmsModules.Where(x => x.Id == id).Count() > 0);
         }
     }
 }

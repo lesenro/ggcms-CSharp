@@ -7,6 +7,7 @@ using System.Web.Http;
 using System.Web;
 using System.Configuration;
 using System.Text;
+using GgcmsCSharp.Models;
 
 namespace GgcmsCSharp.ApiCtrls
 {
@@ -19,7 +20,7 @@ namespace GgcmsCSharp.ApiCtrls
         }
         // GET: api/GgcmsCategories
         [HttpGet]
-        public ResultData GetList(string path)
+        public ResultInfo GetList(string path)
         {
             try
             {
@@ -45,7 +46,7 @@ namespace GgcmsCSharp.ApiCtrls
                         type = "file",
                     });
                 }
-                return new ResultData
+                return  new ResultInfo
                 {
                     Code = 0,
                     Msg = "",
@@ -57,23 +58,23 @@ namespace GgcmsCSharp.ApiCtrls
             }
             catch (Exception ex)
             {
-                return new ResultData
+                return new ResultInfo
                 {
                     Code = 1,
-                    Msg = ex.Message,
-                    Data = ex,
+                    Msg = "",
+                    Data = ex.Message,
                 };
             }
         }
 
         // GET: api/FileManager/5
-        public ResultData GetInfo(string file)
+        public ResultInfo GetInfo(string file)
         {
             try
             {
                 string filePath = getLocalPath(file); 
                 string info = File.ReadAllText(filePath, Encoding.UTF8);
-                return new ResultData
+                return new ResultInfo
                 {
                     Code = 0,
                     Msg = file,
@@ -82,7 +83,7 @@ namespace GgcmsCSharp.ApiCtrls
             }
             catch (Exception ex)
             {
-                return new ResultData
+                return new ResultInfo
                 {
                     Code = 1,
                     Msg = ex.Message,
@@ -92,13 +93,13 @@ namespace GgcmsCSharp.ApiCtrls
         }
 
         // PUT: api/FileManager/5
-        public ResultData Save(string file, string value)
+        public ResultInfo Save(string file, string value)
         {
             try
             {
                 string filePath = getLocalPath(file);
                 File.WriteAllText(filePath, value, Encoding.UTF8);
-                return new ResultData
+                return new ResultInfo
                 {
                     Code = 0,
                     Msg = "ok",
@@ -106,7 +107,7 @@ namespace GgcmsCSharp.ApiCtrls
             }
             catch (Exception ex)
             {
-                return new ResultData
+                return new ResultInfo
                 {
                     Code = 1,
                     Msg = ex.Message,
@@ -117,7 +118,7 @@ namespace GgcmsCSharp.ApiCtrls
         }
 
         // DELETE: api/FileManager/5
-        public ResultData Delete(string path, dynamic files)
+        public ResultInfo Delete(string path, dynamic files)
         {
             try
             {
@@ -136,7 +137,7 @@ namespace GgcmsCSharp.ApiCtrls
                         File.Delete(filePath);
                     }
                 }
-                return new ResultData
+                return new ResultInfo
                 {
                     Code = 0,
                     Msg = "ok",
@@ -144,7 +145,7 @@ namespace GgcmsCSharp.ApiCtrls
             }
             catch (Exception ex)
             {
-                return new ResultData
+                return new ResultInfo
                 {
                     Code = 1,
                     Msg = ex.Message,
@@ -152,7 +153,7 @@ namespace GgcmsCSharp.ApiCtrls
                 };
             }
         }
-        public ResultData NewDir(string path)
+        public ResultInfo NewDir(string path)
         {
             try
             {
@@ -160,7 +161,7 @@ namespace GgcmsCSharp.ApiCtrls
                 if (!Directory.Exists(filePath))
                 {
                     Directory.CreateDirectory(filePath);
-                    return new ResultData
+                    return new ResultInfo
                     {
                         Code = 0,
                         Msg = "ok",
@@ -168,7 +169,7 @@ namespace GgcmsCSharp.ApiCtrls
                 }
                 else
                 {
-                    return new ResultData
+                    return new ResultInfo
                     {
                         Code = 2,
                         Msg = "文件夹已存在",
@@ -178,7 +179,7 @@ namespace GgcmsCSharp.ApiCtrls
             }
             catch (Exception ex)
             {
-                return new ResultData
+                return new ResultInfo
                 {
                     Code = 1,
                     Msg = ex.Message,
@@ -186,7 +187,7 @@ namespace GgcmsCSharp.ApiCtrls
                 };
             }
         }
-        public ResultData StaticFileReName(string oldname,string newname)
+        public ResultInfo StaticFileReName(string oldname,string newname)
         {
             try
             {
@@ -197,7 +198,7 @@ namespace GgcmsCSharp.ApiCtrls
                 {
                     if (Directory.Exists(newname))
                     {
-                        return new ResultData
+                        return new ResultInfo
                         {
                             Code = 2,
                             Msg = "文件夹已存在",
@@ -212,7 +213,7 @@ namespace GgcmsCSharp.ApiCtrls
                 {
                     if (File.Exists(newname))
                     {
-                        return new ResultData
+                        return new ResultInfo
                         {
                             Code = 2,
                             Msg = "文件已存在",
@@ -223,7 +224,7 @@ namespace GgcmsCSharp.ApiCtrls
                         File.Move(oldname, newname);
                     }
                 }
-                return new ResultData
+                return new ResultInfo
                 {
                     Code = 0,
                     Msg = "ok",
@@ -231,7 +232,7 @@ namespace GgcmsCSharp.ApiCtrls
             }
             catch (Exception ex)
             {
-                return new ResultData
+                return new ResultInfo
                 {
                     Code = 1,
                     Msg = ex.Message,

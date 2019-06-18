@@ -28,7 +28,7 @@ namespace GgcmsCSharp.Models
         public static string FileSave(string file,string cnt,int ftype)
         {
             IThirdPartyStorage fileStorage = getFileSaveHandler();
-            ResultData result = fileStorage.UploadFile(file);
+            ResultInfo result = fileStorage.UploadFile(file);
             string rval = cnt;
             switch (ftype)
             {
@@ -49,8 +49,8 @@ namespace GgcmsCSharp.Models
             foreach (UpFileClass ufile in files)
             {
                 PropertyInfo pinfo = t.GetProperty(ufile.propertyName);
-                
-                ResultData result = fileStorage.UploadFile(ufile.filePath);
+
+                ResultInfo result = fileStorage.UploadFile(ufile.filePath);
                 switch (ufile.fileType)
                 {
                     case 1:
@@ -58,8 +58,8 @@ namespace GgcmsCSharp.Models
                         pinfo.SetValue(tinfo, cnt.Replace(fileStorage.serverUrl + ufile.filePath, result.Data));
                         break;
                     case 2:
-                        List<GgcmsAttachment> attachments = (List<GgcmsAttachment>)pinfo.GetValue(tinfo);
-                        foreach (GgcmsAttachment attach in attachments)
+                        List<GgcmsAttachments> attachments = (List<GgcmsAttachments>)pinfo.GetValue(tinfo);
+                        foreach (GgcmsAttachments attach in attachments)
                         {
                             if (attach.RealName == ufile.filePath)
                             {

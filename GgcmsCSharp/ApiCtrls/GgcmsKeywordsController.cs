@@ -1,4 +1,8 @@
 ﻿using GgcmsCSharp.Models;
+using GgcmsCSharp.Utils;
+using System.Data.Entity;
+using System.Linq;
+using System.Web;
 using System.Web.Http;
 using System.Web.Http.Controllers;
 using System.Web.Http.Description;
@@ -11,104 +15,79 @@ namespace GgcmsCSharp.ApiCtrls
 
         // GET: api/GgcmsCategories
         [HttpGet]
-        public ResultData GetList()
+        public IHttpActionResult GetList(string query)
         {
-            var reqParams = InitRequestParams<GgcmsKeyword>();
-            var result = dbHelper.GetList<GgcmsKeyword>(reqParams);
-            return new ResultData
-            {
-                Code = 0,
-                Data = result,
-                Msg = ""
-            };
+            string json = HttpUtility.UrlDecode(query);
+            SearchParams sParams = Tools.JsonDeserialize<SearchParams>(json);
+
+            return Ok(GetRecords<GgcmsKeywords>(sParams));
         }
 
         // GET: api/GgcmsCategories/5
-        public ResultData GetInfo(int id)
+        public IHttpActionResult GetInfo(int id)
         {
-            var result = dbHelper.GetById<GgcmsKeyword>(id);
-            return new ResultData
-            {
-                Code = 0,
-                Data = result,
-                Msg = ""
-            };
+            return Ok(Dbctx.GgcmsKeywords.Find(id));
+
         }
 
         // PUT: api/GgcmsCategories/5
-        public ResultData Edit(int id, GgcmsKeyword GgcmsKeyword)
+        public IHttpActionResult Edit(int id, GgcmsKeywords info)
         {
 
-            if (!ModelState.IsValid)
+            if (Dbctx.GgcmsKeywords.Where(x => x.Id == info.Id).Count() == 0)
             {
-                ResultData result = new ResultData
-                {
-                    Code = 3,
-                    Msg = "",
-                    Data = BadRequest(ModelState)
-                };
-                return result;
+                return BadRequest("信息不存在");
             }
-
-            return new ResultData
-            {
-                Code = 0,
-                Data = dbHelper.Edit(GgcmsKeyword.Id, GgcmsKeyword),
-                Msg = ""
-            };
+            //Dbctx.GgcmsKeywords.Attach(info);
+            //Dbctx.Entry(info).Property("goods_name").IsModified = true;
+            var ent = Dbctx.Entry(info);
+            ent.State = EntityState.Modified;
+            Dbctx.SaveChanges();
+            ClearCache();
+            return Ok(info);
         }
 
         // POST: api/GgcmsCategories
-        public ResultData Add(GgcmsKeyword GgcmsKeyword)
+        public IHttpActionResult Add(GgcmsKeywords info)
         {
-            if (!ModelState.IsValid)
-            {
-                ResultData result = new ResultData
-                {
-                    Code = 3,
-                    Msg = "",
-                    Data = BadRequest(ModelState)
-                };
-                return result;
-            }
-            return new ResultData
-            {
-                Code = 0,
-                Msg = "",
-                Data = dbHelper.Add(GgcmsKeyword)
-            };
+            var result = Dbctx.GgcmsKeywords.Add(info);
+            Dbctx.SaveChanges();
+            ClearCache();
+            return Ok(result);
         }
 
         // DELETE: api/GgcmsCategories/5
-        public ResultData Delete(int id)
+        public IHttpActionResult Delete(int id)
         {
-            return new ResultData
+            GgcmsKeywords oldinfo = Dbctx.GgcmsKeywords.Find(id);
+            if (oldinfo == null)
             {
-                Code = 0,
-                Msg = "",
-                Data = dbHelper.Delete<GgcmsKeyword>(id)
-            };
+                return BadRequest("信息不存在");
+            }
+
+            //List<int> idlist = GetDeleteIds(oldinfo.ticket_key);
+
+            //var query = Dbctx.ticket_information.Where(x => idlist.Contains(x.id));
+            Dbctx.GgcmsKeywords.Remove(oldinfo);
+            Dbctx.SaveChanges();
+            ClearCache();
+            return Ok(oldinfo);
         }
-        [HttpGet]
-        public ResultData MultDelete()
+        [HttpPost]
+        public IHttpActionResult MultDelete(int[] ids)
         {
-            var reqParams = InitRequestParams<GgcmsKeyword>();
-            return new ResultData
-            {
-                Code = 0,
-                Msg = "",
-                Data = dbHelper.MultDelete<GgcmsKeyword>(reqParams)
-            };
+            var query = Dbctx.GgcmsKeywords.Where(x => ids.Contains(x.Id));
+
+            Dbctx.GgcmsKeywords.RemoveRange(query);
+            int c = Dbctx.SaveChanges();
+            ClearCache();
+            return Ok(c);
         }
 
-        public ResultData Exists(int id)
+        public IHttpActionResult Exists(int id)
         {
-            return new ResultData
-            {
-                Code = 0,
-                Msg = "",
-                Data = dbHelper.Exists<GgcmsKeyword>(id)
-            };
+            return Ok(Dbctx.GgcmsAdverts.Where(x => x.Id == id).Count() > 0);
+
         }
     }
 }

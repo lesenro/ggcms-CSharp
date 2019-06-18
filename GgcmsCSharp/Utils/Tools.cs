@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Dynamic;
 using System.IO;
@@ -9,7 +10,6 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
-using System.Web.Script.Serialization;
 using System.Web.Security;
 
 namespace GgcmsCSharp.Utils
@@ -105,81 +105,45 @@ namespace GgcmsCSharp.Utils
             }
             return defaultValue;
         }
+        /// <summary>
+        /// Json字符串转对象
+        /// </summary>
+        /// <typeparam name="T">对象类型</typeparam>
+        /// <param name="json">json字符串</param>
+        /// <returns>返回对象</returns>
+        public static T JsonDeserialize<T>(string json)
+        {
+            try
+            {
+                return JsonConvert.DeserializeObject<T>(json);
+            }
+            catch
+            {
+                return (T)Activator.CreateInstance(typeof(T));
+            }
+        }
+        /// <summary>
+        /// 对象转Json字符串
+        /// </summary>
+        /// <param name="obj">需要转换的对象</param>
+        /// <returns>返回json字符串</returns>
+        public static string JsonSerialize(object obj)
+        {
+            return JsonConvert.SerializeObject(obj);
+        }
         public static T ConvertType<T>(string val) where T : class
         {
             if (val == null) return null;//返回类型的默认值
             try
             {
-                JavaScriptSerializer js = new JavaScriptSerializer();
-                return js.Deserialize<T>(val);
+                return JsonDeserialize<T>(val);
             }
             catch
             {
                 return null;
             }
         }
-        public static string HttpGet(string Url, string postDataStr, string author = "", string contentType = "application/json;charset=UTF-8")
-        {
-            try
-            {
-                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(Url + (postDataStr == "" ? "" : "?") + postDataStr);
-                request.Method = "GET";
-                request.ContentType = contentType;
-                if (author != "")
-                {
-                    request.Headers.Add(HttpRequestHeader.Authorization, author);
-                }
-                HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-                Stream myResponseStream = response.GetResponseStream();
-                StreamReader myStreamReader = new StreamReader(myResponseStream, Encoding.GetEncoding("utf-8"));
-                string result = myStreamReader.ReadToEnd();
-                myStreamReader.Close();
-                myResponseStream.Close();
 
-                return result;
-            }
-            catch (Exception ex)
-            {
-                return null;
-            }
-        }
-        public static string HttpPost(string url, dynamic param, string author = "", string contentType = "application/json;charset=UTF-8")
-        {
-            try
-            {
-                JavaScriptSerializer js = new JavaScriptSerializer();
-                string strURL = url;
-                HttpWebRequest request;
-                request = (HttpWebRequest)WebRequest.Create(strURL);
-                request.Method = "POST";
-                if (author != "")
-                {
-                    request.Headers.Add(HttpRequestHeader.Authorization, author);
-                }
-                request.ContentType = contentType;
-                string paraUrlCoded = js.Serialize(param);
-                byte[] payload;
-                payload = Encoding.UTF8.GetBytes(paraUrlCoded);
-                request.ContentLength = payload.Length;
-                Stream writer = request.GetRequestStream();
-                writer.Write(payload, 0, payload.Length);
-                writer.Close();
-                HttpWebResponse response;
-                response = (HttpWebResponse)request.GetResponse();
-                Stream s;
-                s = response.GetResponseStream();
-                string result = "";
-                using (StreamReader reader = new StreamReader(s, Encoding.UTF8))
-                {
-                    result = reader.ReadToEnd();
-                }
-                return result;
-            }
-            catch
-            {
-                return null;
-            }
-        }
         public static dynamic ObjectMerge(params dynamic[] objs)
         {
             Dictionary<string, dynamic> newObj = new Dictionary<string, dynamic>();
@@ -195,8 +159,7 @@ namespace GgcmsCSharp.Utils
         }
         public static string JsonStringify(dynamic obj)
         {
-            JavaScriptSerializer js = new JavaScriptSerializer();
-            return js.Serialize(obj);
+            return JsonSerialize(obj);
         }
 
     }

@@ -5,118 +5,78 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Http;
-using System.Web.Http.Cors;
 
 namespace GgcmsCSharp.ApiCtrls
 {
     //  [EnableCors(origins: "http://localhost:4200", headers: "*", methods: "*")]
-    public class LoginController : ApiController
+    public class LoginController : ApiBaseController
     {
         private GgcmsDB ggcmsDb = new GgcmsDB();
 
 
         [HttpPost]
         //[GgcmsAuthorizeAttribute("vip")]
-        public ResultData PostLogin(dynamic linfo)
+        public IHttpActionResult PostLogin(dynamic linfo)
         {
-            ResultData result = new ResultData
-            {
-                Code = 0,
-                Msg = ""
-            };
+
             string username = linfo.username;
             string password = linfo.password;
             string captcha = linfo.captcha;
-            var session = HttpContext.Current.Session;
-            if (session != null)
+            string sessionKey = SystemEnums.captcha.ToString();
+
+            if (Session[sessionKey] != null)
             {
-                if (session["ggcms_code"] != null)
+                string sn_captcha = Session[sessionKey].ToString();
+                if (sn_captcha.ToLower() != captcha.ToLower())
                 {
-                    string sn_captcha = session["ggcms_code"].ToString();
-                    if (sn_captcha.ToLower() != captcha.ToLower())
-                    {
-                        result.Code = 101;
-                        result.Msg = "验证码不正确";
-                        return result;
-                    }
+                    return BadRequest("验证码不正确");
                 }
-                else
-                {
-                    result.Code = 101;
-                    return result;
-                }
+            }
+            else
+            {
+                return BadRequest("验证码不正确");
             }
             if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
             {
-                result.Code = 102;
-                result.Msg = "用户名和密码不能为空";
-                return result;
+                return BadRequest("用户名和密码不能为空");
             }
             var member = from c in ggcmsDb.GgcmsMembers
                          where c.UserName == username
                          select c;
-            GgcmsMember m = member.FirstOrDefault<GgcmsMember>();
+            GgcmsMembers m = member.FirstOrDefault<GgcmsMembers>();
             if (m == null)
             {
-                result.Code = 103;
-                result.Msg = "用户名或密码错误，请检查!";
-                return result;
+                return BadRequest("用户名或密码错误，请检查!");
             }
             else
             {
                 string md5pass = Tools.getMd5Hash(m.PassWord + captcha);
                 if (md5pass != password)
                 {
-                    result.Code = 104;
-                    result.Msg = "用户名或密码错误，请检查...";
-                    return result;
+                    return BadRequest("用户名或密码错误，请检查...");
                 }
             }
             m.PassWord = "";
-            session.Add("ggcms_loginUser", m);
-            result.Data = m;
-            return result;
+            Session.Add(SystemEnums.login_user.ToString(), m);
+            return Ok(m);
         }
         [HttpGet]
-        public ResultData GetLoginUser()
+        public IHttpActionResult GetLoginInfo()
         {
-            ResultData result = new ResultData
+            var user = GetLoginUser();
+            if (user != null)
             {
-                Code = 1,
-                Msg = "无登录用户"
-            };
-            var session = HttpContext.Current.Session;
-            if (session != null)
-            {
-                if (session["ggcms_loginUser"] != null)
-                {
-                    GgcmsMember m = session["ggcms_loginUser"] as GgcmsMember;
-                    result = new ResultData
-                    {
-                        Code = 0,
-                        Data = m
-                    };
-                }
+                return Ok(user);
             }
-            return result;
+            return BadRequest("无登录用户");
         }
         [HttpGet]
-        public ResultData GetLogout()
+        public IHttpActionResult GetLogout()
         {
-            ResultData result = new ResultData
-            {
-                Code = 0,
-                Msg = ""
-            };
 
-            var session = HttpContext.Current.Session;
-            if (session != null)
-            {
+            Session.RemoveAll();
 
-                session.RemoveAll();
-            }
-
-            return result;
+            return Ok("退出成功");
         }
 
     }

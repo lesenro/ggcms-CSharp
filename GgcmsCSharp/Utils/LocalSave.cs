@@ -5,6 +5,7 @@ using System.Web;
 using GgcmsCSharp.ApiCtrls;
 using System.IO;
 using System.Configuration;
+using GgcmsCSharp.Models;
 
 namespace GgcmsCSharp.Utils
 {
@@ -31,18 +32,18 @@ namespace GgcmsCSharp.Utils
                 Directory.CreateDirectory(rootpath);
             }
         }
-        public ResultData Delete(string key)
+        public ResultInfo Delete(string key)
         {
             string filePath= HttpContext.Current.Server.MapPath("~" + key);
             File.Delete(filePath);
-            return new ResultData
+            return new ResultInfo
             {
                 Code = 0,
                 Msg = "",
             };
         }
 
-        public ResultData UploadFile(string file)
+        public ResultInfo UploadFile(string file)
         {
             string tempFile = HttpContext.Current.Server.MapPath("~" + file);
             string ext = Path.GetExtension(tempFile);
@@ -56,7 +57,7 @@ namespace GgcmsCSharp.Utils
                 url = UploadPrefix+root + "/" + fn;
             }
             File.Move(tempFile, filePath);
-            return new ResultData
+            return new ResultInfo
             {
                 Code = 0,
                 Msg = "",

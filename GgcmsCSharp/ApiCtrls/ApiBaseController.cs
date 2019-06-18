@@ -1,8 +1,11 @@
-﻿using GgcmsCSharp.Models;
+﻿using GgcmsCSharp.Controllers;
+using GgcmsCSharp.Models;
 using GgcmsCSharp.Utils;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Dynamic;
 using System.Net;
 using System.Net.Http;
 using System.Web;
@@ -14,7 +17,8 @@ namespace GgcmsCSharp.ApiCtrls
 {
     public class ApiBaseController : ApiController
     {
-        public DataBaseHelper<GgcmsDB> dbHelper { get; set; }
+        public GgcmsDB Dbctx { get; set; }
+        public DataHelper dbHelper { get; set; }
         public HttpContext Context { get; set; }
         public HttpSessionState Session { get; set; }
         public HttpServerUtility Server { get; set; }
@@ -24,45 +28,69 @@ namespace GgcmsCSharp.ApiCtrls
         protected override void Initialize(HttpControllerContext controllerContext)
         {
             base.Initialize(controllerContext);
-            dbHelper = new DataBaseHelper<GgcmsDB>(new GgcmsDB());
             Context = HttpContext.Current;
             Session = Context.Session;
             Server = Context.Server;
             httpRequest = Context.Request;
             httpResponse = Context.Response;
+
+            base.Initialize(controllerContext);
+            Context = HttpContext.Current;
+            Session = Context.Session;
+            Server = Context.Server;
+            httpRequest = Context.Request;
+            httpResponse = Context.Response;
+            Dbctx = new GgcmsDB();
+            dbHelper = new DataHelper();
         }
 
         [NonAction]
-        public RequestParams InitRequestParams<T>() where T : class
+        public GgcmsMembers GetLoginUser()
         {
-            string columns = Request.GetQueryString("columns") ?? "";
-            int limit = Tools.ConvertType<int>(Request.GetQueryString("limit"), 10);
-            int offset = Tools.ConvertType<int>(Request.GetQueryString("offset"), 0);
-            int pagenum = Tools.ConvertType<int>(Request.GetQueryString("pagenum"), 1);
-            string order = Request.GetQueryString("order") ?? "";
-            string sortby = Request.GetQueryString("sortby") ?? "";
-            string query = Request.GetQueryString("query") ?? "";
-            return RequestParams.GetRequestParams<GgcmsDB, T>(columns, limit, offset, pagenum, order, sortby, query);
+            //没有登录
+            if (Session[SystemEnums.login_user.ToString()] == null)
+            {
+                return null;
+            }
+
+            var user = Session[SystemEnums.login_user.ToString()] as GgcmsMembers;
+
+            return user;
         }
         [NonAction]
-        public RequestParams InitRequestParams()
+        public List<GgcmsPowers> GetUserPowers()
         {
-            string columns = Request.GetQueryString("columns") ?? "";
-            int limit = Tools.ConvertType<int>(Request.GetQueryString("limit"), 10);
-            int offset = Tools.ConvertType<int>(Request.GetQueryString("offset"), 0);
-            int pagenum = Tools.ConvertType<int>(Request.GetQueryString("pagenum"), 1);
-            string order = Request.GetQueryString("order") ?? "";
-            string sortby = Request.GetQueryString("sortby") ?? "";
-            string query = Request.GetQueryString("query") ?? "";
-            return RequestParams.AdoSqlParams<GgcmsDB>(columns, limit, offset, pagenum, order, sortby, query);
-        }
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing && dbHelper != null)
+            if (Session[SystemEnums.user_powers.ToString()] == null)
             {
-                dbHelper.Dispose(true);
+                return null;
             }
-            base.Dispose(disposing);
+
+            var my_powers = Session[SystemEnums.user_powers.ToString()] as List<GgcmsPowers>;
+
+            return my_powers;
+        }
+        [NonAction]
+        public void ClearCache()
+        {
+            string cachePath = Request.RequestUri.LocalPath;
+            cachePath = cachePath.Substring(0, cachePath.LastIndexOf("/"));
+            CacheHelper.RemoveAllCache(cachePath);
+        }
+        [NonAction]
+        public void ClearCache(string key)
+        {
+            string cachePath = Request.RequestUri.LocalPath;
+            cachePath = cachePath.Substring(0, cachePath.LastIndexOf("/"));
+            var route = ActionContext.RequestContext.RouteData;
+            string ctrl_name = route.Values["controller"].ToString();
+            cachePath = cachePath.Replace(ctrl_name, key);
+            //清理门票API的缓存
+            CacheHelper.RemoveAllCache(cachePath);
+        }
+        [NonAction]
+        public SearchResult<T> GetRecords<T>(SearchParams sParams) where T : class
+        {
+            return dbHelper.GetRecords<T>(sParams);
         }
     }
 }

@@ -22,11 +22,12 @@ namespace GgcmsCSharp.ApiCtrls
             if (obj == null)
             {
                 GgcmsDB db = new GgcmsDB();
-                var tmps = from r in db.GgcmsSysConfigs
-                           select new { r.Id, r.CfgName, r.CfgValue };
+                var tmps = from r in db.GgcmsDictionaries
+                           where r.GroupKey== "system_configs"
+                           select new { r.Id, r.DictKey, r.DictValue };
                 foreach (var item in tmps)
                 {
-                    cfgs.Add(item.CfgName, item.CfgValue);
+                    cfgs.Add(item.DictKey, item.DictValue);
                 }
                 SetCache(cacheName, cfgs);
             }
@@ -36,10 +37,10 @@ namespace GgcmsCSharp.ApiCtrls
             }
             return cfgs;
         }
-        public static List<GgcmsCategory> GetCategorys(string prefix="")
+        public static List<GgcmsCategories> GetCategorys(string prefix="")
         {
             string cacheName = CacheTypeNames.Categorys.ToString();
-            List<GgcmsCategory> categorys = new List<GgcmsCategory>();
+            List<GgcmsCategories> categorys = new List<GgcmsCategories>();
             object obj = GetCache(cacheName);
             if (obj == null)
             {
@@ -48,12 +49,12 @@ namespace GgcmsCSharp.ApiCtrls
                             where r.CategoryType == 0
                             orderby r.OrderId ascending
                             select r).ToList();
-                categorys = GgcmsCategory.GetCategoryList(0, tmps as List<GgcmsCategory>, prefix);
+                categorys = GgcmsCategories.GetCategoryList(0, tmps as List<GgcmsCategories>, prefix);
                 SetCache(cacheName, categorys);
             }
             else
             {
-                categorys = obj as List<GgcmsCategory>;
+                categorys = obj as List<GgcmsCategories>;
             }
             return categorys;
         }
@@ -125,10 +126,25 @@ namespace GgcmsCSharp.ApiCtrls
         /// <summary>  
         /// 移除指定数据缓存  
         /// </summary>  
-        public static void RemoveAllCache(string CacheKey)
+        public static void RemoveAllCache(string key)
         {
-            System.Web.Caching.Cache _cache = HttpRuntime.Cache;
-            _cache.Remove(CacheKey);
+            List<string> cacheKeys = new List<string>();
+            var cacheEnum = HttpRuntime.Cache.GetEnumerator();
+            while (cacheEnum.MoveNext())
+            {
+                if (string.IsNullOrEmpty(key))
+                {
+                    cacheKeys.Add(cacheEnum.Key.ToString());
+                }
+                else if (cacheEnum.Key.ToString().StartsWith(key))
+                {
+                    cacheKeys.Add(cacheEnum.Key.ToString());
+                }
+            }
+            foreach (string cacheKey in cacheKeys)
+            {
+                HttpRuntime.Cache.Remove(cacheKey);
+            }
         }
         public static void RemoveAllCache(CacheTypeNames ctype)
         {

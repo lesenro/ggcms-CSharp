@@ -1,8 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.Default.props" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.Default.props')" />
-  <Import Project="..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.0\build\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props" Condition="Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.0\build\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" />
-  <Import Project="..\packages\Microsoft.Net.Compilers.1.0.0\build\Microsoft.Net.Compilers.props" Condition="Exists('..\packages\Microsoft.Net.Compilers.1.0.0\build\Microsoft.Net.Compilers.props')" />
+<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -10,14 +7,16 @@
     <ProductVersion>
     </ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{4E8753D0-964C-47CF-BF23-3FB695800CD5}</ProjectGuid>
+    <ProjectGuid>{EC96BADF-D1CD-40CF-892A-C58736CC03E8}</ProjectGuid>
     <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>GgcmsCSharp</RootNamespace>
     <AssemblyName>GgcmsCSharp</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <MvcBuildViews>false</MvcBuildViews>
     <UseIISExpress>true</UseIISExpress>
+    <Use64BitIISExpress />
     <IISExpressSSLPort />
     <IISExpressAnonymousAuthentication />
     <IISExpressWindowsAuthentication />
@@ -25,9 +24,6 @@
     <UseGlobalApplicationHostFile />
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
-    <TargetFrameworkProfile />
-    <TypeScriptToolsVersion>1.7</TypeScriptToolsVersion>
-    <Use64BitIISExpress />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -39,6 +35,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\</OutputPath>
@@ -48,146 +45,101 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
-      <Private>True</Private>
+      <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.dll</HintPath>
     </Reference>
     <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.AI.Agent.Intercept, Version=1.2.0.1011, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.ApplicationInsights.Agent.Intercept.1.2.0\lib\net45\Microsoft.AI.Agent.Intercept.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.AI.DependencyCollector, Version=1.2.3.246, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.ApplicationInsights.DependencyCollector.1.2.3\lib\net45\Microsoft.AI.DependencyCollector.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.AI.PerfCounterCollector, Version=1.2.3.246, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.ApplicationInsights.PerfCounterCollector.1.2.3\lib\net45\Microsoft.AI.PerfCounterCollector.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.AI.ServerTelemetryChannel, Version=1.2.3.246, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.ApplicationInsights.WindowsServer.TelemetryChannel.1.2.3\lib\net45\Microsoft.AI.ServerTelemetryChannel.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.AI.Web, Version=1.2.3.246, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.ApplicationInsights.Web.1.2.3\lib\net45\Microsoft.AI.Web.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.AI.WindowsServer, Version=1.2.3.246, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.ApplicationInsights.WindowsServer.1.2.3\lib\net45\Microsoft.AI.WindowsServer.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.ApplicationInsights, Version=1.2.3.490, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.ApplicationInsights.1.2.3\lib\net45\Microsoft.ApplicationInsights.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.CodeDom.Providers.DotNetCompilerPlatform, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.0\lib\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll</HintPath>
-      <Private>True</Private>
+      <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.12.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="Qiniu, Version=7.2.15.0, Culture=neutral, PublicKeyToken=2894d75bb9f220bf, processorArchitecture=MSIL">
       <HintPath>..\packages\Qiniu.Shared.7.2.15\lib\net45\Qiniu.dll</HintPath>
-      <Private>True</Private>
     </Reference>
-    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.IO.Compression" />
     <Reference Include="System.IO.Compression.FileSystem" />
     <Reference Include="System.Linq.Dynamic, Version=1.0.6132.35681, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Linq.Dynamic.1.0.7\lib\net40\System.Linq.Dynamic.dll</HintPath>
-      <Private>True</Private>
     </Reference>
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Security" />
-    <Reference Include="System.Web.Cors, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.AspNet.Cors.5.2.3\lib\net45\System.Web.Cors.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="System.Web.Cors, Version=5.2.7.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Cors.5.2.7\lib\net45\System.Web.Cors.dll</HintPath>
     </Reference>
-    <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />
     <Reference Include="System.Web.ApplicationServices" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
-    <Reference Include="System" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Web.Extensions" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Web" />
-    <Reference Include="System.Web.Http.Cors, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.AspNet.WebApi.Cors.5.2.3\lib\net45\System.Web.Http.Cors.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Web.Http.Cors, Version=5.2.7.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Cors.5.2.7\lib\net45\System.Web.Http.Cors.dll</HintPath>
     </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Abstractions" />
+    <Reference Include="System.Web.Routing" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Configuration" />
-    <Reference Include="System.Web.Services" />
-    <Reference Include="System.EnterpriseServices" />
-    <Reference Include="System.Xml.Linq" />
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="System.Web.Razor">
-      <HintPath>..\packages\Microsoft.AspNet.Razor.3.2.3\lib\net45\System.Web.Razor.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Web.Webpages">
-      <HintPath>..\packages\Microsoft.AspNet.Webpages.3.2.3\lib\net45\System.Web.Webpages.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Web.Webpages.Deployment">
-      <HintPath>..\packages\Microsoft.AspNet.Webpages.3.2.3\lib\net45\System.Web.Webpages.Deployment.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Web.Webpages.Razor">
-      <HintPath>..\packages\Microsoft.AspNet.Webpages.3.2.3\lib\net45\System.Web.Webpages.Razor.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Web.Helpers">
-      <HintPath>..\packages\Microsoft.AspNet.Webpages.3.2.3\lib\net45\System.Web.Helpers.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Web.Infrastructure">
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
       <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
     </Reference>
-    <Reference Include="System.Web.Mvc">
-      <HintPath>..\packages\Microsoft.AspNet.Mvc.5.2.3\lib\net45\System.Web.Mvc.dll</HintPath>
+    <Reference Include="System.Net.Http">
     </Reference>
-    <Reference Include="System.Net.Http.Formatting">
-      <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.2.3\lib\net45\System.Net.Http.Formatting.dll</HintPath>
+    <Reference Include="System.Net.Http.Formatting, Version=5.2.7.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.2.7\lib\net45\System.Net.Http.Formatting.dll</HintPath>
     </Reference>
-    <Reference Include="System.Web.Http">
-      <HintPath>..\packages\Microsoft.AspNet.WebApi.Core.5.2.3\lib\net45\System.Web.Http.dll</HintPath>
+    <Reference Include="System.Net.Http.WebRequest">
     </Reference>
-    <Reference Include="System.Web.Http.WebHost">
-      <HintPath>..\packages\Microsoft.AspNet.WebApi.WebHost.5.2.3\lib\net45\System.Web.Http.WebHost.dll</HintPath>
+    <Reference Include="System.Web.Helpers, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.7\lib\net45\System.Web.Helpers.dll</HintPath>
     </Reference>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Global.asax" />
-    <None Include="Properties\PublishProfiles\todir.pubxml" />
-    <Content Include="sqldb\20180122-01.sql" />
-    <Content Include="sqldb\20170709-01.sql" />
-    <Content Include="sqldb\20170705-01.sql" />
-    <Content Include="sqldb\20170830-01.sql" />
-    <Content Include="sqldb\20170829-01.sql" />
-    <Content Include="sqldb\ggcmsdb.sql" />
-    <Content Include="Web.config" />
+    <Reference Include="System.Web.Http, Version=5.2.7.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Core.5.2.7\lib\net45\System.Web.Http.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Http.WebHost, Version=5.2.7.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.WebHost.5.2.7\lib\net45\System.Web.Http.WebHost.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Mvc, Version=5.2.7.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.AspNet.Mvc.5.2.7\lib\net45\System.Web.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.AspNet.Razor.3.2.7\lib\net45\System.Web.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.7\lib\net45\System.Web.WebPages.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Deployment, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.7\lib\net45\System.Web.WebPages.Deployment.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.7\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="Antlr3.Runtime">
+      <Private>True</Private>
+      <HintPath>..\packages\Antlr.3.5.0.2\lib\Antlr3.Runtime.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ApiCtrls\ApiBaseController.cs" />
+    <Compile Include="ApiCtrls\CacheHelper.cs" />
     <Compile Include="ApiCtrls\CommonController.cs" />
-    <Compile Include="ApiCtrls\WebapiController.cs" />
-    <Compile Include="Migrations\201801290335440_GgcmsCategory-add-RouteKey.cs" />
-    <Compile Include="Migrations\201801290335440_GgcmsCategory-add-RouteKey.Designer.cs">
-      <DependentUpon>201801290335440_GgcmsCategory-add-RouteKey.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Models\ExtendModule.cs" />
-    <Compile Include="Utils\DataBaseHelper.cs" />
     <Compile Include="ApiCtrls\FileManagerController.cs" />
     <Compile Include="ApiCtrls\GgcmsAdvertsController.cs" />
     <Compile Include="ApiCtrls\GgcmsArticlesController.cs" />
     <Compile Include="ApiCtrls\GgcmsAuthorizeAttribute.cs" />
-    <Compile Include="ApiCtrls\CacheHelper.cs" />
     <Compile Include="ApiCtrls\GgcmsCategoriesController.cs" />
+    <Compile Include="ApiCtrls\GgcmsDataToolsController.cs" />
     <Compile Include="ApiCtrls\GgcmsDictionariesController.cs" />
     <Compile Include="ApiCtrls\GgcmsFriendLinksController.cs" />
     <Compile Include="ApiCtrls\GgcmsKeywordsController.cs" />
@@ -195,49 +147,12 @@
     <Compile Include="ApiCtrls\GgcmsModulesController.cs" />
     <Compile Include="ApiCtrls\GgcmsPowersController.cs" />
     <Compile Include="ApiCtrls\GgcmsStylesController.cs" />
-    <Compile Include="ApiCtrls\GgcmsSysConfigsController.cs" />
     <Compile Include="ApiCtrls\GgcmsTasksController.cs" />
     <Compile Include="ApiCtrls\GgcmsTopicsController.cs" />
     <Compile Include="ApiCtrls\HttpRequestMessageExtensions.cs" />
     <Compile Include="ApiCtrls\LoginController.cs" />
-    <Compile Include="ApiCtrls\ResultData.cs" />
-    <Compile Include="Controllers\DataHelper.cs" />
-    <Compile Include="Migrations\201706050222065_字典表增加value字段.cs" />
-    <Compile Include="Migrations\201706050222065_字典表增加value字段.Designer.cs">
-      <DependentUpon>201706050222065_字典表增加value字段.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201706290356538_添加受保护的设置.cs" />
-    <Compile Include="Migrations\201706290356538_添加受保护的设置.Designer.cs">
-      <DependentUpon>201706290356538_添加受保护的设置.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201706290753311_分类中添加文章数统计.cs" />
-    <Compile Include="Migrations\201706290753311_分类中添加文章数统计.Designer.cs">
-      <DependentUpon>201706290753311_分类中添加文章数统计.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201708290947439_增加广告表GgcmsAdverts.cs" />
-    <Compile Include="Migrations\201708290947439_增加广告表GgcmsAdverts.Designer.cs">
-      <DependentUpon>201708290947439_增加广告表GgcmsAdverts.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201708291024185_广告表增加URL字段.cs" />
-    <Compile Include="Migrations\201708291024185_广告表增加URL字段.Designer.cs">
-      <DependentUpon>201708291024185_广告表增加URL字段.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201708291030174_广告表增加Image字段.cs" />
-    <Compile Include="Migrations\201708291030174_广告表增加Image字段.Designer.cs">
-      <DependentUpon>201708291030174_广告表增加Image字段.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201708300038156_修改友情链接类型LinkType为字符型.cs" />
-    <Compile Include="Migrations\201708300038156_修改友情链接类型LinkType为字符型.Designer.cs">
-      <DependentUpon>201708300038156_修改友情链接类型LinkType为字符型.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201708300131572_修改字典类型DictType为字符型.cs" />
-    <Compile Include="Migrations\201708300131572_修改字典类型DictType为字符型.Designer.cs">
-      <DependentUpon>201708300131572_修改字典类型DictType为字符型.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Models\GgcmsAdverts.cs" />
-    <Compile Include="Models\PageTemplate.cs" />
-    <Compile Include="Models\Pagination.cs" />
-    <Compile Include="Models\UpFileClass.cs" />
+    <Compile Include="ApiCtrls\WebapiController.cs" />
+    <Compile Include="App_Start\GgcmsAuthorizeAttribute.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\getCaptchaController.cs" />
@@ -245,121 +160,111 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201705050327139_数据库初始化.cs" />
-    <Compile Include="Migrations\201705050327139_数据库初始化.Designer.cs">
-      <DependentUpon>201705050327139_数据库初始化.cs</DependentUpon>
+    <Compile Include="Migrations\201906130225460_first-init.cs" />
+    <Compile Include="Migrations\201906130225460_first-init.Designer.cs">
+      <DependentUpon>201906130225460_first-init.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201705220558281_增加管理菜单图标.cs" />
-    <Compile Include="Migrations\201705220558281_增加管理菜单图标.Designer.cs">
-      <DependentUpon>201705220558281_增加管理菜单图标.cs</DependentUpon>
+    <Compile Include="Migrations\201906130226174_dict-pid.cs" />
+    <Compile Include="Migrations\201906130226174_dict-pid.Designer.cs">
+      <DependentUpon>201906130226174_dict-pid.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201705220610191_增加管理菜单属性.cs" />
-    <Compile Include="Migrations\201705220610191_增加管理菜单属性.Designer.cs">
-      <DependentUpon>201705220610191_增加管理菜单属性.cs</DependentUpon>
+    <Compile Include="Migrations\201906130239096_totext.cs" />
+    <Compile Include="Migrations\201906130239096_totext.Designer.cs">
+      <DependentUpon>201906130239096_totext.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201705220852257_增加权限Path.cs" />
-    <Compile Include="Migrations\201705220852257_增加权限Path.Designer.cs">
-      <DependentUpon>201705220852257_增加权限Path.cs</DependentUpon>
+    <Compile Include="Migrations\201906140111054_remove-groupkey.cs" />
+    <Compile Include="Migrations\201906140111054_remove-groupkey.Designer.cs">
+      <DependentUpon>201906140111054_remove-groupkey.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201705270642217_article pagetitle.cs" />
-    <Compile Include="Migrations\201705270642217_article pagetitle.Designer.cs">
-      <DependentUpon>201705270642217_article pagetitle.cs</DependentUpon>
+    <Compile Include="Migrations\201906140111590_totext1.cs" />
+    <Compile Include="Migrations\201906140111590_totext1.Designer.cs">
+      <DependentUpon>201906140111590_totext1.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201705270643523_article pagetitle 255.cs" />
-    <Compile Include="Migrations\201705270643523_article pagetitle 255.Designer.cs">
-      <DependentUpon>201705270643523_article pagetitle 255.cs</DependentUpon>
+    <Compile Include="Migrations\201906140120067_dict.cs" />
+    <Compile Include="Migrations\201906140120067_dict.Designer.cs">
+      <DependentUpon>201906140120067_dict.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201906140155063_remove-config.cs" />
+    <Compile Include="Migrations\201906140155063_remove-config.Designer.cs">
+      <DependentUpon>201906140155063_remove-config.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
-    <Compile Include="Models\GgcmsArticle.cs" />
-    <Compile Include="Models\GgcmsArticlePage.cs" />
-    <Compile Include="Models\GgcmsAttachment.cs" />
-    <Compile Include="Models\GgcmsCategory.cs" />
+    <Compile Include="Models\DataHelper.cs" />
+    <Compile Include="Models\ExtendModule.cs" />
+    <Compile Include="Models\GgcmsAdverts.cs" />
+    <Compile Include="Models\GgcmsArticlePages.cs" />
+    <Compile Include="Models\GgcmsArticles.cs" />
+    <Compile Include="Models\GgcmsAttachments.cs" />
+    <Compile Include="Models\GgcmsCategories.cs" />
+    <Compile Include="Models\GgcmsDictionaries.cs" />
+    <Compile Include="Models\GgcmsFriendLinks.cs" />
+    <Compile Include="Models\GgcmsKeywords.cs" />
+    <Compile Include="Models\GgcmsMembers.cs" />
+    <Compile Include="Models\GgcmsModuleColumns.cs" />
+    <Compile Include="Models\GgcmsModules.cs" />
+    <Compile Include="Models\GgcmsPowers.cs" />
+    <Compile Include="Models\GgcmsRolePowers.cs" />
+    <Compile Include="Models\GgcmsStyles.cs" />
+    <Compile Include="Models\GgcmsTasks.cs" />
+    <Compile Include="Models\GgcmsTopics.cs" />
     <Compile Include="Models\GgcmsDB.cs" />
-    <Compile Include="Models\GgcmsDictionary.cs" />
-    <Compile Include="Models\GgcmsFriendLink.cs" />
-    <Compile Include="Models\GgcmsKeyword.cs" />
-    <Compile Include="Models\GgcmsMember.cs" />
-    <Compile Include="Models\GgcmsModule.cs" />
-    <Compile Include="Models\GgcmsModuleColumn.cs" />
-    <Compile Include="Models\GgcmsPower.cs" />
-    <Compile Include="Models\GgcmsRolePower.cs" />
-    <Compile Include="Models\GgcmsStyle.cs" />
-    <Compile Include="Models\GgcmsSysConfig.cs" />
-    <Compile Include="Models\GgcmsTask.cs" />
-    <Compile Include="Models\GgcmsTopic.cs" />
+    <Compile Include="Models\PageTemplate.cs" />
+    <Compile Include="Models\Pagination.cs" />
+    <Compile Include="Models\ResultInfo.cs" />
+    <Compile Include="Models\SearchParams.cs" />
+    <Compile Include="Models\SearchResult.cs" />
+    <Compile Include="Models\SystemEnums.cs" />
+    <Compile Include="Models\UpFileClass.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Utils\HttpClient.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Utils\IThirdPartyStorage.cs" />
     <Compile Include="Utils\LocalSave.cs" />
     <Compile Include="Utils\QiniuHandle.cs" />
     <Compile Include="Utils\Tools.cs" />
+    <Compile Include="WebApiCacheAttribute.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\web.config">
-      <SubType>Designer</SubType>
-    </Content>
-    <Content Include="packages.config" />
-    <Content Include="ApplicationInsights.config">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <None Include="Web.Debug.config">
+    <Content Include="favicon.ico" />
+    <Content Include="Global.asax" />
+    <Content Include="Web.config" />
+    <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
-    </None>
-    <None Include="Web.Release.config">
+    </Content>
+    <Content Include="Web.Release.config">
       <DependentUpon>Web.config</DependentUpon>
-    </None>
+    </Content>
+    <Content Include="Views\Web.config" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="App_Data\" />
     <Folder Include="Content\" />
   </ItemGroup>
   <ItemGroup>
-    <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />
-    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201705050327139_数据库初始化.resx">
-      <DependentUpon>201705050327139_数据库初始化.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201906130225460_first-init.resx">
+      <DependentUpon>201906130225460_first-init.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201705220558281_增加管理菜单图标.resx">
-      <DependentUpon>201705220558281_增加管理菜单图标.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201906130226174_dict-pid.resx">
+      <DependentUpon>201906130226174_dict-pid.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201705220610191_增加管理菜单属性.resx">
-      <DependentUpon>201705220610191_增加管理菜单属性.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201906130239096_totext.resx">
+      <DependentUpon>201906130239096_totext.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201705220852257_增加权限Path.resx">
-      <DependentUpon>201705220852257_增加权限Path.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201906140111054_remove-groupkey.resx">
+      <DependentUpon>201906140111054_remove-groupkey.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201705270642217_article pagetitle.resx">
-      <DependentUpon>201705270642217_article pagetitle.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201906140111590_totext1.resx">
+      <DependentUpon>201906140111590_totext1.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201705270643523_article pagetitle 255.resx">
-      <DependentUpon>201705270643523_article pagetitle 255.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201906140120067_dict.resx">
+      <DependentUpon>201906140120067_dict.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201706050222065_字典表增加value字段.resx">
-      <DependentUpon>201706050222065_字典表增加value字段.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201706290356538_添加受保护的设置.resx">
-      <DependentUpon>201706290356538_添加受保护的设置.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201706290753311_分类中添加文章数统计.resx">
-      <DependentUpon>201706290753311_分类中添加文章数统计.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201708290947439_增加广告表GgcmsAdverts.resx">
-      <DependentUpon>201708290947439_增加广告表GgcmsAdverts.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201708291024185_广告表增加URL字段.resx">
-      <DependentUpon>201708291024185_广告表增加URL字段.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201708291030174_广告表增加Image字段.resx">
-      <DependentUpon>201708291030174_广告表增加Image字段.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201708300038156_修改友情链接类型LinkType为字符型.resx">
-      <DependentUpon>201708300038156_修改友情链接类型LinkType为字符型.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201708300131572_修改字典类型DictType为字符型.resx">
-      <DependentUpon>201708300131572_修改字典类型DictType为字符型.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201801290335440_GgcmsCategory-add-RouteKey.resx">
-      <DependentUpon>201801290335440_GgcmsCategory-add-RouteKey.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201906140155063_remove-config.resx">
+      <DependentUpon>201906140155063_remove-config.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
@@ -367,18 +272,20 @@
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets')" />
   <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
+  <Target Name="MvcBuildViews" AfterTargets="AfterBuild" Condition="'$(MvcBuildViews)'=='true'">
+    <AspNetCompiler VirtualPath="temp" PhysicalPath="$(WebProjectOutputDir)" />
+  </Target>
   <ProjectExtensions>
     <VisualStudio>
       <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
         <WebProjectProperties>
-          <UseIIS>False</UseIIS>
+          <UseIIS>True</UseIIS>
           <AutoAssignPort>True</AutoAssignPort>
-          <DevelopmentServerPort>54926</DevelopmentServerPort>
+          <DevelopmentServerPort>57814</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>http://localhost:54926/</IISUrl>
+          <IISUrl>http://localhost:57814/</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>
@@ -388,18 +295,10 @@
       </FlavorProperties>
     </VisualStudio>
   </ProjectExtensions>
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>这台计算机上缺少此项目引用的 NuGet 程序包。使用“NuGet 程序包还原”可下载这些程序包。有关更多信息，请参见 http://go.microsoft.com/fwlink/?LinkID=322105。缺少的文件是 {0}。</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('..\packages\Microsoft.Net.Compilers.1.0.0\build\Microsoft.Net.Compilers.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Net.Compilers.1.0.0\build\Microsoft.Net.Compilers.props'))" />
-    <Error Condition="!Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.0\build\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.0\build\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props'))" />
-  </Target>
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
   </Target>
   <Target Name="AfterBuild">
-  </Target>
-  -->
+  </Target> -->
 </Project>

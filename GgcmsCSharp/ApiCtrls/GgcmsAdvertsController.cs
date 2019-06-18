@@ -6,6 +6,9 @@ using System;
 using GgcmsCSharp.Controllers;
 using System.Collections.Generic;
 using System.Linq;
+using System.Web;
+using GgcmsCSharp.Utils;
+using System.Data.Entity;
 
 namespace GgcmsCSharp.ApiCtrls
 {
@@ -15,107 +18,82 @@ namespace GgcmsCSharp.ApiCtrls
 
         // GET: api/GgcmsCategories
         [HttpGet]
-        public ResultData GetList()
+        public IHttpActionResult GetList(string query)
         {
-            var reqParams = InitRequestParams<GgcmsAdverts>();
-            var result = dbHelper.GetList<GgcmsAdverts>(reqParams);
-            return new ResultData
-            {
-                Code = 0,
-                Data = result,
-                Msg = ""
-            };
+            string json = HttpUtility.UrlDecode(query);
+            SearchParams sParams = Tools.JsonDeserialize<SearchParams>(json);
+
+            return Ok(GetRecords<GgcmsAdverts>(sParams));
         }
 
         // GET: api/GgcmsCategories/5
-        public ResultData GetInfo(int id)
+        public IHttpActionResult GetInfo(int id)
         {
-            var result = dbHelper.GetById<GgcmsAdverts>(id);
-            return new ResultData
-            {
-                Code = 0,
-                Data = result,
-                Msg = ""
-            };
+            return Ok(Dbctx.GgcmsAdverts.Find(id));
         }
 
         // PUT: api/GgcmsCategories/5
-        public ResultData Edit(GgcmsAdverts adverts)
+        public IHttpActionResult Edit(GgcmsAdverts info)
         {
-
-            if (!ModelState.IsValid)
+            if (Dbctx.GgcmsAdverts.Where(x => x.Id == info.Id).Count() == 0)
             {
-                ResultData result = new ResultData
-                {
-                    Code = 3,
-                    Msg = "",
-                    Data = BadRequest(ModelState)
-                };
-                return result;
+                return BadRequest("信息不存在");
             }
-            UpFileClass.FileSave(adverts, adverts.files);
-            return new ResultData
-            {
-                Code = 0,
-                Data = dbHelper.Edit(adverts.Id, adverts),
-                Msg = ""
-            };
+
+            UpFileClass.FileSave(info, info.files.FindAll(x => x.fileType != 3));
+            //Dbctx.GgcmsAdverts.Attach(info);
+            //Dbctx.Entry(info).Property("goods_name").IsModified = true;
+            var ent = Dbctx.Entry(info);
+            ent.State = EntityState.Modified;
+
+            Dbctx.SaveChanges();
+            ClearCache();
+            return Ok(info);
         }
 
         // POST: api/GgcmsCategories
-        public ResultData Add(GgcmsAdverts adverts)
+        public IHttpActionResult Add(GgcmsAdverts info)
         {
-            if (!ModelState.IsValid)
-            {
-                return new ResultData
-                {
-                    Code = 3,
-                    Msg = "",
-                    Data = BadRequest(ModelState)
-                }; 
-            }
-            adverts = UpFileClass.FileSave(adverts, adverts.files);
-            return new ResultData
-            {
-                Code = 0,
-                Msg = "",
-                Data = dbHelper.Add(adverts)
-            }; 
+            UpFileClass.FileSave(info, info.files.FindAll(x => x.fileType != 3));
+            var result = Dbctx.GgcmsAdverts.Add(info);
+            Dbctx.SaveChanges();
+            ClearCache();
+            return Ok(result);
         }
 
         // DELETE: api/GgcmsCategories/5
-        public ResultData Delete(int id)
+        public IHttpActionResult Delete(int id)
         {
-            return new ResultData
+            GgcmsAdverts oldinfo = Dbctx.GgcmsAdverts.Find(id);
+            if (oldinfo == null)
             {
-                Code = 0,
-                Msg = "",
-                Data = dbHelper.Delete<GgcmsAdverts>(id)
-            };
+                return BadRequest("信息不存在");
+            }
 
+            //List<int> idlist = GetDeleteIds(oldinfo.ticket_key);
+
+            //var query = Dbctx.ticket_information.Where(x => idlist.Contains(x.id));
+            Dbctx.GgcmsAdverts.Remove(oldinfo);
+            Dbctx.SaveChanges();
+            ClearCache();
+            return Ok(oldinfo);
         }
-        [HttpGet]
-        public ResultData MultDelete()
+        [HttpPost]
+        public IHttpActionResult MultDelete(int[] ids)
         {
-            var reqParams = InitRequestParams<GgcmsAdverts>();
-            return new ResultData
-            {
-                Code = 0,
-                Msg = "",
-                Data = dbHelper.MultDelete<GgcmsAdverts>(reqParams)
-            };
-            
+            var query = Dbctx.GgcmsAdverts.Where(x => ids.Contains(x.Id));
+
+            Dbctx.GgcmsAdverts.RemoveRange(query);
+            int c = Dbctx.SaveChanges();
+            ClearCache();
+            return Ok(c);
+
         }
         
 
-        public ResultData Exists(int id)
+        public IHttpActionResult Exists(int id)
         {
-            return new ResultData
-            {
-                Code = 0,
-                Msg = "",
-                Data = dbHelper.Exists<GgcmsAdverts>(id)
-            };
+            return Ok(Dbctx.GgcmsAdverts.Where(x => x.Id == id).Count() > 0);
         }
     }
 }

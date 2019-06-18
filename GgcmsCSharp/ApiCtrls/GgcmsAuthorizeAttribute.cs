@@ -31,12 +31,12 @@ namespace GgcmsCSharp.ApiCtrls
                     return true;
                 }
                 var session = HttpContext.Current.Session;
-                
+                string sessionKey = SystemEnums.login_user.ToString();
                 if (session != null)
                 {
-                    if (session["ggcms_loginUser"] != null)
+                    if (session[sessionKey] != null)
                     {
-                        GgcmsMember m = session["ggcms_loginUser"] as GgcmsMember;
+                        GgcmsMembers m = session[sessionKey] as GgcmsMembers;
                         if (m.Id > 0)
                         {
                             return true;

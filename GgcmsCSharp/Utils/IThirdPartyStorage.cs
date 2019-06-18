@@ -1,4 +1,5 @@
 ﻿using GgcmsCSharp.ApiCtrls;
+using GgcmsCSharp.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +11,7 @@ namespace GgcmsCSharp.Utils
     public interface IThirdPartyStorage
     {
         string serverUrl { get; set; }
-        ResultData UploadFile(string file);
-        ResultData Delete(string key);
+        ResultInfo UploadFile(string file);
+        ResultInfo Delete(string key);
     }
 }

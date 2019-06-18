@@ -1,4 +1,9 @@
 ﻿using GgcmsCSharp.Models;
+using GgcmsCSharp.Utils;
+using System;
+using System.Data.Entity;
+using System.Linq;
+using System.Web;
 using System.Web.Http;
 using System.Web.Http.Controllers;
 using System.Web.Http.Description;
@@ -10,105 +15,114 @@ namespace GgcmsCSharp.ApiCtrls
 
         // GET: api/GgcmsCategories
         [HttpGet]
-        public ResultData GetList()
+        public IHttpActionResult GetList(string query)
         {
-            var reqParams = InitRequestParams<GgcmsDictionary>();
-            var result = dbHelper.GetList<GgcmsDictionary>(reqParams);
-            return new ResultData
-            {
-                Code = 0,
-                Data = result,
-                Msg = ""
-            };
+            string json = HttpUtility.UrlDecode(query);
+            SearchParams sParams = Tools.JsonDeserialize<SearchParams>(json);
+
+            return Ok(GetRecords<GgcmsDictionaries>(sParams));
         }
 
         // GET: api/GgcmsCategories/5
-        public ResultData GetInfo(int id)
+        public IHttpActionResult GetInfo(int id)
         {
-            var result = dbHelper.GetById<GgcmsDictionary>(id);
-            return new ResultData
-            {
-                Code = 0,
-                Data = result,
-                Msg = ""
-            };
+            return Ok(Dbctx.GgcmsDictionaries.Find(id));
         }
 
         // PUT: api/GgcmsCategories/5
-        public ResultData Edit(GgcmsDictionary dictionary)
+        public IHttpActionResult Edit(GgcmsDictionaries info)
         {
 
-            if (!ModelState.IsValid)
+            if (Dbctx.GgcmsDictionaries.Where(x => x.Id == info.Id).Count() == 0)
             {
-                ResultData result = new ResultData
-                {
-                    Code = 3,
-                    Msg = "",
-                    Data = BadRequest(ModelState)
-                };
-                return result;
+                return BadRequest("信息不存在");
             }
+            //Dbctx.GgcmsDictionaries.Attach(info);
+            //Dbctx.Entry(info).Property("goods_name").IsModified = true;
+            var ent = Dbctx.Entry(info);
+            ent.State = EntityState.Modified;
 
-            return new ResultData
-            {
-                Code = 0,
-                Data = dbHelper.Edit(dictionary.Id, dictionary),
-                Msg = ""
-            };
+            Dbctx.SaveChanges();
+            ClearCache();
+            return Ok(info);
         }
 
         // POST: api/GgcmsCategories
-        public ResultData Add(GgcmsDictionary dictionary)
+        public IHttpActionResult Add(GgcmsDictionaries info)
         {
-            if (!ModelState.IsValid)
-            {
-                ResultData result = new ResultData
-                {
-                    Code = 3,
-                    Msg = "",
-                    Data = BadRequest(ModelState)
-                };
-                return result;
-            }
-            return new ResultData
-            {
-                Code = 0,
-                Msg = "",
-                Data = dbHelper.Add(dictionary)
-            };
+            var result = Dbctx.GgcmsDictionaries.Add(info);
+            Dbctx.SaveChanges();
+            ClearCache();
+            return Ok(result);
         }
 
         // DELETE: api/GgcmsCategories/5
-        public ResultData Delete(int id)
+        public IHttpActionResult Delete(int id)
         {
-            return new ResultData
+            GgcmsDictionaries oldinfo = Dbctx.GgcmsDictionaries.Find(id);
+            if (oldinfo == null)
             {
-                Code = 0,
-                Msg = "",
-                Data = dbHelper.Delete<GgcmsDictionary>(id)
-            };
+                return BadRequest("信息不存在");
+            }
+
+            Dbctx.GgcmsDictionaries.Remove(oldinfo);
+            Dbctx.SaveChanges();
+            ClearCache();
+            return Ok(oldinfo);
         }
-        [HttpGet]
-        public ResultData MultDelete()
+        [HttpPost]
+        public IHttpActionResult MultDelete(int[] ids)
         {
-            var reqParams = InitRequestParams<GgcmsDictionary>();
-            return new ResultData
-            {
-                Code = 0,
-                Msg = "",
-                Data = dbHelper.MultDelete<GgcmsDictionary>(reqParams)
-            };
+            var query = Dbctx.GgcmsDictionaries.Where(x => ids.Contains(x.Id));
+
+            Dbctx.GgcmsDictionaries.RemoveRange(query);
+            int c = Dbctx.SaveChanges();
+            ClearCache();
+            return Ok(c);
+
         }
        
 
-        public ResultData Exists(int id)
+        public IHttpActionResult Exists(int id)
         {
-            return new ResultData
+            return Ok(Dbctx.GgcmsDictionaries.Where(x => x.Id == id).Count() > 0);
+        }
+
+        public IHttpActionResult SettingsSave(dynamic data)
+        {
+
+            try
             {
-                Code = 0,
-                Msg = "",
-                Data = dbHelper.Exists<GgcmsDictionary>(id)
-            };
+                foreach (var file in data.files)
+                {
+                    foreach (var item in data.list)
+                    {
+                        if (item.DictKey.ToString() == file.propertyName.ToString())
+                        {
+                            item.DictValue = UpFileClass.FileSave(file.filePath.ToString(), item.DictValue.ToString(), (int)file.fileType);
+                        }
+                    }
+                }
+                Dbctx.GgcmsDictionaries
+                   .ToList()
+                   .ForEach(x =>
+                   {
+                       foreach (var item in data.list)
+                       {
+                           if (x.Id == (int)item.Id)
+                           {
+                               x.DictValue = item.DictValue.ToString();
+                           }
+                       }
+                   });
+                Dbctx.SaveChanges();
+                CacheHelper.RemoveAllCache(CacheTypeNames.SysConfigs.ToString());
+                return Ok(data.list);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }

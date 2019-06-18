@@ -1,16 +1,14 @@
-﻿
 namespace GgcmsCSharp.Models
 {
-    using GgcmsCSharp.Utils;
     using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Data.Entity.Spatial;
+
     public partial class GgcmsAdverts
     {
         public int Id { get; set; }
-
 
         [StringLength(255)]
         public string Title { get; set; }
@@ -23,56 +21,16 @@ namespace GgcmsCSharp.Models
 
         [StringLength(100)]
         public string GroupKey { get; set; }
-
+        [Column(TypeName = "text")]
         public string Content { get; set; }
 
         public int OrderID { get; set; }
 
         public int Status { get; set; }
 
-
         [StringLength(255)]
         public string Describe { get; set; }
-
         [NotMapped]
         public List<UpFileClass> files { get; set; }
-
-        public static GgcmsAdverts Clone(dynamic data)
-        {
-            GgcmsAdverts info = new GgcmsAdverts();
-            if (Tools.IsPropertyExist(data, "Id"))
-            {
-                info.Id = data.Id;
-            }
-            if (Tools.IsPropertyExist(data, "Title"))
-            {
-                info.Title = data.Title;
-            }
-            if (Tools.IsPropertyExist(data, "Url"))
-            {
-                info.Url = data.Url;
-            }
-            if (Tools.IsPropertyExist(data, "Image"))
-            {
-                info.Image = data.Image;
-            }
-            if (Tools.IsPropertyExist(data, "GroupKey"))
-            {
-                info.GroupKey = data.GroupKey;
-            }
-            if (Tools.IsPropertyExist(data, "Content"))
-            {
-                info.Content = data.Content;
-            }
-            if (Tools.IsPropertyExist(data, "OrderID"))
-            {
-                info.OrderID = data.OrderID;
-            }
-            if (Tools.IsPropertyExist(data, "Status"))
-            {
-                info.Status = data.Status;
-            }
-            return info;
-        }
     }
 }
