@@ -14,17 +14,11 @@
       @selection-change="handleSelectionChange"
     >
       <el-table-column type="selection" width="55"></el-table-column>
-      <el-table-column prop="DictName" label="字典名称"></el-table-column>
-      <el-table-column prop="DictKey" label="关键字"></el-table-column>
-      <el-table-column prop="DictValue" label="字典值"></el-table-column>
-      <el-table-column prop="GroupKey" label="类型">
-        <template slot-scope="scope">{{getGroupName(scope.row.GroupKey)}}</template>
-      </el-table-column>
-      <el-table-column prop="DictStatus" label="状态">
-        <template slot-scope="scope">
-          <el-tag v-if="scope.row.DictStatus==1" type="success">正常</el-tag>
-          <el-tag v-if="scope.row.DictStatus==0" type="danger">禁用</el-tag>
-        </template>
+      <el-table-column prop="UserName" label="用户名"></el-table-column>
+      <el-table-column prop="Email" label="电邮"></el-table-column>
+      <el-table-column prop="Phone" label="手机"></el-table-column>
+      <el-table-column prop="Roles_Id" label="角色">
+        <template slot-scope="scope">{{getRoleName(scope.row.Roles_Id)}}</template>
       </el-table-column>
       <el-table-column label="操作">
         <template slot-scope="scope">
@@ -50,7 +44,7 @@
         :total="pageInfo.total"
       ></el-pagination>
     </div>
-    <el-dialog title="系统字典" :visible.sync="dialogFormVisible" @open="dialogOpened">
+    <el-dialog title="友情链接" :visible.sync="dialogFormVisible" @open="dialogOpened">
       <form-generator :value="value" @change="onFormCtrlChange" ref="form" :settings="formSettings"></form-generator>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">取 消</el-button>
@@ -61,48 +55,53 @@
 </template>
 
 <script>
-import formSettings from "./dict_form";
+import formSettings, { defaultValue } from "./form_settings";
 import { mapActions, mapState } from "vuex";
 export default {
-  name: "dict-list",
+  name: "user-list",
   data() {
     return {
       dialogFormVisible: false,
-      formSettings: Object.assign({}, formSettings),
-      value: Object.assign({}, formSettings.value),
+      formSettings: {},
+      value: Object.assign({}, defaultValue),
       data_list: [],
       pageInfo: {},
-      dict_groups: [],
-      select_ids: []
+      roles: [],
+      select_ids: [],
     };
   },
   computed: {
     ...mapState("global", ["page_sizes"]),
     ...mapState("dict", ["loading"])
   },
-  created() {
-    this.getList({
-      QueryString: 'DictType==0 and GroupKey=="base_dict"',
+  async created() {
+    let settings = Object.assign({}, formSettings);
+
+    this.formSettings = settings;
+    let roles = await this.getDictList({
+      QueryString: 'GroupKey=="user_role" and DictType==0 and DictStatus=1',
       PageSize: 0,
       OrderBy: "OrderId asc"
-    }).then(x => {
-      if (x.Records.length > 0) {
-        this.dict_groups = x.Records.map(d => {
-          return {
-            label: d.DictName,
-            value: d.DictKey
-          };
-        });
-      }
     });
-    this.pageInfo = Object.assign({}, this.$store.state.global.defaultPageInfo);
-    this.pageInfo.QueryString = "DictType==1";
-    this.pageInfo.OrderBy = "OrderId asc";
+    if (roles.Records.length > 0) {
+      this.roles = roles.Records.map(x => {
+        return {
+          label: x.DictName,
+          value: x.Id
+        };
+      });
+    }
+    this.pageInfo = Object.assign({}, defaultValue);
+    this.pageInfo.QueryString = "";
+    this.pageInfo.OrderBy = "Id asc";
     this.dataLoad();
   },
 
   methods: {
-    ...mapActions("dict", ["getList", "save", "del", "getById"]),
+    ...mapActions("dict", {
+      getDictList: "getList"
+    }),
+    ...mapActions("user", ["getList", "save", "del", "getById","modifyPassword"]),
     currentChange(ev) {
       let pageInfo = this.pageInfo;
       pageInfo.PageNum = ev;
@@ -113,10 +112,10 @@ export default {
       pageInfo.PageSize = ev;
       this.getList(pageInfo);
     },
-    getGroupName(gkey) {
-      let grp = this.dict_groups.find(x => x.value == gkey);
-      if (grp) {
-        return grp.label;
+    getRoleName(gkey) {
+      let role = this.roles.find(x => x.value == gkey);
+      if (role) {
+        return role.label;
       }
       return "";
     },
@@ -131,10 +130,10 @@ export default {
         this.pageInfo = pinfo;
       });
     },
+
     handleEdit(index, row) {
       this.getById(row.Id).then(x => {
         this.value = x;
-        this.value.DictStatus = x.DictStatus == 1 ? true : false;
         this.dialogFormVisible = true;
       });
     },
@@ -170,8 +169,7 @@ export default {
         });
     },
     handleAdd() {
-      this.value = Object.assign({}, formSettings.value);
-
+      this.value = Object.assign({}, defaultValue);
       this.dialogFormVisible = true;
     },
     dialogOpened() {
@@ -183,7 +181,12 @@ export default {
         return;
       }
       form.resetForm();
-      form.setOptions("GroupKey", this.dict_groups);
+      form.setOptions("Roles_Id", this.roles);
+      if(this.value.Id>0){
+        form.setRules("PassWord",[{required:false}]);
+      }else{
+        form.setRules("PassWord",[{required:true}]);
+      }
       form.setValues(Object.assign({}, this.value));
     },
     onInfoSubmit() {
@@ -191,7 +194,7 @@ export default {
       if (!vals) {
         return;
       }
-      vals.DictStatus = vals.DictStatus ? 1 : 0;
+      
       this.save(vals).then(x => {
         if (x.Id > 0) {
           this.dialogFormVisible = false;

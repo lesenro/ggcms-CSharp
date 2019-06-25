@@ -997,6 +997,19 @@ namespace GgcmsCSharp.ApiCtrls
                      ParentKey="",
                      OtherProperty=""
                 },
+                new GgcmsDictionaries()
+                {
+                     DictName="默认角色",
+                     DictKey="default_role",
+                     DictValue="",
+                     GroupKey="user_role",
+                     DictDescribe="默认角色",
+                     OrderId=order++,
+                     DictStatus=1,
+                     DictType=0,
+                     ParentKey="",
+                     OtherProperty=""
+                },
             });
             Dbctx.SaveChanges();
         }

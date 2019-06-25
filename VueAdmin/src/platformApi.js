@@ -372,9 +372,53 @@ export async function styleImport(params) {
         },
     });
 }
+
+
+//保存用户信息
+export async function userSave(params) {
+    let action = params.Id > 0 ? "Edit" : "Add";
+    const data = Object.assign({}, params);
+    if (data.PassWord) {
+        data.PassWord = AppTools.Md5(params.PassWord);
+    }
+    return request(`${apiUrl}/GgcmsMembers/${action}`, {
+        method: 'POST',
+        body: {
+            ...data,
+        },
+    });
+}
+
+//删除用户信息
+export async function userDel(params) {
+    return request(`${apiUrl}/GgcmsMembers/MultDelete`, {
+        method: 'POST',
+        body: params,
+    });
+}
+
+//获取用户信息详情
+export async function userGetById(id) {
+    return request(`${apiUrl}/GgcmsMembers/GetInfo/${id}`, {
+        method: 'Get'
+    });
+}
+
+
+//获取用户信息列表
+export async function userGetList(params) {
+    const query = JSON.stringify(params);
+    return request(`${apiUrl}/GgcmsMembers/GetList?query=${query}`, {
+        method: 'Get'
+    });
+}
+
 //密码修改
 export async function modifyPassword(params) {
     const data = Object.assign({}, params);
+    data.oldPassword = AppTools.Md5(params.oldPassword);
+    data.newPassword = AppTools.Md5(params.newPassword);
+    data.rePassword = AppTools.Md5(params.rePassword);
     return request(`${apiUrl}/GgcmsMembers/ModifyPassword`, {
         method: 'POST',
         body: {
@@ -382,6 +426,7 @@ export async function modifyPassword(params) {
         },
     });
 }
+
 //清理缓存
 export async function clearCache() {
     return request(`${apiUrl}/Common/ClearAllCache`, {

@@ -1052,6 +1052,12 @@ $side-menu-active-color:#ddd;
     // height: 44px;
   }
 }
+.float-left{
+  float: left;
+}
+.float-right{
+  float: right;
+}
 :export {
   primary_color: $--color-primary;
   side_menu_background: $side-menu-background;

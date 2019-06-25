@@ -15,9 +15,6 @@
     >
       <el-table-column type="selection" width="55"></el-table-column>
       <el-table-column prop="Title" label="文章标题"></el-table-column>
-      <el-table-column prop="Category_Id" label="所属分类">
-        <template slot-scope="scope">{{getCategoryName(scope.row.Category_Id)}}</template>
-      </el-table-column>
       <el-table-column prop="Author" label="作者"></el-table-column>
       <el-table-column label="操作">
         <template slot-scope="scope">
@@ -46,53 +43,24 @@
     <el-dialog title="文章管理" :visible.sync="dialogFormVisible" @open="dialogOpened">
       <form-generator :value="value" @change="onFormCtrlChange" ref="form" :settings="formSettings"></form-generator>
       <div slot="footer" class="dialog-footer">
-        <el-button type="primary" class="float-left" @click="attachmentVisible=true">附件管理</el-button>
         <el-button @click="dialogFormVisible = false">取 消</el-button>
         <el-button type="primary" @click="onInfoSubmit">确 定</el-button>
-      </div>
-    </el-dialog>
-    <el-dialog title="附件管理" width="70%" append-to-body :visible.sync="attachmentVisible">
-      <el-scrollbar ref="scrollbar">
-        <div class="attr-list" v-if="attrCount>0">
-          <div class="attr-item" :key="item.key" v-for="item  in value.attachments">
-            <form-generator
-              class="attr-form"
-              :value="item"
-              @change="onFormCtrlChange"
-              ref="attrForm"
-              :settings="item.form"
-            ></form-generator>
-            <el-button size="mini" type="danger" @click="attrDel(item)" icon="el-icon-delete"></el-button>
-          </div>
-        </div>
-        <div class="no-data" text-center v-if="attrCount==0">
-          <span>暂无附件</span>
-        </div>
-      </el-scrollbar>
-      <div slot="footer" class="dialog-footer">
-        <el-button type="primary" class="float-left" icon="el-icon-plus" @click="attachmentAdd">添加</el-button>
-        <el-button type="primary" @click="attachmentVisible=false">确 定</el-button>
       </div>
     </el-dialog>
   </div>
 </template>
 
 <script>
-import {
-  ArticleFrom,
-  defaultValue,
-  GgcmsAttachment,
-  GgcmsAttachmentFrom
-} from "./form_settings";
+import formSettings, { defaultValue } from "./form_settings";
 import { mapActions, mapState } from "vuex";
+import _ from "lodash";
 export default {
-  name: "article-list",
+  name: "single-list",
   data() {
     return {
       dialogFormVisible: false,
-      attachmentVisible: false,
       formSettings: {},
-      value: new defaultValue(),
+      value: Object.assign({}, defaultValue),
       data_list: [],
       pageInfo: {},
       display_modes: [],
@@ -101,37 +69,30 @@ export default {
       category_list: [],
       category_tree: [],
       styles: [],
-      files: []
+      files: [],
+      article_type: 0
     };
   },
   computed: {
     ...mapState("global", ["page_sizes"]),
-    ...mapState("dict", ["loading"]),
-    attrCount() {
-      return this.value.attachments.length;
-    }
+    ...mapState("dict", ["loading"])
   },
   async created() {
-    let settings = new ArticleFrom();
-    //设置标题图上传
+    let settings = Object.assign({}, _.cloneDeep(formSettings));
     let upload = settings.layouts[0].layouts[0].controls.find(
       x => x.key == "TitleImg"
     );
     upload.controlProps.httpRequest = ev => this.imageUpload(ev, "TitleImg");
+    settings.layouts[0].layouts[0].controls = settings.layouts[0].layouts[0].controls.where(
+      x => x.key !== "CategoryId"
+    );
+    this.formSettings = settings;
     let cates = await this.getCategory({
       PageSize: 0,
       OrderBy: "OrderId asc"
     });
-    //设置分类选项
     this.category_list = cates.Records;
     this.category_tree = this.generateTree(cates.Records, 0);
-    let item = settings.layouts[0].layouts[0].controls.find(
-      x => x.key == "CategoryId"
-    );
-    if (item) {
-      item.options = this.category_tree;
-    }
-    //设置文章级别
     let grps = await this.getDictList({
       QueryString:
         '(GroupKey=="display_mode" or GroupKey=="top_level") and DictType==0 and DictStatus=1',
@@ -144,7 +105,7 @@ export default {
       ).map(x => {
         return {
           label: x.DictName,
-          value: Number(x.DictValue)
+          value: x.DictKey
         };
       });
       this.display_modes.unshift({
@@ -155,7 +116,7 @@ export default {
         x => {
           return {
             label: x.DictName,
-            value: Number(x.DictValue)
+            value: x.DictKey
           };
         }
       );
@@ -164,19 +125,7 @@ export default {
         value: 0
       });
     }
-    item = settings.layouts[0].layouts[2].controls.find(
-      x => x.key == "ShowType"
-    );
-    if (item) {
-      item.options = this.display_modes;
-    }
-    item = settings.layouts[0].layouts[2].controls.find(
-      x => x.key == "ShowLevel"
-    );
-    if (item) {
-      item.options = this.top_levels;
-    }
-    //设置风格
+
     let styles = await this.getStyles();
     this.styles = styles.Records.map(s => {
       return {
@@ -185,20 +134,11 @@ export default {
         id: s.Id
       };
     });
-    item = settings.layouts[0].layouts[2].controls.find(
-      x => x.key == "StyleName"
-    );
-    if (item) {
-      item.options = this.styles;
-    }
-    this.formSettings = settings;
-
     this.pageInfo = Object.assign({}, this.$store.state.global.defaultPageInfo);
     this.pageInfo.QueryString = "";
     this.pageInfo.OrderBy = "Id asc";
-
-    this.pageInfo.QueryString = "Category_Id>0";
-
+      this.article_type = 1;
+      this.pageInfo.QueryString = "Category_Id == 0";
     this.dataLoad();
   },
 
@@ -252,37 +192,6 @@ export default {
     handleSelectionChange(rows) {
       this.select_ids = rows.map(x => x.Id);
     },
-    attachmentAdd() {
-      let attr = new GgcmsAttachment();
-      if (this.value.attachments.length == 0) {
-        attr.key = 0;
-      } else {
-        attr.key = this.value.attachments.max(x => x.key) || 0;
-      }
-      attr.key++;
-      attr.form = new GgcmsAttachmentFrom();
-      let upload = attr.form.layouts[0].layouts[1].controls.find(
-        x => x.key == "AttaUrl"
-      );
-      upload.controlProps.httpRequest = ev =>
-        this.attrUpload(ev, "AttaUrl", attr.key);
-      this.value.attachments.push(attr);
-    },
-    attrDel(item) {
-      //删除文件
-      let file = this.files.find(x => x.filePath == item.RealName);
-      if (file) {
-        let fidx = this.files.indexOf(file);
-        if (fidx != -1) {
-          this.files.splice(fidx, 1);
-        }
-      }
-      //删除附件
-      let idx = this.value.attachments.indexOf(item);
-      if (idx != -1) {
-        this.value.attachments.splice(idx, 1);
-      }
-    },
     dataLoad() {
       this.getList(this.pageInfo).then(x => {
         this.data_list = x.Records;
@@ -294,7 +203,7 @@ export default {
     onFileSelect(ev, key, ftype = 0) {
       const form = this.$refs["form"];
       if (ev.file) {
-        if (ftype != 2 && !ev.file.type.startsWith("image")) {
+        if (!ev.file.type.startsWith("image")) {
           this.$message({
             type: "error",
             message: "必须上传图片"
@@ -324,27 +233,12 @@ export default {
     handleEdit(index, row) {
       this.getById(row.Id).then(x => {
         this.value = x;
+        this.value.Status = x.Status == 1 ? true : false;
         this.value.CategoryId = [];
-        this.findCategoryIds(x.Category_Id);
-        this.value.attachments.forEach(a => {
-          a.key = a.Id;
-          a.form = new GgcmsAttachmentFrom();
-          let upload = a.form.layouts[0].layouts[1].controls.find(
-            x => x.key == "AttaUrl"
-          );
-          upload.controlProps.httpRequest = ev =>
-            this.attrUpload(ev, "AttaUrl", a.key);
-        });
         this.dialogFormVisible = true;
       });
     },
-    findCategoryIds(cid) {
-      if (cid > 0) {
-        this.value.CategoryId.unshift(cid);
-        let category = this.category_list.find(x => x.Id == cid);
-        this.findCategoryIds(category.ParentId);
-      }
-    },
+
     handleDelete(index, row) {
       if (this.select_ids.length == 0) {
         this.$message({
@@ -377,7 +271,7 @@ export default {
         });
     },
     handleAdd() {
-      this.value = new defaultValue();
+      this.value = Object.assign({}, defaultValue);
       this.dialogFormVisible = true;
     },
     dialogOpened() {
@@ -389,18 +283,20 @@ export default {
         return;
       }
       this.files = [];
-      form.resetForm();
-
+      form.setOptions("StyleName", this.styles);
       if (this.value.StyleName) {
         this.styleChange(this.value.StyleName);
       }
+      form.setOptions("ShowLevel", this.top_levels);
+      form.setOptions("ShowType", this.display_modes);
+      form.setOptions("CategoryId", this.category_tree);
+      form.resetForm();
       let editor = form.getControl("Content");
       if (!editor.finished) {
         editor.finished = true;
         editor.$on("imageAdded", this.editorImageAdded);
       }
       form.setValues(Object.assign({}, this.value));
-      form.updateValue("CategoryId", this.value.CategoryId);
     },
     onInfoSubmit() {
       let vals = this.$refs["form"].formSubmit();
@@ -408,19 +304,7 @@ export default {
         return;
       }
       vals.files = this.files;
-      if (vals.CategoryId.length == 0) {
-        return;
-      }
-      vals.Category_Id = vals.CategoryId[vals.CategoryId.length - 1];
-      vals.attachments = vals.attachments.map(x => {
-        return {
-          Id: x.Id,
-          AttaTitle: x.AttaTitle,
-          AttaUrl: x.AttaUrl,
-          Describe: x.Describe,
-          RealName: x.RealName
-        };
-      });
+      vals.Category_Id = 0;
       this.save(vals).then(x => {
         if (x.Id > 0) {
           this.dialogFormVisible = false;
@@ -441,14 +325,6 @@ export default {
       ctrl.clearFiles();
       let result = await this.onFileSelect(ev, key);
       form.setValue(key, result.link);
-    },
-    async attrUpload(ev, key, id) {
-      const form = this.$refs["attrForm"].find(x => x.value.key == id);
-      let ctrl = form.getControl(key);
-      ctrl.clearFiles();
-      let result = await this.onFileSelect(ev, "attachments", 2);
-      form.setValue(key, result.link);
-      form.value.RealName = result.Data[0].url;
     },
     styleChange(folderName) {
       let s = this.styles.find(x => x.value == folderName);
@@ -496,15 +372,5 @@ export default {
 <style lang="scss">
 .data-table::before {
   height: 0;
-}
-.attr-list {
-  max-height: 300px;
-  .attr-item {
-    .attr-form {
-      display: inline-block;
-      vertical-align: top;
-      margin-right: 15px;
-    }
-  }
 }
 </style>

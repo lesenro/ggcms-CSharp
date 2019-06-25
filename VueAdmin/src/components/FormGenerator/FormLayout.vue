@@ -175,8 +175,19 @@ export default {
         if (x.startsWith("c_")) {
           item.setControlProps(x.substr(2), prop);
         } else {
-          console.log(x);
           item.setAllControlProps(prop);
+        }
+      }
+      return false;
+    },
+    updateValue(key, val) {
+      for (let x in this.$refs) {
+        if (x.startsWith("s_")) {
+          continue;
+        }
+        let item = this.$refs[x][0];
+        if (item.updateValue(key, val)) {
+          return true;
         }
       }
       return false;

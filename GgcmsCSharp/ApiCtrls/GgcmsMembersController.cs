@@ -25,22 +25,33 @@ namespace GgcmsCSharp.ApiCtrls
         // GET: api/GgcmsCategories/5
         public IHttpActionResult GetInfo(int id)
         {
-            return Ok(Dbctx.GgcmsMembers.Find(id));
+            var info = Dbctx.GgcmsMembers.Find(id);
+            info.PassWord = "";
+            return Ok(info);
         }
 
         // PUT: api/GgcmsCategories/5
         public IHttpActionResult Edit(GgcmsMembers info)
         {
-            if (Dbctx.GgcmsMembers.Where(x => x.Id == info.Id).Count() == 0)
+            var oldinfo = Dbctx.GgcmsMembers.Find(info.Id);
+            if (oldinfo==null)
             {
                 return BadRequest("信息不存在");
             }
+            Dbctx.Entry(oldinfo).State = EntityState.Detached;
+            
             //Dbctx.GgcmsMembers.Attach(info);
             //Dbctx.Entry(info).Property("goods_name").IsModified = true;
+            //密码为空时，使用旧密码
+            if (string.IsNullOrWhiteSpace(info.PassWord))
+            {
+                info.PassWord = oldinfo.PassWord;
+            }
             var ent = Dbctx.Entry(info);
             ent.State = EntityState.Modified;
             Dbctx.SaveChanges();
             ClearCache();
+            info.PassWord = "";
             return Ok(info);
 
         }
@@ -75,7 +86,9 @@ namespace GgcmsCSharp.ApiCtrls
         [HttpPost]
         public IHttpActionResult MultDelete(int[] ids)
         {
-            var query = Dbctx.GgcmsMembers.Where(x => ids.Contains(x.Id));
+            var user=this.GetLoginUser();
+            var idlist = ids.Where(x => x != user.Id).ToArray();
+            var query = Dbctx.GgcmsMembers.Where(x => idlist.Contains(x.Id));
 
             Dbctx.GgcmsMembers.RemoveRange(query);
             int c = Dbctx.SaveChanges();

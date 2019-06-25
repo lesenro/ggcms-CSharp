@@ -264,6 +264,14 @@ export default {
       }
       return true;
     },
+    updateValue(key, val) {
+      if (key != this.settings.key) {
+        return false;
+      }
+      this.$set(this.value, key, val);
+      this.$forceUpdate();
+      return true;
+    },
     onChange(ev) {
       if (this.d_settings.type == "button") {
         ev.preventDefault();
@@ -293,9 +301,7 @@ export default {
         value: list
       });
     },
-
-    onFileUploadSuccess(ev) {
-    },
+    onFileUploadSuccess(ev) {},
     getControl() {
       return this.$refs["ctrl"];
     },

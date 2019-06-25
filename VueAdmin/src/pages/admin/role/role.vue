@@ -14,18 +14,8 @@
       @selection-change="handleSelectionChange"
     >
       <el-table-column type="selection" width="55"></el-table-column>
-      <el-table-column prop="DictName" label="字典名称"></el-table-column>
-      <el-table-column prop="DictKey" label="关键字"></el-table-column>
-      <el-table-column prop="DictValue" label="字典值"></el-table-column>
-      <el-table-column prop="GroupKey" label="类型">
-        <template slot-scope="scope">{{getGroupName(scope.row.GroupKey)}}</template>
-      </el-table-column>
-      <el-table-column prop="DictStatus" label="状态">
-        <template slot-scope="scope">
-          <el-tag v-if="scope.row.DictStatus==1" type="success">正常</el-tag>
-          <el-tag v-if="scope.row.DictStatus==0" type="danger">禁用</el-tag>
-        </template>
-      </el-table-column>
+      <el-table-column prop="DictName" label="角色名称"></el-table-column>
+      <el-table-column prop="DictDescribe" label="描述"></el-table-column>
       <el-table-column label="操作">
         <template slot-scope="scope">
           <el-button-group>
@@ -61,18 +51,18 @@
 </template>
 
 <script>
-import formSettings from "./dict_form";
+import formSettings ,{defaultValue} from "./form_settings";
 import { mapActions, mapState } from "vuex";
+const dict_key = "user_role";
 export default {
-  name: "dict-list",
+  name: "role-list",
   data() {
     return {
       dialogFormVisible: false,
       formSettings: Object.assign({}, formSettings),
-      value: Object.assign({}, formSettings.value),
+      value: Object.assign({}, defaultValue),
       data_list: [],
       pageInfo: {},
-      dict_groups: [],
       select_ids: []
     };
   },
@@ -81,22 +71,8 @@ export default {
     ...mapState("dict", ["loading"])
   },
   created() {
-    this.getList({
-      QueryString: 'DictType==0 and GroupKey=="base_dict"',
-      PageSize: 0,
-      OrderBy: "OrderId asc"
-    }).then(x => {
-      if (x.Records.length > 0) {
-        this.dict_groups = x.Records.map(d => {
-          return {
-            label: d.DictName,
-            value: d.DictKey
-          };
-        });
-      }
-    });
     this.pageInfo = Object.assign({}, this.$store.state.global.defaultPageInfo);
-    this.pageInfo.QueryString = "DictType==1";
+    this.pageInfo.QueryString = `DictType==0 and GroupKey=="${dict_key}"`;
     this.pageInfo.OrderBy = "OrderId asc";
     this.dataLoad();
   },
@@ -113,13 +89,7 @@ export default {
       pageInfo.PageSize = ev;
       this.getList(pageInfo);
     },
-    getGroupName(gkey) {
-      let grp = this.dict_groups.find(x => x.value == gkey);
-      if (grp) {
-        return grp.label;
-      }
-      return "";
-    },
+
     handleSelectionChange(rows) {
       this.select_ids = rows.map(x => x.Id);
     },
@@ -170,7 +140,7 @@ export default {
         });
     },
     handleAdd() {
-      this.value = Object.assign({}, formSettings.value);
+      this.value = Object.assign({}, defaultValue);
 
       this.dialogFormVisible = true;
     },
@@ -183,7 +153,7 @@ export default {
         return;
       }
       form.resetForm();
-      form.setOptions("GroupKey", this.dict_groups);
+      this.value.GroupKey = dict_key;
       form.setValues(Object.assign({}, this.value));
     },
     onInfoSubmit() {

@@ -18,7 +18,6 @@
 </template>
 
 <script>
-import { mapState, mapActions } from "vuex";
 import FormLayout from "./FormLayout.vue";
 const formName = "editForm";
 export default {
@@ -93,7 +92,7 @@ export default {
           continue;
         }
         let layout = this.$refs[x][0];
-        layout.setAllControlProps(prop)
+        layout.setAllControlProps(prop);
       }
       return false;
     },
@@ -109,7 +108,19 @@ export default {
       }
       return false;
     },
-    setValue(key, val) {
+    updateValue(key, val, force = false) {
+      for (let x in this.$refs) {
+        if (x == formName) {
+          continue;
+        }
+        let layout = this.$refs[x][0];
+        if (layout.updateValue(key, val)) {
+          return true;
+        }
+      }
+      return false;
+    },
+    setValue(key, val, force = false) {
       this.d_value[key] = val;
     },
     setValues(val) {

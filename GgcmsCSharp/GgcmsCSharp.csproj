@@ -243,6 +243,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="Properties\PublishProfiles\FolderProfile.pubxml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201906130225460_first-init.resx">

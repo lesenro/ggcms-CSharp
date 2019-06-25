@@ -1,40 +1,42 @@
 import imageUpload from "@/components/imageUpload";
+import fileUpload from "@/components/fileUpload";
 
-export const defaultValue = {
-    Id: 0,
-    Content: "",
-    Title: "",
-    TitleImg: "",
-    RedirectUrl: "",
-    Source: "",
-    SourceUrl: "",
-    Keywords: "",
-    Description: "",
-    TmplName: "",
-    StyleName: "",
-    PageTitle: "",
-    ExtModelId: 0,
-    MobileTmplName: "",
-    ShowType: 0,
-    ShowLevel: 0,
-    Author: "",
-    CategoryId: [],
-    attachments: [],
-    files: [],
-    ModuleInfo: {
+export class defaultValue  {
+    Id= 0;
+    Content= "";
+    Title= "";
+    TitleImg= "";
+    RedirectUrl= "";
+    Source= "";
+    SourceUrl= "";
+    Keywords= "";
+    Description= "";
+    TmplName= "";
+    StyleName= "";
+    PageTitle= "";
+    ExtModelId= 0;
+    MobileTmplName= "";
+    ShowType= 0;
+    ShowLevel= 0;
+    Author= "";
+    CategoryId= [];
+    attachments= [];
+    files= [];
+    ModuleInfo= {
         Id: 0,
         Columns: [],
-    }
-};
-export default {
-    props: {
+    };
+}
+
+export class ArticleFrom {
+    props = {
         "label-width": "150px",
         "size": "mini",
-    },
-    buttons: {
+    };
+    buttons = {
         hidden: true
-    },
-    layouts: [
+    };
+    layouts = [
         {
             key: "div",
             name: "div",
@@ -63,7 +65,6 @@ export default {
 
                             }
                         },
-
                         {
                             key: "CategoryId",
                             name: "所属分类",
@@ -223,6 +224,86 @@ export default {
 
             ],
         },
-    ],
+    ];
 }
 
+export class GgcmsAttachment {
+    Id = 0;
+    AttaTitle = "";
+    AttaUrl = "";
+    Describe = "";
+    RealName = "";
+    key = 0;
+    form = {};
+}
+
+
+export class GgcmsAttachmentFrom {
+    props = {
+        "label-width": "150px",
+        "size": "mini",
+    };
+    buttons = {
+        hidden: true
+    };
+    layouts = [
+        {
+            key: "div",
+            name: "div",
+            type: "row",
+            layouts: [
+                {
+                    key: "col-1",
+                    name: "col-1",
+                    type: "col",
+                    props: {
+                        span: 12
+                    },
+                    controls: [
+                        {
+                            key: "AttaTitle",
+                            name: "附件标题",
+                            type: "text",
+                            itemProps: {
+                                rules: [
+                                    { required: true, message: "请输入附件标题", trigger: "blur" },
+                                    { min: 1, max: 100, message: "长度在 1 到 100 个字符", trigger: "blur" }
+                                ],
+
+                            },
+                            controlProps: {
+
+                            }
+                        },
+                    ]
+                }, {
+                    key: "col-2",
+                    name: "col-2",
+                    type: "col",
+                    props: {
+                        span: 12
+                    },
+                    controls: [
+                        {
+                            key: "AttaUrl",
+                            name: "附件上传",
+                            type: "upload",
+                            component: fileUpload,
+                            itemProps: {
+                                rules: [
+                                    { required: true, message: "请上传附件", trigger: "blur" },
+                                ],
+
+                            },
+                            controlProps: {
+                                "show-file-list": false,
+                                action: ""
+                            }
+                        },
+                    ]
+                }
+            ],
+
+        }
+    ]
+}
