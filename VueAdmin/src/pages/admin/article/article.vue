@@ -79,7 +79,7 @@
 
 <script>
 import {
-  ArticleFrom,
+  ArticleForm,
   defaultValue,
   GgcmsAttachment,
   GgcmsAttachmentFrom
@@ -112,7 +112,7 @@ export default {
     }
   },
   async created() {
-    let settings = new ArticleFrom();
+    let settings = new ArticleForm();
     //设置标题图上传
     let upload = settings.layouts[0].layouts[0].controls.find(
       x => x.key == "TitleImg"

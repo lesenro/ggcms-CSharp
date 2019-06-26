@@ -13,6 +13,7 @@ import linkModule from './links'
 import categoryModule from './category'
 import articleModule from './article'
 import userModule from './users'
+import dataModel from './data_model'
 const store = new Vuex.Store({
     modules: {
         global: globalModule,
@@ -24,6 +25,7 @@ const store = new Vuex.Store({
         category: categoryModule,
         article: articleModule,
         user: userModule,
+        extMod: dataModel,
     }
 })
 export default store;

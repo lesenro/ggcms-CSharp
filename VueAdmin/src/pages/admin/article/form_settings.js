@@ -28,7 +28,7 @@ export class defaultValue  {
     };
 }
 
-export class ArticleFrom {
+export class ArticleForm {
     props = {
         "label-width": "150px",
         "size": "mini",

@@ -13,7 +13,8 @@ import {
   Role,
   User,
   Single,
-  Review
+  Review,
+  dataModel
 } from './pages'
 import CachePages from './components/CachePages'
 import VueRouter from 'vue-router'
@@ -461,6 +462,45 @@ const routes = [
         redirect: "/admin/system/data",
         name: "分类内容",
         children: [
+          {
+            icon: 'el-icon-set-up',
+            path: 'data-model',
+            iconColor: "#F56C6C",
+            component: dataModel,
+            name: "数据模型",
+            powers: [
+              {
+                name: "查询",
+                keys: ["menu_18", "/companyUser/selectPage", "/companyDepart/selectPage"],
+                isMenu: true,
+              },
+              {
+                name: "添加",
+                keys: ["/companyUser/add"],
+                isMenu: false,
+              },
+              {
+                name: "修改",
+                keys: ["/companyUser/update", "/companyUser/selectById"],
+                isMenu: false,
+              },
+              {
+                name: "删除",
+                keys: ["/companyUser/del"],
+                isMenu: false,
+              },
+              {
+                name: "角色分配",
+                keys: ["/sysResources/select4Com", "/sysUserRoleRelation/getByUserId", "/sysUserRoleRelation/add"],
+                isMenu: false,
+              },
+              {
+                name: "角色查询",
+                keys: ["/sysResources/select4Com", "/sysUserRoleRelation/getByUserId"],
+                isMenu: false,
+              },
+            ]
+          },
           {
             icon: 'el-icon-help',
             path: 'category',

@@ -62,6 +62,7 @@ namespace GgcmsCSharp.ApiCtrls
             Dbctx.SaveChanges();
             result.TableName = "moduleTab_" + result.Id.ToString();
             result.ViewName = "moduleView_" + result.Id.ToString();
+            ExtendModule.TableCreate(module);
             Dbctx.SaveChanges();
             ClearCache();
             return Ok(result);

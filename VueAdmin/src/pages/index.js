@@ -12,4 +12,5 @@ export { default as Role } from './admin/role/role';
 export { default as User } from './admin/users/users';
 export { default as Single } from './admin/article/single';
 export { default as Review } from './admin/article/review';
+export { default as dataModel } from './admin/ext-model/ext-model';
 

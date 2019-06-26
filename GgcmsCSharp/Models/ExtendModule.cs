@@ -352,6 +352,9 @@ namespace GgcmsCSharp.Models
                         case "int":
                             newTabSql.Append(",[" + col.ColName + "] int ");
                             break;
+                        case "ntext":
+                            newTabSql.Append(",[" + col.ColName + "] ntext ");
+                            break;
                         case "bigint":
                             newTabSql.Append(",[" + col.ColName + "] bigint ");
                             break;
@@ -360,6 +363,9 @@ namespace GgcmsCSharp.Models
                             break;
                         case "decimal":
                             newTabSql.Append(",[" + col.ColName + "] decimal(18" + (col.ColDecimal > 0 && col.ColDecimal < 6 ? "," + col.ColDecimal.ToString() : "") + ") ");
+                            break;
+                        default:
+                            newTabSql.Append(",[" + col.ColName + "] " + col.ColType + " ");
                             break;
                     }
                     colidx++;
