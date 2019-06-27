@@ -14,7 +14,7 @@
           <i class="el-icon-s-fold"></i>
         </el-button>
 
-        <img alt="logo" :src="login_user.logo||'./assets/images/logo.png'">
+        <img alt="logo" :src="'./assets/images/logo.png'">
       </div>
       <el-scrollbar class="layout-scrollbar">
         <side-menu :collapse="isCollapse" ref="sideMenu"/>

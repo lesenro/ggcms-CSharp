@@ -70,10 +70,18 @@ namespace GgcmsCSharp.ApiCtrls
         }
 
         // DELETE: api/GgcmsCategories/5
+        [HttpGet]
         public IHttpActionResult Delete(int id)
         {
 
             ExtendModule.TableDelete(id);
+            GgcmsModules module = Dbctx.GgcmsModules.Where(x => x.Id == id).FirstOrDefault();
+            if (module != null)
+            {
+                Dbctx.GgcmsModules.Remove(module);
+                Dbctx.SaveChanges();
+            }
+            ClearCache();
             return Ok(id);
 
         }

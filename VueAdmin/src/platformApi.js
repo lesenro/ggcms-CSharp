@@ -528,7 +528,7 @@ export async function modulesSave(params) {
 
 //删除数据模型
 export async function modulesDel(id) {
-    return request(`${apiUrl}/GgcmsModules/Delete/${id}`, {
+    return request(`${apiUrl}/GgcmsModules/Delete?id=${id}`, {
         method: 'Get'
     });
 }

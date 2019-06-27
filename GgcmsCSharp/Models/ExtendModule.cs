@@ -284,6 +284,9 @@ namespace GgcmsCSharp.Models
                             case "int":
                                 db.Database.ExecuteSqlCommand("ALTER TABLE [dbo].[" + module.TableName + "] ADD [" + col.ColName + "] int");
                                 break;
+                            case "ntext":
+                                db.Database.ExecuteSqlCommand("ALTER TABLE [dbo].[" + module.TableName + "] ADD [" + col.ColName + "] ntext");
+                                break;
                             case "bigint":
                                 db.Database.ExecuteSqlCommand("ALTER TABLE [dbo].[" + module.TableName + "] ADD [" + col.ColName + "] bigint");
                                 break;
@@ -310,6 +313,9 @@ namespace GgcmsCSharp.Models
                                 break;
                             case "int":
                                 db.Database.ExecuteSqlCommand("ALTER TABLE [dbo].[" + module.TableName + "] ALTER COLUMN [" + col.ColName + "] int");
+                                break;
+                            case "ntext":
+                                db.Database.ExecuteSqlCommand("ALTER TABLE [dbo].[" + module.TableName + "] ALTER COLUMN [" + col.ColName + "] ntext");
                                 break;
                             case "bigint":
                                 db.Database.ExecuteSqlCommand("ALTER TABLE [dbo].[" + module.TableName + "] ALTER COLUMN [" + col.ColName + "] bigint");

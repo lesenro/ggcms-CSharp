@@ -66,6 +66,8 @@ export class moduleColumns {
     OrderId = 0;
     Module_Id = 0;
     Value = null;
+    tmpId = 0;
+    inputType = "";
 }
 
 export const inputTypes = [
@@ -384,62 +386,62 @@ export const propsOptions = [
     {
         label: "隐藏",
         value: "all",
-        hidden: ["min", "max", "value", "size","label-width"]
+        hidden: ["min", "max", "value", "size", "label-width"]
     },
     {
         label: "尺寸",
         value: "size",
         itemType: "item",
-        hidden: ["min", "max", "value","label-width"]
-    },    
+        hidden: ["min", "max", "value", "label-width"]
+    },
     {
         label: "标签宽度",
         value: "label-width",
         itemType: "item",
         hidden: ["min", "max", "value", "size"]
-    },    
+    },
     {
         label: "最小长度",
         value: "minlength",
         itemType: "control",
-        hidden: ["max", "value", "size","label-width"]
+        hidden: ["max", "value", "size", "label-width"]
     },
     {
         label: "最大长度",
         value: "maxlength",
         itemType: "control",
-        hidden: ["min", "value", "size","label-width"]
+        hidden: ["min", "value", "size", "label-width"]
     },
     {
         label: "长度范围",
         value: "lenRange",
         itemType: "control",
-        hidden: ["value", "size","label-width"]
+        hidden: ["value", "size", "label-width"]
     },
     {
         label: "占位文字",
         value: "placeholder",
         itemType: "control",
-        hidden: ["min", "max", "size","label-width"]
+        hidden: ["min", "max", "size", "label-width"]
     },
 
     {
         label: "最小值",
         value: "min",
         itemType: "control",
-        hidden: ["max", "value", "size","label-width"]
+        hidden: ["max", "value", "size", "label-width"]
     },
     {
         label: "最大值",
         value: "max",
         itemType: "control",
-        hidden: ["min", "value", "size","label-width"]
+        hidden: ["min", "value", "size", "label-width"]
     },
     {
         label: "范围",
         value: "range",
         itemType: "control",
-        hidden: ["value", "size","label-width"]
+        hidden: ["value", "size", "label-width"]
     },
 ]
 export class propsValue {
@@ -448,8 +450,8 @@ export class propsValue {
     max = 0;
     size = "";
     value = "";
-    constructor(){
-        this["label-width"]=100;
+    constructor() {
+        this["label-width"] = 100;
     }
 }
 export class propsForm {

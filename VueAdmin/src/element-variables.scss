@@ -919,7 +919,8 @@ $side-menu-active-color:#ddd;
 
 @import "~element-ui/packages/theme-chalk/src/index";
 
-[text-right]{
+[text-right],
+.text-right{
   text-align: right;
 }
 [text-center]{
@@ -931,19 +932,27 @@ $side-menu-active-color:#ddd;
 [cursor-pointer]{
   cursor: pointer;
 }
-[padding-horizontal]{
+[padding-horizontal],
+.padding-horizontal{
   padding-left: 15px;
   padding-right: 15px;
 }
-[padding-vertical]{
+[padding-vertical],
+.padding-vertical{
   padding-top: 15px;
   padding-bottom: 15px;
 }
-[padding]{
+[padding],
+.padding{
   padding: 15px;
 }
-[margin-bottom]{
+[margin-bottom],
+.margin-bottom{
   margin-bottom: 15px;
+}
+[margin-top],
+.margin-top{
+  margin-top: 15px;
 }
 .fade-enter-active, .fade-leave-active {
   transition: opacity .5s;
