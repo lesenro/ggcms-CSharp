@@ -187,6 +187,14 @@
       v-model="value[d_settings.key]"
     />
   </el-form-item>
+  <div :prop="d_settings.key" v-bind="itemProps" v-else-if="d_settings.type=='article'">
+    <article-content
+      ref="ctrl"
+      @change="onChange"
+      v-bind="controlProps"
+      v-model="value[d_settings.key]"
+    />
+  </div>
 </template>
 
 <script>
@@ -196,6 +204,7 @@
 // theme css
 import { mapState, mapActions } from "vuex";
 import { VueEditor } from "vue2-editor";
+import articleContent from "@/components/articleContent";
 export default {
   name: "form-control",
   created() {
@@ -324,7 +333,7 @@ export default {
       this.d_itemProps.rules = rules;
     }
   },
-  components: { VueEditor }
+  components: { VueEditor ,articleContent}
 };
 </script>
 

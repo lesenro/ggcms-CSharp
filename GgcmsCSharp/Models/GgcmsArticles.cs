@@ -64,10 +64,14 @@ namespace GgcmsCSharp.Models
         public string Author { get; set; }
 
         public int Category_Id { get; set; }
+        public int pagesCount { get; set; }
         [NotMapped]
         public List<UpFileClass> files { get; set; }
         [NotMapped]
         public List<GgcmsAttachments> attachments { get; set; }
+        [NotMapped]
+        public List<GgcmsArticlePages> pages { get; set; }
+       
         [NotMapped]
         public GgcmsModules ModuleInfo { get; set; }
         [NotMapped]

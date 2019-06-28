@@ -1,28 +1,29 @@
 import imageUpload from "@/components/imageUpload";
 import fileUpload from "@/components/fileUpload";
 
-export class defaultValue  {
-    Id= 0;
-    Content= "";
-    Title= "";
-    TitleImg= "";
-    RedirectUrl= "";
-    Source= "";
-    SourceUrl= "";
-    Keywords= "";
-    Description= "";
-    TmplName= "";
-    StyleName= "";
-    PageTitle= "";
-    ExtModelId= 0;
-    MobileTmplName= "";
-    ShowType= 0;
-    ShowLevel= 0;
-    Author= "";
-    CategoryId= [];
-    attachments= [];
-    files= [];
-    ModuleInfo= {
+export class defaultValue {
+    Id = 0;
+    Content = "";
+    Title = "";
+    TitleImg = "";
+    RedirectUrl = "";
+    Source = "";
+    SourceUrl = "";
+    Keywords = "";
+    Description = "";
+    TmplName = "";
+    StyleName = "";
+    PageTitle = "";
+    ExtModelId = 0;
+    MobileTmplName = "";
+    ShowType = 0;
+    ShowLevel = 0;
+    Author = "";
+    CategoryId = [];
+    attachments = [];
+    files = [];
+    pages = [];
+    ModuleInfo = {
         Id: 0,
         Columns: [],
     };
@@ -113,17 +114,13 @@ export class ArticleForm {
                     type: "tab",
                     controls: [
                         {
-                            key: "Content",
+                            key: "pages",
                             name: "文章内容",
-                            type: "editor",
+                            type: "article",
                             itemProps: {
                                 labelHidden: true
                             },
                             controlProps: {
-                                style: {
-                                    height: "310px",
-                                    marginBottom: "70px",
-                                }
                             }
                         },
                     ]
@@ -307,3 +304,5 @@ export class GgcmsAttachmentFrom {
         }
     ]
 }
+
+

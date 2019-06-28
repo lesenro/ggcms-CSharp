@@ -79,6 +79,7 @@ export default {
       data_list: [],
       files: [],
       styles: [],
+      model_list: [],
       props: {
         label: "CategoryName"
       }
@@ -98,6 +99,18 @@ export default {
         };
       });
     });
+    this.getExtModList().then(result => {
+      this.model_list = result.Records.map(x => {
+        return {
+          label: x.ModuleName,
+          value: x.Id
+        };
+      });
+      this.model_list.unshift({
+        label: "未选择",
+        value: 0
+      });
+    });
     let settings = Object.assign({}, formSettings);
     let upload = settings.layouts[0].layouts[0].controls.find(
       x => x.key == "LogoImg"
@@ -112,6 +125,9 @@ export default {
     ...mapActions("styles", {
       getStyles: "getList",
       getTmplList: "getTmplList"
+    }),
+    ...mapActions("extMod", {
+      getExtModList: "getList"
     }),
     ...mapActions("category", [
       "getList",
@@ -229,6 +245,7 @@ export default {
         value: "tab-1"
       });
       form.setOptions("StyleName", this.styles);
+      form.setOptions("ExtModelId", this.model_list);
       if (this.value.StyleName) {
         this.styleChange(this.value.StyleName);
       }

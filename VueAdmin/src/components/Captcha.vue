@@ -18,8 +18,7 @@ export default {
     ...mapState("login", ["codeImgUrl"]),
     code() {
       return (
-        this.codeImgUrl ||
-        "http://n8.cmsfile.pg0.cn/group4/M00/03/BA/CgoOFlnoGnyAOQ54AABZQUxMv3E579.jpg?enable=&qt=75"
+        this.codeImgUrl ||""
       );
     }
   },

@@ -46,7 +46,13 @@
     <el-dialog title="文章管理" :visible.sync="dialogFormVisible" @open="dialogOpened">
       <form-generator :value="value" @change="onFormCtrlChange" ref="form" :settings="formSettings"></form-generator>
       <div slot="footer" class="dialog-footer">
-        <el-button type="primary" class="float-left" @click="attachmentVisible=true">附件管理</el-button>
+        <el-button-group class="float-left">
+          <el-button
+            :type="value.attachments.length>0?'primary':'info'"
+            @click="attachmentVisible=true"
+          >附件管理</el-button>
+          <el-button v-if="extModelInfo" type="success" @click="modelInputVisible=true">数据模型</el-button>
+        </el-button-group>
         <el-button @click="dialogFormVisible = false">取 消</el-button>
         <el-button type="primary" @click="onInfoSubmit">确 定</el-button>
       </div>
@@ -55,13 +61,7 @@
       <el-scrollbar ref="scrollbar">
         <div class="attr-list" v-if="attrCount>0">
           <div class="attr-item" :key="item.key" v-for="item  in value.attachments">
-            <form-generator
-              class="attr-form"
-              :value="item"
-              @change="onFormCtrlChange"
-              ref="attrForm"
-              :settings="item.form"
-            ></form-generator>
+            <form-generator class="attr-form" :value="item" ref="attrForm" :settings="item.form"></form-generator>
             <el-button size="mini" type="danger" @click="attrDel(item)" icon="el-icon-delete"></el-button>
           </div>
         </div>
@@ -74,6 +74,22 @@
         <el-button type="primary" @click="attachmentVisible=false">确 定</el-button>
       </div>
     </el-dialog>
+    <el-dialog
+      title="模型数据输入"
+      append-to-body
+      :visible.sync="modelInputVisible"
+      @open="modelInputOpened"
+    >
+      <el-scrollbar ref="scrollbar">
+        <div class="attr-list">
+          <model-input
+            @onSubmit="modelDataSubmit"
+            @onCancel="modelInputVisible=false"
+            ref="model-input"
+          />
+        </div>
+      </el-scrollbar>
+    </el-dialog>
   </div>
 </template>
 
@@ -84,13 +100,16 @@ import {
   GgcmsAttachment,
   GgcmsAttachmentFrom
 } from "./form_settings";
+import modelInput from "./model-input";
 import { mapActions, mapState } from "vuex";
+import { GgcmsArticlePages } from "@/components/articleContent";
 export default {
   name: "article-list",
   data() {
     return {
       dialogFormVisible: false,
       attachmentVisible: false,
+      modelInputVisible: false,
       formSettings: {},
       value: new defaultValue(),
       data_list: [],
@@ -101,7 +120,8 @@ export default {
       category_list: [],
       category_tree: [],
       styles: [],
-      files: []
+      files: [],
+      extModelInfo: null
     };
   },
   computed: {
@@ -213,8 +233,18 @@ export default {
     ...mapActions("category", {
       getCategory: "getList"
     }),
-    ...mapActions("article", ["getList", "save", "del", "getById"]),
+    ...mapActions("article", [
+      "getList",
+      "save",
+      "del",
+      "getById",
+      "getValues"
+    ]),
     ...mapActions("global", ["fileUpload"]),
+    ...mapActions("extMod", {
+      getModelById: "getById"
+    }),
+
     generateTree(list, pid) {
       let nodes = [];
       list
@@ -323,9 +353,18 @@ export default {
     },
     handleEdit(index, row) {
       this.getById(row.Id).then(x => {
+        let page1 = new GgcmsArticlePages();
+        page1.Content = x.Content || "";
+        page1.Title = x.PageTitle || "";
+        page1.Article_Id = x.Id;
+        x.pages.unshift(page1);
         this.value = x;
         this.value.CategoryId = [];
         this.findCategoryIds(x.Category_Id);
+        this.onFormCtrlChange({
+          key: "CategoryId",
+          value: this.value.CategoryId
+        });
         this.value.attachments.forEach(a => {
           a.key = a.Id;
           a.form = new GgcmsAttachmentFrom();
@@ -378,6 +417,8 @@ export default {
     },
     handleAdd() {
       this.value = new defaultValue();
+      this.value.pages.push(new GgcmsArticlePages());
+      this.extModelInfo = null;
       this.dialogFormVisible = true;
     },
     dialogOpened() {
@@ -390,17 +431,15 @@ export default {
       }
       this.files = [];
       form.resetForm();
-
+      form.setLayoutProps("div", { value: "tab-1" });
       if (this.value.StyleName) {
         this.styleChange(this.value.StyleName);
       }
-      let editor = form.getControl("Content");
-      if (!editor.finished) {
-        editor.finished = true;
-        editor.$on("imageAdded", this.editorImageAdded);
-      }
       form.setValues(Object.assign({}, this.value));
       form.updateValue("CategoryId", this.value.CategoryId);
+      //强制更新分页
+      let pagesCtrl = form.getControl("pages");
+      pagesCtrl.setValues(this.value.pages);
     },
     onInfoSubmit() {
       let vals = this.$refs["form"].formSubmit();
@@ -412,15 +451,18 @@ export default {
         return;
       }
       vals.Category_Id = vals.CategoryId[vals.CategoryId.length - 1];
-      vals.attachments = vals.attachments.map(x => {
-        return {
-          Id: x.Id,
-          AttaTitle: x.AttaTitle,
-          AttaUrl: x.AttaUrl,
-          Describe: x.Describe,
-          RealName: x.RealName
-        };
-      });
+      vals.ModuleInfo = this.extModelInfo;
+      vals.attachments = vals.attachments
+        .filter(x => x.AttaUrl)
+        .map(x => {
+          return {
+            Id: x.Id,
+            AttaTitle: x.AttaTitle,
+            AttaUrl: x.AttaUrl,
+            Describe: x.Describe,
+            RealName: x.RealName
+          };
+        });
       this.save(vals).then(x => {
         if (x.Id > 0) {
           this.dialogFormVisible = false;
@@ -428,13 +470,13 @@ export default {
         }
       });
     },
-    async editorImageAdded(file, Editor, cursorLocation, resetUploader) {
-      let result = await this.onFileSelect({ file: file }, "Content", 1);
-      if (result.Code == 0) {
-        Editor.insertEmbed(cursorLocation, "image", result.link);
-        resetUploader();
-      }
-    },
+    // async editorImageAdded(file, Editor, cursorLocation, resetUploader) {
+    //   let result = await this.onFileSelect({ file: file }, "Content", 1);
+    //   if (result.Code == 0) {
+    //     Editor.insertEmbed(cursorLocation, "image", result.link);
+    //     resetUploader();
+    //   }
+    // },
     async imageUpload(ev, key) {
       const form = this.$refs["form"];
       let ctrl = form.getControl(key);
@@ -446,7 +488,7 @@ export default {
       const form = this.$refs["attrForm"].find(x => x.value.key == id);
       let ctrl = form.getControl(key);
       ctrl.clearFiles();
-      let result = await this.onFileSelect(ev, "attachments", 2);
+      let result = await this.onFileSelect(ev, "attachments", 3);
       form.setValue(key, result.link);
       form.value.RealName = result.Data[0].url;
     },
@@ -484,11 +526,53 @@ export default {
       }
     },
     //表单项改动事件
-    onFormCtrlChange(ev) {
+    async onFormCtrlChange(ev) {
       if (ev.key == "StyleName") {
         this.styleChange(ev.value);
+      } else if (ev.key == "CategoryId") {
+        let cid = 0;
+        if (ev.value.length > 0) {
+          cid = ev.value[ev.value.length - 1];
+        }
+
+        let category = this.category_list.find(x => x.Id == cid);
+        if (category && category.ExtModelId > 0) {
+          //分类有扩展模型信息
+          this.extModelInfo = await this.getModelById(category.ExtModelId);
+          if (this.value.Id > 0) {
+            //文章扩展模型信息
+            let vals = await this.getValues({
+              aid: this.value.Id,
+              mid: category.ExtModelId
+            });
+            this.extModelInfo.Columns.forEach(x => {
+              x.Value = vals[x.ColName];
+            });
+          }
+        } else {
+          this.extModelInfo = null;
+        }
       }
+    },
+    modelInputOpened() {
+      let editor = this.$refs["model-input"];
+      if (!editor) {
+        setTimeout(() => {
+          this.modelInputOpened();
+        }, 100);
+        return;
+      }
+      editor.setValues(this.extModelInfo);
+    },
+    modelDataSubmit(vals) {
+      this.extModelInfo.Columns.forEach(x => {
+        x.Value = vals[x.ColName];
+      });
+      this.modelInputVisible = false;
     }
+  },
+  components: {
+    modelInput
   }
 };
 </script>

@@ -4,7 +4,6 @@ import {
     modulesDel,
     modulesGetById,
     modulesGetList,
-    modulesGetValue,
 } from '../platformApi';
 const dataModel = {
     namespaced: true,
@@ -42,12 +41,7 @@ const dataModel = {
             ctx.commit("setLoading", false);
             return result;
         },
-        async getValues(ctx, params) {
-            ctx.commit("setLoading", true);
-            let result = await modulesGetValue(params);
-            ctx.commit("setLoading", false);
-            return result;
-        },
+
     }
 }
 

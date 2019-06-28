@@ -4,6 +4,8 @@ import {
     articleDel,
     articleGetById,
     articleGetList,
+    modulesGetValue,
+    getPageInfo
 } from '../platformApi';
 const articleModule = {
     namespaced: true,
@@ -38,6 +40,18 @@ const articleModule = {
         async getById(ctx, params) {
             ctx.commit("setLoading", true);
             let result = await articleGetById(params);
+            ctx.commit("setLoading", false);
+            return result;
+        },
+        async getValues(ctx, params) {
+            ctx.commit("setLoading", true);
+            let result = await modulesGetValue(params);
+            ctx.commit("setLoading", false);
+            return result;
+        },
+        async getPageInfo(ctx, params) {
+            ctx.commit("setLoading", true);
+            let result = await getPageInfo(params);
             ctx.commit("setLoading", false);
             return result;
         },

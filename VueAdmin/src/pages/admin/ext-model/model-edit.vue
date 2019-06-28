@@ -10,7 +10,7 @@
         ></form-generator>
       </el-col>
       <el-col :span="16">
-        <el-table :data="value.Columns" stripe row-key="tmpId" ref="table" max-height="300px">
+        <el-table :data="columns" stripe row-key="tmpId" ref="table" max-height="300px">
           <el-table-column prop="ColTitle" label="字段名称"></el-table-column>
           <el-table-column prop="ColType" label="字段类型"></el-table-column>
           <el-table-column label="操作">
@@ -59,7 +59,11 @@ export default {
       col_value: new moduleColumns()
     };
   },
-  computed: {},
+  computed: {
+    columns(){
+      return this.value.Columns.orderBy(x=>x.OrderId);
+    }
+  },
 
   methods: {
     setValues(val) {

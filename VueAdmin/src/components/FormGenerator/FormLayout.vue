@@ -45,7 +45,7 @@
     </transition-group>
     <slot></slot>
   </el-card>
-  <el-tabs class="form-layout" v-bind="layoutProps" v-else-if="settings.type=='tabs'">
+  <el-tabs class="form-layout" v-model="layoutProps.value" v-bind="layoutProps" v-else-if="settings.type=='tabs'">
     <el-tab-pane
       v-bind="layout.props"
       :key="layout.key"
@@ -194,9 +194,12 @@ export default {
     },
     setLayoutProps(key, prop) {
       if (key == this.settings.key) {
-        this.d_layoutProps = Object.assign({}, this.d_layoutProps, prop);
+        let props = Object.assign({}, this.d_layoutProps, prop);
+        this.$set(this, "d_layoutProps", props);
+        this.d_layoutProps = props;
         return true;
       }
+
       for (let x in this.$refs) {
         if (x.startsWith("l_")) {
           let item = this.$refs[x][0];

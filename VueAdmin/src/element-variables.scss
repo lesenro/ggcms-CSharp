@@ -1070,6 +1070,12 @@ $side-menu-active-color:#ddd;
 .float-right{
   float: right;
 }
+.inline-block{
+  display: inline-block;
+}
+.v-align-mid{
+  vertical-align: middle;
+}
 :export {
   primary_color: $--color-primary;
   side_menu_background: $side-menu-background;

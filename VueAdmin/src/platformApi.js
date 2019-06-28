@@ -124,9 +124,10 @@ export async function articleSave(params) {
 }
 
 //删除文章信息
-export async function articleDel(ids) {
-    return request(`${apiUrl}/GgcmsArticles/MultDelete/?ids=${ids.join(",")}`, {
-        method: 'Get'
+export async function articleDel(params) {
+    return request(`${apiUrl}/GgcmsArticles/MultDelete`, {
+        method: 'POST',
+        body: params,
     });
 }
 
@@ -550,8 +551,15 @@ export async function modulesGetList(params) {
 }
 //获取数据模型对应文章内容
 export async function modulesGetValue(params) {
-    const query = JSON.stringify(params);
-    return request(`${apiUrl}/GgcmsModules/GetGgcmsModuleValue?${query}`, {
+    const query = stringify(params);
+    return request(`${apiUrl}/GgcmsArticles/GetGgcmsModuleValue?${query}`, {
+        method: 'Get'
+    });
+}
+//获取数据模型对应文章内容
+export async function getPageInfo(params) {
+    const query = stringify(params);
+    return request(`${apiUrl}/GgcmsArticles/GetPageInfo?${query}`, {
         method: 'Get'
     });
 }

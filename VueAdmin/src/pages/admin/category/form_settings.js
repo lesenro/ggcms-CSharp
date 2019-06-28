@@ -98,9 +98,9 @@ export default {
                             }
                         },
                         {
-                            key: "ExtAttrib",
-                            name: "扩展属性",
-                            type: "textarea",
+                            key: "ExtModelId",
+                            name: "数据模型",
+                            type: "select",
                             itemProps: {
                                 rules: [
                                 ],
@@ -108,6 +108,7 @@ export default {
                             controlProps: {
                             }
                         },
+
                     ]
                 },
                 {
@@ -193,8 +194,17 @@ export default {
                             itemProps: {
                             },
                         },
-
-                    ]
+                        {
+                            key: "ExtAttrib",
+                            name: "扩展属性",
+                            type: "textarea",
+                            itemProps: {
+                                rules: [
+                                ],
+                            },
+                            controlProps: {
+                            }
+                        },]
                 },
                 {
                     key: "tab-4",

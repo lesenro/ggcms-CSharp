@@ -108,7 +108,7 @@ export default {
       }
       return false;
     },
-    updateValue(key, val, force = false) {
+    updateValue(key, val) {
       for (let x in this.$refs) {
         if (x == formName) {
           continue;
@@ -120,7 +120,7 @@ export default {
       }
       return false;
     },
-    setValue(key, val, force = false) {
+    setValue(key, val) {
       this.d_value[key] = val;
     },
     setValues(val) {

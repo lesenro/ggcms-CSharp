@@ -188,6 +188,10 @@
     <Compile Include="Migrations\201906140155063_remove-config.Designer.cs">
       <DependentUpon>201906140155063_remove-config.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201906280132483_article-pagesCount.cs" />
+    <Compile Include="Migrations\201906280132483_article-pagesCount.Designer.cs">
+      <DependentUpon>201906280132483_article-pagesCount.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\DataHelper.cs" />
     <Compile Include="Models\ExtendModule.cs" />
@@ -266,6 +270,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201906140155063_remove-config.resx">
       <DependentUpon>201906140155063_remove-config.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201906280132483_article-pagesCount.resx">
+      <DependentUpon>201906280132483_article-pagesCount.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

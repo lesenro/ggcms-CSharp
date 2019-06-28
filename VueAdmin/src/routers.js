@@ -617,7 +617,7 @@ const routes = [
             path: 'single',
             iconColor: "#ff8a65",
             component: Single,
-            name: "单页文章",
+            name: "单独文章",
             powers: [
               {
                 name: "查询",
