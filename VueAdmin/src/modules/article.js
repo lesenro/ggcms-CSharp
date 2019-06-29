@@ -55,6 +55,12 @@ const articleModule = {
             ctx.commit("setLoading", false);
             return result;
         },
+        async getPageInfoById(ctx, params) {
+            ctx.commit("setLoading", true);
+            let result = await getPageInfo(params);
+            ctx.commit("setLoading", false);
+            return result;
+        },
     }
 }
 

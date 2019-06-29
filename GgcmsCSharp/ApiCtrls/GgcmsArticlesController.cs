@@ -44,14 +44,23 @@ namespace GgcmsCSharp.ApiCtrls
             if (pages.Count() > 0)
             {
                 info.pagesCount = pages.Count() + 1;
-                info.pages = pages.OrderBy(x => x.OrderId).Select(x => new GgcmsArticlePages
+                info.pages = pages.OrderBy(x => x.OrderId).Select(x => new
                 {
                     Article_Id = x.Article_Id,
                     Id = x.Id,
                     OrderId = x.OrderId,
                     state = EntityState.Detached
 
-                }).ToList();
+                }).ToList().Select(x=> 
+                    new GgcmsArticlePages
+                    {
+                        Article_Id = x.Article_Id,
+                        Id = x.Id,
+                        OrderId = x.OrderId,
+                        state = EntityState.Detached
+
+                    }
+                ).ToList();
             }
             return Ok(info);
         }
@@ -65,6 +74,12 @@ namespace GgcmsCSharp.ApiCtrls
         public IHttpActionResult GetPageInfo(int id, int pn)
         {
             var info = Dbctx.GgcmsArticlePages.Where(x => x.Article_Id == id && x.OrderId == pn).FirstOrDefault();
+            return Ok(info);
+        }
+        [HttpGet]
+        public IHttpActionResult GetPageInfo(int pid)
+        {
+            var info = Dbctx.GgcmsArticlePages.Find(pid);
             return Ok(info);
         }
         // PUT: api/GgcmsCategories/5
@@ -142,9 +157,9 @@ namespace GgcmsCSharp.ApiCtrls
             {
                 foreach (var page in info.pages)
                 {
+                    UpFileClass.FileSave(page, page.files);
                     if (page.state == EntityState.Added)
                     {
-                        UpFileClass.FileSave(page, page.files);
                         page.Article_Id = info.Id;
                         Dbctx.GgcmsArticlePages.Add(page);
                     }

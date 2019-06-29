@@ -102,7 +102,7 @@ import {
 } from "./form_settings";
 import modelInput from "./model-input";
 import { mapActions, mapState } from "vuex";
-import { GgcmsArticlePages } from "@/components/articleContent";
+import { GgcmsArticlePages, EntityState } from "@/components/articleContent";
 export default {
   name: "article-list",
   data() {
@@ -439,7 +439,7 @@ export default {
       form.updateValue("CategoryId", this.value.CategoryId);
       //强制更新分页
       let pagesCtrl = form.getControl("pages");
-      pagesCtrl.setValues(this.value.pages);
+      pagesCtrl.setValues(this.value.pages, this.value.Id);
     },
     onInfoSubmit() {
       let vals = this.$refs["form"].formSubmit();
@@ -449,6 +449,16 @@ export default {
       vals.files = this.files;
       if (vals.CategoryId.length == 0) {
         return;
+      }
+      let page1 = vals.pages.find(x => x.OrderId == 1);
+      vals.Content = page1.Content;
+      vals.PageTitle = page1.Title;
+      vals.files.push(...page1.files);
+      if (page1.Id == 0) {
+        let idx = vals.pages.indexOf(page1);
+        vals.pages.splice(idx, 1);
+      } else {
+        page1.state = EntityState.Deleted;
       }
       vals.Category_Id = vals.CategoryId[vals.CategoryId.length - 1];
       vals.ModuleInfo = this.extModelInfo;

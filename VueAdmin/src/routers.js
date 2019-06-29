@@ -12,8 +12,8 @@ import {
   Article,
   Role,
   User,
-  Single,
-  Review,
+  // Single,
+  // Review,
   dataModel
 } from './pages'
 import CachePages from './components/CachePages'
@@ -616,8 +616,10 @@ const routes = [
             icon: 'el-icon-tickets',
             path: 'single',
             iconColor: "#ff8a65",
-            component: Single,
+            // component: Single,
+            component: Building,
             name: "单独文章",
+            sideHidden: true,
             powers: [
               {
                 name: "查询",
@@ -645,8 +647,10 @@ const routes = [
             icon: 'el-icon-circle-check',
             path: 'review',
             iconColor: "rgb(247, 186, 42)",
-            component: Review,
+            // component: Review,
+            component: Building,
             name: "待审核文章",
+            sideHidden: true,
             powers: [
               {
                 name: "查询",

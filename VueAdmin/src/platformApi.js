@@ -563,4 +563,11 @@ export async function getPageInfo(params) {
         method: 'Get'
     });
 }
+//获取数据模型对应文章内容
+export async function getPageInfoById(params) {
+    const query = stringify(params);
+    return request(`${apiUrl}/GgcmsArticles/GetPageInfo?${query}`, {
+        method: 'Get'
+    });
+}
 

@@ -71,32 +71,58 @@ export default {
   mounted() {},
   updated() {},
   props: {
-    value: Array,
-    aid: Number
+    value: Array
   },
   data() {
     return {
       info: new GgcmsArticlePages(),
       d_value: this.value,
-      cur_page: 1
+      cur_page: 1,
+      articleId: 0
     };
   },
   computed: {
-    articleId() {
-      return this.aid;
-    },
     pageCount() {
       return this.d_value.where(x => x.state != EntityState.Deleted).length;
     }
   },
   methods: {
-    ...mapActions("article", ["getPageInfo"]),
-    setValues(val) {
+    ...mapActions("article", ["getPageInfoById"]),
+    ...mapActions("global", ["fileUpload"]),
+    setValues(val, aid) {
+      this.articleId = aid;
       this.$set(this, "d_value", val);
       // this.d_value = val;
       this.currentChange(1);
     },
-    async editorImageAdded(file, Editor, cursorLocation, resetUploader) {},
+    async editorImageAdded(file, Editor, cursorLocation, resetUploader) {
+      if (!file.type.startsWith("image")) {
+        this.$message({
+          type: "error",
+          message: "必须上传图片"
+        });
+        return;
+      }
+      let result = await this.fileUpload({
+        type: "article",
+        file: file
+      });
+
+      if (result.Code != 0) {
+        return;
+      }
+      Editor.insertEmbed(cursorLocation, "image", result.link);
+      resetUploader();
+      if (!this.info.files) {
+        this.info.files = [];
+      }
+
+      this.info.files.push({
+        filePath: result.Data[0].url,
+        propertyName: "Content",
+        fileType: 1
+      });
+    },
     currentChange(ev) {
       this.cur_page = ev;
       let info = this.d_value.find(
@@ -105,8 +131,19 @@ export default {
       if (!info) {
         return;
       }
-      this.info = info;
-      if (this.info.Id > 0 && !this.info.isReady) {
+      if (info.Id > 0 && !info.isReady) {
+        this.getPageInfoById({
+          pid: info.Id
+        }).then(x => {
+          info = Object.assign(info, x);
+          info.files = [];
+          info.OrderId = ev;
+          info.isReady = true;
+          info.state = EntityState.Modified;
+          this.info = info;
+        });
+      } else {
+        this.info = info;
       }
     },
     addPage() {
@@ -121,7 +158,7 @@ export default {
         return;
       }
       let info = this.d_value.find(
-        x => x.state != EntityState.Deleted && x.OrderId == ev
+        x => x.state != EntityState.Deleted && x.OrderId == this.cur_page
       );
       if (info.Id > 0) {
         info.state = EntityState.Deleted;
@@ -137,6 +174,11 @@ export default {
             page.state = EntityState.Unchanged;
           }
         });
+      if (this.pageCount < this.cur_page) {
+        this.currentChange(this.pageCount);
+      } else {
+        this.currentChange(this.cur_page);
+      }
     },
     insPage() {
       this.d_value

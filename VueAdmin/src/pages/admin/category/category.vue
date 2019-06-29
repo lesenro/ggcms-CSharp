@@ -214,7 +214,7 @@ export default {
           type: "category",
           file: ev.file
         }).then(x => {
-          let file = this.files.find(f => f.propertyName == key);
+          let file = this.files.find(f => f.propertyName == key && ftype == 0);
           if (file) {
             file.filePath = x.Data[0].url;
             file.propertyName = key;
