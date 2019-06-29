@@ -1,5 +1,6 @@
 ﻿using GgcmsCSharp.Models;
 using GgcmsCSharp.Utils;
+using System;
 using System.Data.Entity;
 using System.Linq;
 using System.Web;
@@ -47,6 +48,7 @@ namespace GgcmsCSharp.ApiCtrls
         // POST: api/GgcmsCategories
         public IHttpActionResult Add(GgcmsTasks info)
         {
+            info.RunTime = DateTime.Now;
             var result = Dbctx.GgcmsTasks.Add(info);
             Dbctx.SaveChanges();
             ClearCache();

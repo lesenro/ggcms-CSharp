@@ -14,7 +14,8 @@ import {
   User,
   // Single,
   // Review,
-  dataModel
+  dataModel,
+  Tasks
 } from './pages'
 import CachePages from './components/CachePages'
 import VueRouter from 'vue-router'
@@ -721,122 +722,8 @@ const routes = [
         icon: 'el-icon-s-operation',
         iconColor: "#009688",
         path: 'task',
-        component: CachePages,
-        sideHidden: true,
-        redirect: "/admin/system/data",
+        component: Tasks,
         name: "任务管理",
-        children: [
-          {
-            icon: 'el-icon-truck',
-            path: 'run',
-            iconColor: "#69f0ae",
-            component: Building,
-            name: "任务执行",
-            powers: [
-              {
-                name: "查询",
-                keys: ["menu_18", "/companyUser/selectPage", "/companyDepart/selectPage"],
-                isMenu: true,
-              },
-              {
-                name: "添加",
-                keys: ["/companyUser/add"],
-                isMenu: false,
-              },
-              {
-                name: "修改",
-                keys: ["/companyUser/update", "/companyUser/selectById"],
-                isMenu: false,
-              },
-              {
-                name: "删除",
-                keys: ["/companyUser/del"],
-                isMenu: false,
-              },
-              {
-                name: "角色分配",
-                keys: ["/sysResources/select4Com", "/sysUserRoleRelation/getByUserId", "/sysUserRoleRelation/add"],
-                isMenu: false,
-              },
-              {
-                name: "角色查询",
-                keys: ["/sysResources/select4Com", "/sysUserRoleRelation/getByUserId"],
-                isMenu: false,
-              },
-            ]
-          },
-          {
-            icon: 'el-icon-finished',
-            path: 'sql',
-            iconColor: "#00e5ff",
-            component: Building,
-            name: "SQL语句",
-            powers: [
-              {
-                name: "查询",
-                keys: ["menu_19", "/sysRole/selectPage"],
-                isMenu: true,
-              },
-              {
-                name: "添加",
-                keys: ["/sysRole/add"],
-                isMenu: false,
-              },
-              {
-                name: "修改",
-                keys: ["/sysRole/update", "/sysRole/getById"],
-                isMenu: false,
-              },
-              {
-                name: "删除",
-                keys: ["/sysRole/del"],
-                isMenu: false,
-              },
-              {
-                name: "权限查询",
-                keys: [
-                  "/sysRoleResourcesRelation/getByRoleId",
-                  "/sysResources/select4Com"
-                ],
-                isMenu: false,
-              },
-              {
-                name: "权限编辑",
-                keys: ["/sysRoleResourcesRelation/add"],
-                isMenu: false,
-              },
-            ]
-          },
-          {
-            icon: 'el-icon-set-up',
-            path: 'rule',
-            component: Building,
-            iconColor: "#7c4dff",
-            name: "采集规则",
-            powers: [
-              {
-                name: "查询",
-                keys: ["menu_20", "/companyDepart/getByPid"],
-                isMenu: true,
-              },
-              {
-                name: "添加",
-                keys: ["/companyDepart/add"],
-                isMenu: false,
-              },
-              {
-                name: "修改",
-                keys: ["/companyDepart/update", "/companyDepart/getById"],
-                isMenu: false,
-              },
-              {
-                name: "删除",
-                keys: ["/companyDepart/del"],
-                isMenu: false,
-              },
-            ]
-          },
-        ]
       },
     ]
   },

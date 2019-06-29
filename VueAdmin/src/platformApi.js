@@ -571,3 +571,39 @@ export async function getPageInfoById(params) {
     });
 }
 
+//======================================
+//保存广告
+export async function tasksSave(params) {
+    let action = params.Id > 0 ? "Edit" : "Add";
+    const data = Object.assign({}, params);
+    return request(`${apiUrl}/GgcmsTasks/${action}`, {
+        method: 'POST',
+        body: {
+            ...data,
+        },
+    });
+}
+
+//删除广告
+export async function tasksDel(params) {
+    return request(`${apiUrl}/GgcmsTasks/MultDelete`, {
+        method: 'POST',
+        body: params,
+    });
+}
+
+//获取广告详情
+export async function tasksGetById(id) {
+    return request(`${apiUrl}/GgcmsTasks/GetInfo/${id}`, {
+        method: 'Get'
+    });
+}
+
+
+//获取广告列表
+export async function tasksGetList(params) {
+    const query = JSON.stringify(params);
+    return request(`${apiUrl}/GgcmsTasks/GetList?query=${query}`, {
+        method: 'Get'
+    });
+}
