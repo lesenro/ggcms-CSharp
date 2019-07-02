@@ -18,7 +18,7 @@ namespace GgcmsCSharp.Models
         public string Prefix { get; set; }
         public DataHelper()
         {
-            Prefix = ConfigurationManager.AppSettings["UploadPrefix"].ToString();
+            Prefix = ConfigurationManager.AppSettings["LinkPrefix"].ToString();
         }
         //获取分类列表
         public List<GgcmsCategories> Categories()

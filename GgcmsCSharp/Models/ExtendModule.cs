@@ -201,7 +201,7 @@ namespace GgcmsCSharp.Models
             }
             if (dt.Columns.Contains("RedirectUrl"))
             {
-                string Prefix = ConfigurationManager.AppSettings["UploadPrefix"].ToString();
+                string Prefix = ConfigurationManager.AppSettings["LinkPrefix"].ToString();
                 foreach (DataRow row in dt.Rows)
                 {
                     

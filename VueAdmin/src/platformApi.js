@@ -572,7 +572,7 @@ export async function getPageInfoById(params) {
 }
 
 //======================================
-//保存广告
+//保存任务
 export async function tasksSave(params) {
     let action = params.Id > 0 ? "Edit" : "Add";
     const data = Object.assign({}, params);
@@ -584,7 +584,7 @@ export async function tasksSave(params) {
     });
 }
 
-//删除广告
+//删除任务
 export async function tasksDel(params) {
     return request(`${apiUrl}/GgcmsTasks/MultDelete`, {
         method: 'POST',
@@ -592,7 +592,7 @@ export async function tasksDel(params) {
     });
 }
 
-//获取广告详情
+//获取任务详情
 export async function tasksGetById(id) {
     return request(`${apiUrl}/GgcmsTasks/GetInfo/${id}`, {
         method: 'Get'
@@ -600,10 +600,16 @@ export async function tasksGetById(id) {
 }
 
 
-//获取广告列表
+//获取任务列表
 export async function tasksGetList(params) {
     const query = JSON.stringify(params);
     return request(`${apiUrl}/GgcmsTasks/GetList?query=${query}`, {
+        method: 'Get'
+    });
+}
+//任务立即执行
+export async function runNow(id) {
+    return request(`${apiUrl}/GgcmsTasks/RunNow?id=${id}`, {
         method: 'Get'
     });
 }

@@ -22,7 +22,7 @@ namespace GgcmsCSharp.Utils
             
             string staticDir = ConfigurationManager.AppSettings["StaticDir"].ToString();
             string uploadDir = ConfigurationManager.AppSettings["UploadDir"].ToString();
-            UploadPrefix = ConfigurationManager.AppSettings["UploadPrefix"].ToString();
+            UploadPrefix = ConfigurationManager.AppSettings["ServerBaseUrl"].ToString();
             serverUrl = UploadPrefix;
             DateTime dtime = DateTime.Now;
             root = "/" + staticDir + "/" + uploadDir + "/" + dtime.ToString("yyyyMM");

@@ -38,10 +38,12 @@ namespace GgcmsCSharp.ApiCtrls
             }
             //Dbctx.GgcmsTasks.Attach(info);
             //Dbctx.Entry(info).Property("goods_name").IsModified = true;
+            info.SetNextRuntime();
             var ent = Dbctx.Entry(info);
             ent.State = EntityState.Modified;
             Dbctx.SaveChanges();
             ClearCache();
+            CacheHelper.RemoveAllCache(CacheTypeNames.Tasks);
             return Ok(info);
         }
 
@@ -49,9 +51,11 @@ namespace GgcmsCSharp.ApiCtrls
         public IHttpActionResult Add(GgcmsTasks info)
         {
             info.RunTime = DateTime.Now;
+            info.SetNextRuntime();
             var result = Dbctx.GgcmsTasks.Add(info);
             Dbctx.SaveChanges();
             ClearCache();
+            CacheHelper.RemoveAllCache(CacheTypeNames.Tasks);
             return Ok(result);
         }
 
@@ -70,6 +74,7 @@ namespace GgcmsCSharp.ApiCtrls
             Dbctx.GgcmsTasks.Remove(oldinfo);
             Dbctx.SaveChanges();
             ClearCache();
+            CacheHelper.RemoveAllCache(CacheTypeNames.Tasks);
             return Ok(oldinfo);
         }
         [HttpPost]
@@ -80,6 +85,22 @@ namespace GgcmsCSharp.ApiCtrls
             Dbctx.GgcmsTasks.RemoveRange(query);
             int c = Dbctx.SaveChanges();
             ClearCache();
+            CacheHelper.RemoveAllCache(CacheTypeNames.Tasks);
+            return Ok(c);
+        }
+        [HttpGet]
+        public IHttpActionResult RunNow(int id)
+        {
+            var task = Dbctx.GgcmsTasks.Find(id);
+            if (task ==null)
+            {
+                return BadRequest("任务不存在");
+            }
+            task.RunTime = DateTime.Now;
+            task.TaskState = TaskStatus.Ready;
+            int c = Dbctx.SaveChanges();
+            ClearCache();
+            CacheHelper.RemoveAllCache(CacheTypeNames.Tasks);
             return Ok(c);
         }
  

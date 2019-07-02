@@ -4,6 +4,7 @@ import {
     tasksDel,
     tasksGetById,
     tasksGetList,
+    runNow
 } from '../platformApi';
 const linkModule = {
     namespaced: true,
@@ -38,6 +39,12 @@ const linkModule = {
         async getById(ctx, params) {
             ctx.commit("setLoading", true);
             let result = await tasksGetById(params);
+            ctx.commit("setLoading", false);
+            return result;
+        },
+        async runNow(ctx, id) {
+            ctx.commit("setLoading", true);
+            let result = await runNow(id);
             ctx.commit("setLoading", false);
             return result;
         },

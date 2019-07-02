@@ -29,7 +29,7 @@ namespace GgcmsCSharp.ApiCtrls
             }
             string staticDir = ConfigurationManager.AppSettings["StaticDir"].ToString();
             string uploadDir = ConfigurationManager.AppSettings["UploadDir"].ToString();
-            string serverurl = ConfigurationManager.AppSettings["UploadPrefix"].ToString();
+            string serverurl = ConfigurationManager.AppSettings["ServerBaseUrl"].ToString();
 
             string root = "/" + staticDir + "/" + uploadDir + "/temp";
             string rootpath = HttpContext.Current.Server.MapPath("~" + root);

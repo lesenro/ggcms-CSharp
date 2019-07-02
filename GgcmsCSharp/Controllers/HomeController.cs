@@ -139,16 +139,16 @@ namespace GgcmsCSharp.Controllers
                 case PageType.category:
                     tmplName = sysConfigs["cfg_template_list"];
                     category = info as GgcmsCategories;
-
-                    if (!string.IsNullOrEmpty(category.StyleName.Trim()))
+                    string style = category.StyleName ?? cfgStyle??"";
+                    if (!string.IsNullOrWhiteSpace(style))
                     {
-                        templateDir = "~/Views/" + ConfigurationManager.AppSettings["TemplateDir"].ToString() + "/" + category.StyleName;
-                        stylePath = "/" + staticDir + "/" + styleDir + "/" + category.StyleName;
-                        if (isMobile && !string.IsNullOrEmpty(category.MobileTmplName.Trim()))
+                        templateDir = "~/Views/" + ConfigurationManager.AppSettings["TemplateDir"].ToString() + "/" + style;
+                        stylePath = "/" + staticDir + "/" + styleDir + "/" + style;
+                        if (isMobile && !string.IsNullOrWhiteSpace(category.MobileTmplName.Trim()))
                         {
                             tmplName = category.MobileTmplName;
                         }
-                        else if (!string.IsNullOrEmpty(category.TmplName.Trim()))
+                        else if (!string.IsNullOrWhiteSpace(category.TmplName))
                         {
                             tmplName = category.TmplName;
                         }
