@@ -215,7 +215,7 @@ export default {
 
     this.pageInfo = Object.assign({}, this.$store.state.global.defaultPageInfo);
     this.pageInfo.QueryString = "";
-    this.pageInfo.OrderBy = "Id asc";
+    this.pageInfo.OrderBy = "Id desc";
 
     this.pageInfo.QueryString = "Category_Id>0";
 
@@ -265,12 +265,12 @@ export default {
     currentChange(ev) {
       let pageInfo = this.pageInfo;
       pageInfo.PageNum = ev;
-      this.getList(pageInfo);
+      this.dataLoad(pageInfo);
     },
     handleSizeChange(ev) {
       let pageInfo = this.pageInfo;
       pageInfo.PageSize = ev;
-      this.getList(pageInfo);
+      this.dataLoad(pageInfo);
     },
     getCategoryName(cid) {
       let c = this.category_list.find(x => x.Id == cid);
@@ -315,7 +315,7 @@ export default {
     },
     dataLoad() {
       this.getList(this.pageInfo).then(x => {
-        this.data_list = x.Records;
+        this.data_list=x.Records;
         let pinfo = this.pageInfo;
         pinfo.total = x.Count;
         this.pageInfo = pinfo;
@@ -381,7 +381,9 @@ export default {
       if (cid > 0) {
         this.value.CategoryId.unshift(cid);
         let category = this.category_list.find(x => x.Id == cid);
-        this.findCategoryIds(category.ParentId);
+        if(category){
+          this.findCategoryIds(category.ParentId);
+        }
       }
     },
     handleDelete(index, row) {

@@ -251,7 +251,7 @@ export default {
                   [{ size: ["small", false, "large"] }],
                   ["bold", "italic"],
                   [{ list: "ordered" }, { list: "bullet" }],
-                  ["link", { align: [] }]
+                  ["link", { align: [] },"code-block"]
                 ]
               };
             }

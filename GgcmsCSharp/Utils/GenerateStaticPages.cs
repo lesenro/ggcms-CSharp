@@ -42,12 +42,25 @@ namespace GgcmsCSharp.Utils
                 }
             }
         }
+        private void GeneratePage(string fn,string url)
+        {
+            string dir = Path.GetDirectoryName(fn);
+            if (!Directory.Exists(dir))
+            {
+                Directory.CreateDirectory(dir);
+            }
+            if (File.Exists(fn))
+            {
+                File.Delete(fn);
+            }
+            string html = webclient.DownloadString(url);
+            File.WriteAllText(fn, html, Encoding.UTF8);
+        }
         private void GenerateHome()
         {
-            string html = webclient.DownloadString(prefix);
             string svrpath = context.Server.MapPath("~");
             string fn = Path.GetFullPath(svrpath + "\\index.html");
-            File.WriteAllText(fn, html, Encoding.UTF8);
+            GeneratePage(fn, prefix);
         }
 
         private void GenerateCategories(List<GgcmsCategories> list)
@@ -57,36 +70,23 @@ namespace GgcmsCSharp.Utils
             string dir = Path.GetFullPath(svrpath + "/category");
             var cfgs = dhlp.SysConfigs();
             int pageSize = Convert.ToInt32(cfgs["cfg_page_size"]);
-            if (!Directory.Exists(dir))
-            {
-                Directory.CreateDirectory(dir);
-            }
             using (GgcmsDB db = new GgcmsDB())
             {
                 foreach (var c in list)
                 {
-                    string html = webclient.DownloadString(curl + c.Id);
                     string fn = Path.GetFullPath(dir + "/" + (string.IsNullOrWhiteSpace(c.RouteKey) ? c.Id.ToString() : c.RouteKey.Trim()));
-                    if (!Directory.Exists(fn))
-                    {
-                        Directory.CreateDirectory(fn);
-                    }
                     fn = fn + "\\index.html";
-                    File.WriteAllText(fn, html, Encoding.UTF8);
+                    GeneratePage(fn, curl + c.Id);
+
                     decimal count = db.GgcmsArticles.Where(x => x.Category_Id == c.Id).Count();
                     int psize = c.PageSize == 0 ? pageSize : c.PageSize;
                     int pagecount = Convert.ToInt32(Math.Ceiling(count / psize));
                     for(int p = 1; p < pagecount; p++)
                     {
                         int page = p + 1;
-                        html = webclient.DownloadString(curl + c.Id + "/" + page.ToString());
                         fn = Path.GetFullPath(dir + "/" + (string.IsNullOrWhiteSpace(c.RouteKey) ? c.Id.ToString() : c.RouteKey.Trim()) + "/" + page.ToString());
-                        if (!Directory.Exists(fn))
-                        {
-                            Directory.CreateDirectory(fn);
-                        }
                         fn = fn + "\\index.html";
-                        File.WriteAllText(fn, html, Encoding.UTF8);
+                        GeneratePage(fn, curl + c.Id + "/" + page.ToString());
                     }
                     GenerateArticles(c);
                 }
@@ -98,36 +98,23 @@ namespace GgcmsCSharp.Utils
             string aurl = prefix + "/Article/";
             string svrpath = context.Server.MapPath("~");
             string dir = Path.GetFullPath(svrpath + "/article");
-            if (!Directory.Exists(dir))
-            {
-                Directory.CreateDirectory(dir);
-            }
 
             using (GgcmsDB db=new GgcmsDB())
             {
                 var list = db.GgcmsArticles.Where(x => x.Category_Id == cinfo.Id).ToList();
                 foreach(var info in list)
                 {
-                    string html = webclient.DownloadString(aurl + info.Id);
                     string fn = Path.GetFullPath(dir + "/" + info.Id.ToString());
-                    if (!Directory.Exists(fn))
-                    {
-                        Directory.CreateDirectory(fn);
-                    }
                     fn = fn + "\\index.html";
-                    File.WriteAllText(fn, html, Encoding.UTF8);
+                    GeneratePage(fn, aurl + info.Id);
+
                     decimal count = info.pagesCount;
                     for (int p = 1; p < count; p++)
                     {
                         int page = p + 1;
-                        html = webclient.DownloadString(aurl + info.Id + "/" + page.ToString());
                         fn = Path.GetFullPath(dir + "/" + info.Id.ToString() + "/" + page.ToString());
-                        if (!Directory.Exists(fn))
-                        {
-                            Directory.CreateDirectory(fn);
-                        }
                         fn = fn + "\\index.html";
-                        File.WriteAllText(fn, html, Encoding.UTF8);
+                        GeneratePage(fn, aurl + info.Id + "/" + page.ToString());
                     }
                 }
             }

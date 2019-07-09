@@ -8,6 +8,7 @@ using System.Web.Routing;
 using System.Text.RegularExpressions;
 using GgcmsCSharp.Utils;
 using System.Web;
+using System;
 
 namespace GgcmsCSharp.Controllers
 {
@@ -47,6 +48,7 @@ namespace GgcmsCSharp.Controllers
             var pt = getTemplate();
             ViewBag.pageTmpl = pt;
             ViewBag.topId = 0;
+            ViewBag.PageType = 0;
             return View(pt.templateUrl);
 
         }
@@ -85,8 +87,12 @@ namespace GgcmsCSharp.Controllers
             ViewBag.pagination = pagination;
             ViewBag.Title = category.CategoryName;
             ViewBag.category = category;
-            ViewBag.articles = dataHelper.Articles(ids, pagination).Records;
+            var result= dataHelper.Articles(ids, pagination);
+            ViewBag.articles = result.Records;
+            pagination.setMaxSize(Convert.ToInt32( result.Count));
+
             ViewBag.topId = dataHelper.GetCategoryTopId(category);
+            ViewBag.PageType = 1;
             var pt = getTemplate(PageType.category, category);
             ViewBag.pageTmpl = pt;
             return View(pt.templateUrl);
@@ -108,6 +114,7 @@ namespace GgcmsCSharp.Controllers
             ViewBag.topId = dataHelper.GetCategoryTopId(category);
             var pt = getTemplate(PageType.article, article);
             ViewBag.pageTmpl = pt;
+            ViewBag.PageType = 2;
             return View(pt.templateUrl);
         }
         private PageTemplate getTemplate(PageType ptype = PageType.home, dynamic info = null)

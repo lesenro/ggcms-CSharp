@@ -92,10 +92,10 @@ namespace GgcmsCSharp.Models
         {
             if (!query.ToLower().Contains("status") && !string.IsNullOrWhiteSpace(query))
             {
-                query = query + ",Status = 0";
+                query = query + " and Status = 1";
             }
             columns = string.IsNullOrWhiteSpace(columns) ? "Id,OrderId,Url,WebName,LogoImg,LinkType,RelationId,ExtAttrib" : columns;
-            query = string.IsNullOrWhiteSpace(query) ? "Status = 0" : query;
+            query = string.IsNullOrWhiteSpace(query) ? "Status = 1" : query;
             SearchParams rparams = new SearchParams
             {
                 Columns = columns,
@@ -111,10 +111,10 @@ namespace GgcmsCSharp.Models
         {
             if (!query.ToLower().Contains("status")&& !string.IsNullOrWhiteSpace(query))
             {
-                query = query + ",Status = 0";
+                query = query + " and Status = 1";
             }
             columns = string.IsNullOrWhiteSpace(columns) ? "Id,Title,Url,Image,GroupKey,Content,OrderID" : columns;
-            query = string.IsNullOrWhiteSpace(query) ? "Status = 0" : query;
+            query = string.IsNullOrWhiteSpace(query) ? "Status = 1" : query;
             SearchParams rparams = new SearchParams
             {
                 Columns = columns,

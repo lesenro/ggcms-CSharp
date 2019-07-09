@@ -208,8 +208,8 @@ export default {
     return {
       list: [],
       value: {
-        username: "admin",
-        password: "123456",
+        username: "",
+        password: "",
         captcha: ""
       },
       formSettings: formSettings,

@@ -89,6 +89,7 @@ export class ArticleForm {
                             itemProps: {
                                 rules: [
                                 ],
+                                showClear:true,
                             },
                             controlProps: {
                                 action: ""
@@ -178,6 +179,9 @@ export class ArticleForm {
                             type: "textarea",
                             itemProps: {
                             },
+                            controlProps:{
+                                maxlength:255
+                            }
                         },
                         {
                             key: "Description",
@@ -185,6 +189,9 @@ export class ArticleForm {
                             type: "textarea",
                             itemProps: {
                             },
+                            controlProps:{
+                                maxlength:255
+                            }
                         },
                         {
                             key: "Author",
@@ -201,7 +208,8 @@ export class ArticleForm {
                                 rules: [
                                 ],
                             },
-                            controlProps: {
+                            controlProps:{
+                                maxlength:255
                             }
                         },
                         {
@@ -212,7 +220,8 @@ export class ArticleForm {
                                 rules: [
                                 ],
                             },
-                            controlProps: {
+                            controlProps:{
+                                maxlength:255
                             }
                         },
 

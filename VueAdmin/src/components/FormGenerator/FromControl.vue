@@ -148,6 +148,7 @@
     <el-upload ref="ctrl" v-bind="controlProps" :on-success="onFileUploadSuccess">
       <sub-component ref="subCtrl" :image="value[d_settings.key]"/>
     </el-upload>
+    <el-button v-if="itemProps.showClear&&value[d_settings.key]" type="danger" class="btn-clear" icon="el-icon-close" @click="value[d_settings.key]=''">清除</el-button>
   </el-form-item>
   <el-form-item :prop="d_settings.key" v-bind="itemProps" v-else-if="d_settings.type=='button'">
     <el-button ref="ctrl" @click="onChange" v-bind="controlProps">{{d_settings.name}}</el-button>
@@ -337,5 +338,6 @@ export default {
 };
 </script>
 
-<style>
+<style lang="scss">
+.btn-clear{width: 130px}
 </style>

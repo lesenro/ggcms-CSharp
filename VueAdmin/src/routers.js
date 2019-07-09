@@ -69,7 +69,7 @@ const routes = [
     component: Home,
     tabHidden: true,
     no_login: true,
-    redirect: "/error-404",
+    redirect: "/login/admin",
   },
   { path: '/login/:role', no_login: true, component: Login, name: "登录" },
   // { path: '/province-city', component: provinceCity, name: "登录" },

@@ -31,6 +31,10 @@ namespace GgcmsCSharp.Models
         {
             return pageSize * (page - 1);
         }
+        public string getUrl(int p=1)
+        {
+            return baseLink.Replace("{page}", p.ToString());
+        }
         public void setMaxSize(int count)
         {
             maxSize = (int)Math.Ceiling((double)count / pageSize);
