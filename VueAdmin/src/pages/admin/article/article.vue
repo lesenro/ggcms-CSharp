@@ -28,7 +28,14 @@
       <el-table-column type="selection" width="55"></el-table-column>
       <el-table-column prop="Title" label="文章标题"></el-table-column>
       <el-table-column prop="Category_Id" label="所属分类">
-        <template slot-scope="scope">{{getCategoryName(scope.row.Category_Id)}}</template>
+        <template slot-scope="scope">
+          <el-button
+            size="mini"
+            type="primary"
+            plain
+            @click="searchCategory(scope.row.Category_Id)"
+          >{{getCategoryName(scope.row.Category_Id)}}</el-button>
+        </template>
       </el-table-column>
       <el-table-column prop="Author" label="作者"></el-table-column>
       <el-table-column label="操作">
@@ -595,6 +602,13 @@ export default {
       });
       this.modelInputVisible = false;
     },
+    searchCategory(cid) {
+      if (!cid) {
+        return;
+      }
+      this.searchKey = "c:" + this.getCategoryName(cid);
+      this.onSearch();
+    },
     onSearch() {
       if (!this.searchKey) {
         return;
@@ -616,7 +630,7 @@ export default {
           }
         }
       } else {
-        this.pageInfo.QueryString = `Category_Id>0 and (Title.Contains("${this.searchKey}") or Description.Contains("${this.searchKey}") or Description.Contains("${this.Author}"))`;
+        this.pageInfo.QueryString = `Category_Id>0 and (Title.Contains("${this.searchKey}") or Description.Contains("${this.searchKey}") or Author.Contains("${this.searchKey}"))`;
       }
       this.pageInfo.PageNum = 1;
       this.dataLoad();
