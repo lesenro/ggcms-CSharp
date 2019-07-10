@@ -1,11 +1,23 @@
 <template>
   <div class="page-panel" v-loading="loading">
-    <div class="header-bar">
-      <el-button-group>
-        <el-button icon="el-icon-plus" size="mini" type="primary" @click="handleAdd">添加</el-button>
-        <el-button icon="el-icon-delete" size="mini" type="danger" @click="handleDelete">删除</el-button>
-      </el-button-group>
-    </div>
+    <el-row type="flex" class="header-bar" justify="space-between">
+      <el-col :span="8">
+        <el-button-group>
+          <el-button icon="el-icon-plus" size="mini" type="primary" @click="handleAdd">添加</el-button>
+          <el-button icon="el-icon-delete" size="mini" type="danger" @click="handleDelete">删除</el-button>
+        </el-button-group>
+      </el-col>
+      <el-col :span="8">
+        <el-form size="mini" :inline="true" class="float-right">
+          <el-form-item required>
+            <el-input v-model="searchKey" clearable @clear="clearSearch" placeholder="查询关键词"></el-input>
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="onSearch">查询</el-button>
+          </el-form-item>
+        </el-form>
+      </el-col>
+    </el-row>
     <el-table
       :data="data_list"
       stripe
@@ -121,7 +133,8 @@ export default {
       category_tree: [],
       styles: [],
       files: [],
-      extModelInfo: null
+      extModelInfo: null,
+      searchKey: ""
     };
   },
   computed: {
@@ -315,7 +328,7 @@ export default {
     },
     dataLoad() {
       this.getList(this.pageInfo).then(x => {
-        this.data_list=x.Records;
+        this.data_list = x.Records;
         let pinfo = this.pageInfo;
         pinfo.total = x.Count;
         this.pageInfo = pinfo;
@@ -381,7 +394,7 @@ export default {
       if (cid > 0) {
         this.value.CategoryId.unshift(cid);
         let category = this.category_list.find(x => x.Id == cid);
-        if(category){
+        if (category) {
           this.findCategoryIds(category.ParentId);
         }
       }
@@ -581,6 +594,38 @@ export default {
         x.Value = vals[x.ColName];
       });
       this.modelInputVisible = false;
+    },
+    onSearch() {
+      if (!this.searchKey) {
+        return;
+      }
+      let rule = /^c:/gi;
+      if (rule.test(this.searchKey)) {
+        let category = this.searchKey.replace(rule, "");
+        let cid = Number(category);
+        if (cid) {
+          this.pageInfo.QueryString = "Category_Id==" + Math.abs(cid);
+        } else {
+          let citem = this.category_list.find(
+            x => x.CategoryName.indexOf(category) != -1
+          );
+          if (citem) {
+            this.pageInfo.QueryString = "Category_Id==" + Math.abs(citem.Id);
+          } else {
+            return;
+          }
+        }
+      } else {
+        this.pageInfo.QueryString = `Category_Id>0 and (Title.Contains("${this.searchKey}") or Description.Contains("${this.searchKey}") or Description.Contains("${this.Author}"))`;
+      }
+      this.pageInfo.PageNum = 1;
+      this.dataLoad();
+    },
+    clearSearch() {
+      this.searchKey = "";
+      this.pageInfo.QueryString = `Category_Id>0`;
+      this.pageInfo.PageNum = 1;
+      this.dataLoad();
     }
   },
   components: {
