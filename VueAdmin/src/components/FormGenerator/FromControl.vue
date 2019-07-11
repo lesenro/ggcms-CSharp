@@ -146,9 +146,15 @@
   </el-form-item>
   <el-form-item :prop="d_settings.key" v-bind="itemProps" v-else-if="d_settings.type=='upload'">
     <el-upload ref="ctrl" v-bind="controlProps" :on-success="onFileUploadSuccess">
-      <sub-component ref="subCtrl" :image="value[d_settings.key]"/>
+      <sub-component ref="subCtrl" :image="value[d_settings.key]" />
     </el-upload>
-    <el-button v-if="itemProps.showClear&&value[d_settings.key]" type="danger" class="btn-clear" icon="el-icon-close" @click="value[d_settings.key]=''">清除</el-button>
+    <el-button
+      v-if="itemProps.showClear&&value[d_settings.key]"
+      type="danger"
+      class="btn-clear"
+      icon="el-icon-close"
+      @click="value[d_settings.key]=''"
+    >清除</el-button>
   </el-form-item>
   <el-form-item :prop="d_settings.key" v-bind="itemProps" v-else-if="d_settings.type=='button'">
     <el-button ref="ctrl" @click="onChange" v-bind="controlProps">{{d_settings.name}}</el-button>
@@ -206,6 +212,7 @@
 import { mapState, mapActions } from "vuex";
 import { VueEditor } from "vue2-editor";
 import articleContent from "@/components/articleContent";
+
 export default {
   name: "form-control",
   created() {
@@ -225,7 +232,7 @@ export default {
       d_settings: this.settings,
       d_options: (this.settings.options || []).map(x => x),
       d_itemProps: this.settings.itemProps || {},
-      d_controlProps: this.settings.controlProps || {}
+      d_controlProps: this.settings.controlProps || {},
     };
   },
   computed: {
@@ -334,10 +341,12 @@ export default {
       this.d_itemProps.rules = rules;
     }
   },
-  components: { VueEditor ,articleContent}
+  components: { VueEditor, articleContent }
 };
 </script>
 
 <style lang="scss">
-.btn-clear{width: 130px}
+.btn-clear {
+  width: 130px;
+}
 </style>

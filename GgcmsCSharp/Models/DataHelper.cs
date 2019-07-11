@@ -55,9 +55,18 @@ namespace GgcmsCSharp.Models
             return GgcmsCategories.GetCategoryByKey(id, list);
         }
         //获取文章列表
-        public GgcmsArticles Article(int id)
+        public GgcmsArticles Article(int id, int page = 1)
         {
             GgcmsArticles article = db.GgcmsArticles.Find(id);
+            if (page > 1)
+            {
+                GgcmsArticlePages art_page = db.GgcmsArticlePages.Where(x => x.Article_Id == id && x.OrderId == page).FirstOrDefault();
+                if (art_page != null)
+                {
+                    article.Content = art_page.Content;
+                    article.PageTitle = art_page.Title;
+                }
+            }
             var list = from r in db.GgcmsAttachments
                        where r.Articles_Id == article.Id
                        select r;
@@ -178,7 +187,7 @@ namespace GgcmsCSharp.Models
                 QueryString = "@0.Contains(outerIt.Category_Id)",
                 PageNum = pagination.page,
                 PageSize = pagination.pageSize,
-                OrderBy = "Id desc",
+                OrderBy = "ShowLevel desc,Id desc",
                 WhereParams= ids
             };
             return Articles(rparams);

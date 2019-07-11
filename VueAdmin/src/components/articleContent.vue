@@ -78,7 +78,7 @@ export default {
       info: new GgcmsArticlePages(),
       d_value: this.value,
       cur_page: 1,
-      articleId: 0
+      articleId: 0,
     };
   },
   computed: {

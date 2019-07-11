@@ -344,13 +344,6 @@ export default {
     onFileSelect(ev, key, ftype = 0) {
       const form = this.$refs["form"];
       if (ev.file) {
-        if (ftype != 2 && !ev.file.type.startsWith("image")) {
-          this.$message({
-            type: "error",
-            message: "必须上传图片"
-          });
-          return;
-        }
         return this.fileUpload({
           type: "article",
           file: ev.file
@@ -513,6 +506,13 @@ export default {
       const form = this.$refs["form"];
       let ctrl = form.getControl(key);
       ctrl.clearFiles();
+      if (!ev.file.type.startsWith("image")) {
+        this.$message({
+          type: "error",
+          message: "必须上传图片"
+        });
+        return;
+      }
       let result = await this.onFileSelect(ev, key);
       form.setValue(key, result.link);
     },

@@ -98,14 +98,20 @@ namespace GgcmsCSharp.Controllers
             return View(pt.templateUrl);
         }
         [OutputCache(CacheProfile = "ViewCache")]
-        public ActionResult Article(int id)
+        public ActionResult Article(int id, int page = 1)
         {
-            GgcmsArticles article = dataHelper.Article(id);
+            GgcmsArticles article = dataHelper.Article(id, page);
             //跳转到错误页
             if (article == null)
             {
 
             }
+            Pagination pagination = new Pagination();
+            pagination.page = page;
+            pagination.baseLink = dataHelper.Prefix + "/Article/" + id + "/{page}";
+            pagination.pageSize = 1;
+            pagination.setMaxSize(article.pagesCount);
+            ViewBag.pagination = pagination;
 
             GgcmsCategories category = dataHelper.Categories(article.Category_Id);
             ViewBag.Title = article.Title;

@@ -261,12 +261,14 @@ namespace GgcmsCSharp.ApiCtrls
 
             //删除关联模型数据
             var category = dbHelper.Categories(Math.Abs( info.Category_Id));
-            if (category.ExtModelId > 0)
+            if (category != null)
             {
-                ExtendModule.Delete(info.Id, category.ExtModelId);
+                if (category.ExtModelId > 0)
+                {
+                    ExtendModule.Delete(info.Id, category.ExtModelId);
+                }
+                updateArticleNumber(info.Category_Id, -1);
             }
-            updateArticleNumber(info.Category_Id, -1);
-
             Dbctx.GgcmsArticles.Remove(info);
             //删除关联附件
             Dbctx.GgcmsAttachments.RemoveRange(Dbctx.GgcmsAttachments.Where(x => x.Articles_Id == info.Id));
@@ -284,15 +286,18 @@ namespace GgcmsCSharp.ApiCtrls
             foreach (GgcmsArticles item in query.ToList())
             {
 
-                updateArticleNumber(item.Category_Id, -1);
                 //删除关联附件
                 var attalist = Dbctx.GgcmsAttachments.Where(x => x.Articles_Id == item.Id);
                 Dbctx.GgcmsAttachments.RemoveRange(attalist);
                 //删除关联模型数据
                 var category = dbHelper.Categories(Math.Abs(item.Category_Id));
-                if (category.ExtModelId > 0)
+                if (category != null)
                 {
-                    ExtendModule.Delete(item.Id, category.ExtModelId);
+                    if (category.ExtModelId > 0)
+                    {
+                        ExtendModule.Delete(item.Id, category.ExtModelId);
+                    }
+                    updateArticleNumber(item.Category_Id, -1);
                 }
                 //删除关联分页
                 Dbctx.GgcmsArticlePages.RemoveRange(Dbctx.GgcmsArticlePages.Where(x => x.Article_Id == item.Id));

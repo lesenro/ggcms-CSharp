@@ -1,11 +1,23 @@
 <template>
   <div class="page-panel" v-loading="loading">
-    <div class="header-bar">
-      <el-button-group>
-        <el-button icon="el-icon-plus" size="mini" type="primary" @click="handleAdd">添加</el-button>
-        <el-button icon="el-icon-delete" size="mini" type="danger" @click="handleDelete">删除</el-button>
-      </el-button-group>
-    </div>
+    <el-row type="flex" class="header-bar" justify="space-between">
+      <el-col :span="8">
+        <el-button-group>
+          <el-button icon="el-icon-plus" size="mini" type="primary" @click="handleAdd">添加</el-button>
+          <el-button icon="el-icon-delete" size="mini" type="danger" @click="handleDelete">删除</el-button>
+        </el-button-group>
+      </el-col>
+      <el-col :span="8">
+        <el-form size="mini" :inline="true" class="float-right">
+          <el-form-item required>
+            <el-input v-model="searchKey" clearable @clear="clearSearch" placeholder="查询关键词"></el-input>
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="onSearch">查询</el-button>
+          </el-form-item>
+        </el-form>
+      </el-col>
+    </el-row>
     <el-table
       :data="data_list"
       stripe
@@ -14,18 +26,30 @@
       @selection-change="handleSelectionChange"
     >
       <el-table-column type="selection" width="55"></el-table-column>
-      <el-table-column prop="WebName" label="网站名称"></el-table-column>
-      <el-table-column prop="Url" label="网站地址"></el-table-column>
-      <el-table-column prop="链接类型" label="链接类型">
-        <template slot-scope="scope">{{getGroupName(scope.row.LinkType)}}</template>
+      <el-table-column prop="WebName" label="网站名称">
+        <template slot-scope="scope">
+          {{scope.row.WebName}}
+          <img :style="{height:'20px',transform:'translateY(3px)'}" v-if="scope.row.LogoImg" alt="logo img" :src="scope.row.LogoImg"/>
+        </template>
       </el-table-column>
-      <el-table-column prop="Status" label="状态">
+      <el-table-column prop="Url" label="网站地址"></el-table-column>
+      <el-table-column prop="GroupKey" label="链接类型" width="200">
+        <template slot-scope="scope">
+          <el-button
+            size="mini"
+            type="primary"
+            plain
+            @click="searchByGroup(scope.row.LinkType)"
+          >{{getGroupName(scope.row.LinkType)}}</el-button>
+        </template>
+      </el-table-column>
+      <el-table-column prop="Status" label="状态" width="120">
         <template slot-scope="scope">
           <el-tag v-if="scope.row.Status==1" type="success">正常</el-tag>
           <el-tag v-if="scope.row.Status==0" type="danger">禁用</el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="操作">
+      <el-table-column label="操作" width="120">
         <template slot-scope="scope">
           <el-button-group>
             <el-button
@@ -73,7 +97,8 @@ export default {
       pageInfo: {},
       link_types: [],
       select_ids: [],
-      files: []
+      files: [],
+      searchKey:""
     };
   },
   computed: {
@@ -115,12 +140,12 @@ export default {
     currentChange(ev) {
       let pageInfo = this.pageInfo;
       pageInfo.PageNum = ev;
-      this.getList(pageInfo);
+      this.dataLoad();
     },
     handleSizeChange(ev) {
       let pageInfo = this.pageInfo;
       pageInfo.PageSize = ev;
-      this.getList(pageInfo);
+      this.dataLoad();
     },
     getGroupName(gkey) {
       let grp = this.link_types.find(x => x.value == gkey);
@@ -246,7 +271,41 @@ export default {
     },
 
     //表单项改动事件
-    onFormCtrlChange(ev) {}
+    onFormCtrlChange(ev) {},
+    searchByGroup(gid) {
+      if (!gid) {
+        return;
+      }
+      this.searchKey = "g:" + this.getGroupName(gid);
+      this.onSearch();
+    },
+    onSearch() {
+      if (!this.searchKey) {
+        return;
+      }
+      let rule = /^g:/gi;
+      if (rule.test(this.searchKey)) {
+        let group = this.searchKey.replace(rule, "");
+        let citem = this.link_types.find(
+          x => x.label.indexOf(group) != -1
+        );
+        if (citem) {
+          this.pageInfo.QueryString = `LinkType=="${citem.value}"`;
+        } else {
+          return;
+        }
+      } else {
+        this.pageInfo.QueryString = `(WebName.Contains("${this.searchKey}") or LinkType.Contains("${this.searchKey}") or Url.Contains("${this.searchKey}"))`;
+      }
+      this.pageInfo.PageNum = 1;
+      this.dataLoad();
+    },
+    clearSearch() {
+      this.searchKey = "";
+      this.pageInfo.QueryString = ``;
+      this.pageInfo.PageNum = 1;
+      this.dataLoad();
+    }
   }
 };
 </script>
