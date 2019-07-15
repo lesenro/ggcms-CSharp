@@ -144,9 +144,13 @@
       v-model="value[d_settings.key]"
     ></el-cascader>
   </el-form-item>
-  <el-form-item :prop="d_settings.key" v-bind="itemProps" v-else-if="d_settings.type=='upload'">
+  <el-form-item
+    :prop="d_settings.key"
+    v-bind="itemProps"
+    v-else-if="d_settings.type=='image-upload'"
+  >
     <el-upload ref="ctrl" v-bind="controlProps" :on-success="onFileUploadSuccess">
-      <sub-component ref="subCtrl" :image="value[d_settings.key]" />
+      <image-upload ref="subCtrl" :image="value[d_settings.key]" />
     </el-upload>
     <el-button
       v-if="itemProps.showClear&&value[d_settings.key]"
@@ -156,6 +160,15 @@
       @click="value[d_settings.key]=''"
     >清除</el-button>
   </el-form-item>
+  <el-form-item
+    :prop="d_settings.key"
+    v-bind="itemProps"
+    v-else-if="d_settings.type=='file-upload'"
+  >
+    <el-upload ref="ctrl" v-bind="controlProps" :on-success="onFileUploadSuccess">
+      <file-upload ref="subCtrl" :image="value[d_settings.key]" />
+    </el-upload>
+  </el-form-item>
   <el-form-item :prop="d_settings.key" v-bind="itemProps" v-else-if="d_settings.type=='button'">
     <el-button ref="ctrl" @click="onChange" v-bind="controlProps">{{d_settings.name}}</el-button>
   </el-form-item>
@@ -163,13 +176,16 @@
     <el-alert ref="ctrl" v-bind="controlProps"></el-alert>
   </el-form-item>
   <el-form-item :prop="d_settings.key" v-bind="itemProps" v-else-if="d_settings.type=='editor'">
-    <vue-editor
-      useCustomImageHandler
+    <tinymce
+      @editorInit="editorInit"
+      :style="{'margin-right':'4px'}"
+      :other_options="editorOptions"
+      :id="d_settings.key"
       ref="ctrl"
-      v-bind="controlProps"
       v-model="value[d_settings.key]"
-      @text-change="onEditorChange"
-    ></vue-editor>
+      @editorChange="onEditorChange"
+      v-bind="controlProps"
+    ></tinymce>
   </el-form-item>
   <el-form-item :prop="d_settings.key" v-bind="itemProps" v-else-if="d_settings.type=='code'">
     <codemirror
@@ -210,8 +226,9 @@
 // import "codemirror/mode/xml/xml.js";
 // theme css
 import { mapState, mapActions } from "vuex";
-import { VueEditor } from "vue2-editor";
 import articleContent from "@/components/articleContent";
+import imageUpload from "@/components/imageUpload";
+import fileUpload from "@/components/fileUpload";
 
 export default {
   name: "form-control",
@@ -221,18 +238,45 @@ export default {
     }
   },
   updated() {
-    if (this.d_settings.type == "code") {
-      // console.log(this.value[this.d_settings.key]);
+    if (this.d_settings.type == "editor") {
+      // this.value[this.d_settings.key] = this.d_val;
     }
   },
   props: ["settings", "value"],
   data() {
+    let self = this;
     return {
       vueName: "sub-component",
       d_settings: this.settings,
       d_options: (this.settings.options || []).map(x => x),
       d_itemProps: this.settings.itemProps || {},
       d_controlProps: this.settings.controlProps || {},
+      editorOptions:Object.assign({},{
+        selector: "#"+this.settings.key,
+        file_browser_callback_types: "image",
+        // file_browser_callback_types: "file image media",
+        language_url: "/assets/js/zh_CN.js",
+        plugins:['advlist autolink lists link image charmap print preview hr anchor pagebreak', 'searchreplace visualblocks visualchars code fullscreen', 'insertdatetime media nonbreaking save table contextmenu directionality','template paste textcolor colorpicker textpattern imagetools toc help emoticons hr codesample'],
+        file_picker_callback: function(callback, value, meta) {
+          // Provide image and alt text for the image dialog
+          // if (meta.filetype == "image") {
+          //   callback("myimage.jpg", { alt: "My alt text" });
+          // }
+          let ctrl= self.$refs["ctrl"];
+
+          if (meta.filetype == "image") {
+            let file=document.createElement("input");
+            file.type="file"
+            file.onchange=(ev)=>{
+              if(ctrl.imageAdded){
+                ctrl.imageAdded(file.files[0],callback);
+              }
+            };
+            file.click();
+            // callback("myimage.jpg", { alt: "My alt text" });
+          }
+        }
+      }, (this.settings.controlProps||{}).configs)
     };
   },
   computed: {
@@ -298,15 +342,15 @@ export default {
         value: ev
       });
     },
-    onEditorChange(delta, oldDelta, source) {
+    editorInit(ev) {
+      this.originalEditor=ev;
+      this.value[this.d_settings.key]=this.value[this.d_settings.key]+" ";
+    },
+    onEditorChange(ev) {
       this.$emit("change", {
         key: this.d_settings.key,
         value: this.value[this.d_settings.key],
-        event: {
-          delta,
-          oldDelta,
-          source
-        }
+        event: ev
       });
     },
     onChangeArray(ev) {
@@ -341,10 +385,9 @@ export default {
       this.d_itemProps.rules = rules;
     }
   },
-  components: { VueEditor, articleContent }
+  components: { articleContent, imageUpload, fileUpload }
 };
 </script>
-
 <style lang="scss">
 .btn-clear {
   width: 130px;

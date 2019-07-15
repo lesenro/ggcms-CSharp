@@ -31,7 +31,7 @@ namespace GgcmsCSharp.ApiCtrls
         }
 
         // PUT: api/GgcmsCategories/5
-        public IHttpActionResult Edit(int id, GgcmsKeywords info)
+        public IHttpActionResult Edit(GgcmsKeywords info)
         {
 
             if (Dbctx.GgcmsKeywords.Where(x => x.Id == info.Id).Count() == 0)

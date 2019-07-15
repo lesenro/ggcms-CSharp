@@ -26,23 +26,10 @@
       @selection-change="handleSelectionChange"
     >
       <el-table-column type="selection" width="55"></el-table-column>
-      <el-table-column prop="WebName" label="网站名称">
-        <template slot-scope="scope">
-          {{scope.row.WebName}}
-          <img :style="{height:'20px',transform:'translateY(3px)'}" v-if="scope.row.LogoImg" alt="logo img" :src="scope.row.LogoImg"/>
-        </template>
+      <el-table-column prop="Keyword" label="关键词">
       </el-table-column>
-      <el-table-column prop="Url" label="网站地址"></el-table-column>
-      <el-table-column prop="GroupKey" label="链接类型" width="200">
-        <template slot-scope="scope">
-          <el-button
-            size="mini"
-            type="primary"
-            plain
-            @click="searchByGroup(scope.row.LinkType)"
-          >{{getGroupName(scope.row.LinkType)}}</el-button>
-        </template>
-      </el-table-column>
+      <el-table-column prop="Url" label="地址"></el-table-column>
+
       <el-table-column prop="Status" label="状态" width="120">
         <template slot-scope="scope">
           <el-tag v-if="scope.row.Status==1" type="success">正常</el-tag>
@@ -73,7 +60,7 @@
         :total="pageInfo.total"
       ></el-pagination>
     </div>
-    <el-dialog title="友情链接" :visible.sync="dialogFormVisible" @open="dialogOpened">
+    <el-dialog title="站内标签" :visible.sync="dialogFormVisible" @open="dialogOpened">
       <form-generator :value="value" @change="onFormCtrlChange" ref="form" :settings="formSettings"></form-generator>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">取 消</el-button>
@@ -95,7 +82,6 @@ export default {
       value: Object.assign({}, defaultValue),
       data_list: [],
       pageInfo: {},
-      link_types: [],
       select_ids: [],
       files: [],
       searchKey:""
@@ -103,39 +89,20 @@ export default {
   },
   computed: {
     ...mapState("global", ["page_sizes"]),
-    ...mapState("link", ["loading"])
+    ...mapState("keys", ["loading"])
   },
   async created() {
     let settings = Object.assign({}, formSettings);
-    let upload = settings.layouts[0].controls.find(
-      x => x.key == "LogoImg"
-    );
-    upload.controlProps.httpRequest = ev => this.onFileSelect(ev, "LogoImg");
     this.formSettings = settings;
-    let grps = await this.getDictList({
-      QueryString: 'GroupKey=="link_type" and DictType==1 and DictStatus=1',
-      PageSize: 0,
-      OrderBy: "OrderId asc"
-    });
-    if (grps.Records.length > 0) {
-      this.link_types = grps.Records.map(x => {
-        return {
-          label: x.DictName,
-          value: x.DictKey
-        };
-      });
-    }
+
     this.pageInfo = Object.assign({}, this.$store.state.global.defaultPageInfo);
     this.pageInfo.QueryString = "";
-    this.pageInfo.OrderBy = "OrderID asc";
+    this.pageInfo.OrderBy = "Id desc";
     this.dataLoad();
   },
 
   methods: {
-    ...mapActions("dict", {
-      getDictList: "getList"
-    }),
-    ...mapActions("link", ["getList", "save", "del", "getById"]),
+    ...mapActions("keys", ["getList", "save", "del", "getById"]),
     ...mapActions("global", ["fileUpload"]),
     currentChange(ev) {
       let pageInfo = this.pageInfo;
@@ -147,13 +114,7 @@ export default {
       pageInfo.PageSize = ev;
       this.dataLoad();
     },
-    getGroupName(gkey) {
-      let grp = this.link_types.find(x => x.value == gkey);
-      if (grp) {
-        return grp.label;
-      }
-      return "";
-    },
+
     handleSelectionChange(rows) {
       this.select_ids = rows.map(x => x.Id);
     },
@@ -165,40 +126,7 @@ export default {
         this.pageInfo = pinfo;
       });
     },
-    onFileSelect(ev, key) {
-      const form = this.$refs["form"];
-      let ctrl = form.getControl(key);
-      if (ev.file) {
-        if (!ev.file.type.startsWith("image")) {
-          this.$message({
-            type: "error",
-            message: "必须上传图片"
-          });
-          ctrl.clearFiles();
-          return;
-        }
-        this.fileUpload({
-          type: "link",
-          file: ev.file
-        }).then(x => {
-          let file = this.files.find(f => f.propertyName == key);
-          if (file) {
-            file.filePath = x.Data[0].url;
-            file.propertyName = key;
-            file.fileType = 0;
-          } else {
-            this.files.push({
-              filePath: x.Data[0].url,
-              propertyName: key,
-              fileType: 0
-            });
-          }
-          ctrl.clearFiles();
-          form.setValue(key, x.link);
-        });
-      }
-      //
-    },
+
     handleEdit(index, row) {
       this.getById(row.Id).then(x => {
         this.value = x;
@@ -250,9 +178,6 @@ export default {
         return;
       }
       form.resetForm();
-      this.files=[];
-      form.setOptions("LinkType", this.link_types);
-
       form.setValues(Object.assign({}, this.value));
     },
     onInfoSubmit() {
@@ -283,20 +208,8 @@ export default {
       if (!this.searchKey) {
         return;
       }
-      let rule = /^g:/gi;
-      if (rule.test(this.searchKey)) {
-        let group = this.searchKey.replace(rule, "");
-        let citem = this.link_types.find(
-          x => x.label.indexOf(group) != -1
-        );
-        if (citem) {
-          this.pageInfo.QueryString = `LinkType=="${citem.value}"`;
-        } else {
-          return;
-        }
-      } else {
-        this.pageInfo.QueryString = `(WebName.Contains("${this.searchKey}") or LinkType.Contains("${this.searchKey}") or Url.Contains("${this.searchKey}"))`;
-      }
+
+      this.pageInfo.QueryString = `(Keyword.Contains("${this.searchKey}") or Url.Contains("${this.searchKey}"))`;
       this.pageInfo.PageNum = 1;
       this.dataLoad();
     },

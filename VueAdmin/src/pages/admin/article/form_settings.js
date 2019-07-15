@@ -1,5 +1,3 @@
-import imageUpload from "@/components/imageUpload";
-import fileUpload from "@/components/fileUpload";
 
 export class defaultValue {
     Id = 0;
@@ -84,8 +82,7 @@ export class ArticleForm {
                         {
                             key: "TitleImg",
                             name: "图片上传",
-                            type: "upload",
-                            component: imageUpload,
+                            type: "image-upload",
                             itemProps: {
                                 rules: [
                                 ],
@@ -293,8 +290,7 @@ export class GgcmsAttachmentFrom {
                         {
                             key: "AttaUrl",
                             name: "附件上传",
-                            type: "upload",
-                            component: fileUpload,
+                            type: "file-upload",
                             itemProps: {
                                 rules: [
                                     { required: true, message: "请上传附件", trigger: "blur" },

@@ -23,18 +23,16 @@
 
 <script>
 import { mapActions, mapState } from "vuex";
-import imageUpload from "@/components/imageUpload";
 export default {
   name: "settings",
   data() {
     return {
-      dialogFormVisible: false,
       formSettings: {},
       uploadTypes: [],
       value: null,
       styles: [],
       configs: [],
-      files: []
+      files: [],
     };
   },
   computed: {
@@ -69,6 +67,7 @@ export default {
       getStyles: "getList",
       getTmplList: "getTmplList"
     }),
+
     styleChange(folderName) {
       let s = this.styles.find(x => x.value == folderName);
       if (s) {
@@ -227,7 +226,6 @@ export default {
             item.key = x.DictKey;
             item.name = `${x.DictName}(${x.DictKey})`;
             if (item.key == "cfg_logo") {
-              item.component = imageUpload;
               if (!item.controlProps) {
                 item.controlProps = {};
               }
@@ -247,12 +245,9 @@ export default {
                   height: "120px",
                   marginBottom: "30px"
                 },
-                editorToolbar: [
-                  [{ size: ["small", false, "large"] }],
-                  ["bold", "italic"],
-                  [{ list: "ordered" }, { list: "bullet" }],
-                  ["link", { align: [] },"code-block"]
-                ]
+                configs: {
+                  menubar: false
+                }
               };
             }
             return item;
@@ -312,8 +307,11 @@ export default {
         list: cfgs,
         files: this.files
       }).then(x => {
-        if (x.Id > 0) {
-          this.dialogFormVisible = false;
+        if (x.length > 0) {
+          this.$message({
+            type: "success",
+            message: "保存成功"
+          });
           this.dataLoad();
         }
       });

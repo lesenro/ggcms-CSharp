@@ -33,20 +33,20 @@
         <el-input v-model="info.Title"></el-input>
       </el-form-item>
       <el-form-item label="内容">
-        <vue-editor
+        <tinymce
+          @editorInit="editorInit"
+          class="tinymce-editor"
+          :other_options="editorOptions"
           id="editor"
-          useCustomImageHandler
           ref="editor"
           v-model="info.Content"
-          @imageAdded="editorImageAdded"
-        ></vue-editor>
+        ></tinymce>
       </el-form-item>
     </el-form>
   </div>
 </template>
 
 <script>
-import { VueEditor } from "vue2-editor";
 import { mapActions, mapState } from "vuex";
 
 export class GgcmsArticlePages {
@@ -74,11 +74,32 @@ export default {
     value: Array
   },
   data() {
+    let self=this;
     return {
       info: new GgcmsArticlePages(),
       d_value: this.value,
       cur_page: 1,
       articleId: 0,
+      editorOptions:{
+        selector: "#editor",
+        height:300,
+        file_browser_callback_types: "image",
+        // file_browser_callback_types: "file image media",
+        language_url: "/assets/js/zh_CN.js",
+        plugins:['advlist autolink lists link image charmap print preview hr anchor pagebreak', 'searchreplace visualblocks visualchars code fullscreen', 'insertdatetime media nonbreaking save table contextmenu directionality','template paste textcolor colorpicker textpattern imagetools toc help emoticons hr codesample'],
+        file_picker_callback: function(callback, value, meta) {
+          // Provide image and alt text for the image dialog
+          if (meta.filetype == "image") {
+            let file=document.createElement("input");
+            file.type="file"
+            file.onchange=(ev)=>{
+              self.editorImageAdded(file.files[0],callback);
+            };
+            file.click();
+            // callback("myimage.jpg", { alt: "My alt text" });
+          }
+        }
+      }
     };
   },
   computed: {
@@ -89,13 +110,16 @@ export default {
   methods: {
     ...mapActions("article", ["getPageInfoById"]),
     ...mapActions("global", ["fileUpload"]),
+    editorInit(ev){
+
+    },
     setValues(val, aid) {
       this.articleId = aid;
       this.$set(this, "d_value", val);
       // this.d_value = val;
       this.currentChange(1);
     },
-    async editorImageAdded(file, Editor, cursorLocation, resetUploader) {
+    async editorImageAdded(file, callback) {
       if (!file.type.startsWith("image")) {
         this.$message({
           type: "error",
@@ -111,8 +135,7 @@ export default {
       if (result.Code != 0) {
         return;
       }
-      Editor.insertEmbed(cursorLocation, "image", result.link);
-      resetUploader();
+      callback(result.link, { alt: file.name });
       if (!this.info.files) {
         this.info.files = [];
       }
@@ -213,7 +236,6 @@ export default {
       this.currentChange(target);
     }
   },
-  components: { VueEditor }
 };
 </script>
 
@@ -224,7 +246,5 @@ export default {
     line-height: 25px;
   }
 }
-#editor {
-  height: 250px;
-}
+
 </style>

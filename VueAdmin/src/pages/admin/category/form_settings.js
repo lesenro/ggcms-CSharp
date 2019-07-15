@@ -1,4 +1,3 @@
-import imageUpload from "@/components/imageUpload";
 
 export const defaultValue = {
     Id: 0,
@@ -64,7 +63,6 @@ export default {
                             key: "RedirectUrl",
                             name: "跳转地址",
                             type: "text",
-                            component: imageUpload,
                             itemProps: {
                                 rules: [
                                 ],
@@ -75,8 +73,7 @@ export default {
                         {
                             key: "LogoImg",
                             name: "图片上传",
-                            type: "upload",
-                            component: imageUpload,
+                            type: "image-upload",
                             itemProps: {
                                 rules: [
                                 ],
@@ -89,7 +86,6 @@ export default {
                             key: "RouteKey",
                             name: "路由关键词",
                             type: "text",
-                            component: imageUpload,
                             itemProps: {
                                 rules: [
                                 ],
@@ -219,9 +215,9 @@ export default {
                                 labelHidden: true
                             },
                             controlProps: {
-                                style: {
-                                    height: "320px",
-                                    marginBottom: "50px",
+                                class:"tinymce-editor",
+                                configs:{
+                                    height:300
                                 }
                             }
                         },

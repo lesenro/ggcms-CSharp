@@ -92,7 +92,7 @@ namespace GgcmsCSharp.ApiCtrls
                      DictType=0,
                      ParentKey="cfg_base",
                      OtherProperty=Tools.JsonSerialize(new {
-                        type= "upload",
+                        type= "image-upload",
                         itemProps= new {
                         rules = new List<dynamic>(){
                             new {
@@ -573,34 +573,6 @@ namespace GgcmsCSharp.ApiCtrls
 
                new GgcmsDictionaries()
                 {
-                     DictName="链接格式",
-                     DictKey="cfg_link_template",
-                     DictValue="",
-                     GroupKey="system_configs",
-                     DictDescribe="内链链接格式",
-                     OrderId=order++,
-                     DictStatus=1,
-                     DictType=0,
-                     ParentKey="cfg_content",
-                     OtherProperty=Tools.JsonSerialize(new {
-                        type= "text",
-                        itemProps= new {
-                        rules = new List<dynamic>(){
-                             new {
-                                min=1,
-                                max=255,
-                                message="长度在 1 到 255 个字符",
-                                trigger="blur"
-                            }
-                        } ,
-                        controlProps=new List<dynamic>()
-                        {
-                        }
-                     }})
-                },
-
-               new GgcmsDictionaries()
-                {
                      DictName="启用站内关键词",
                      DictKey="cfg_artkey_enable",
                      DictValue="True",
@@ -614,6 +586,33 @@ namespace GgcmsCSharp.ApiCtrls
                         type= "switch",
                         itemProps= new {
                         rules = new List<dynamic>(){
+                        } ,
+                        controlProps=new List<dynamic>()
+                        {
+                        }
+                     }})
+                },
+               new GgcmsDictionaries()
+                {
+                     DictName="链接格式",
+                     DictKey="cfg_link_template",
+                     DictValue="",
+                     GroupKey="system_configs",
+                     DictDescribe="内链链接格式",
+                     OrderId=order++,
+                     DictStatus=1,
+                     DictType=0,
+                     ParentKey="cfg_other",
+                     OtherProperty=Tools.JsonSerialize(new {
+                        type= "text",
+                        itemProps= new {
+                        rules = new List<dynamic>(){
+                             new {
+                                min=1,
+                                max=255,
+                                message="长度在 1 到 255 个字符",
+                                trigger="blur"
+                            }
                         } ,
                         controlProps=new List<dynamic>()
                         {

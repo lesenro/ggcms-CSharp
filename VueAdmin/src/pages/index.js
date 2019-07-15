@@ -14,4 +14,5 @@ export { default as User } from './admin/users/users';
 // export { default as Review } from './admin/article/review';
 export { default as dataModel } from './admin/ext-model/ext-model';
 export { default as Tasks } from './admin/tasks/tasks';
+export { default as Keywords } from './admin/keywords/keywords';
 

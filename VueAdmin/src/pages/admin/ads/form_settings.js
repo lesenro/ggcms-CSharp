@@ -1,4 +1,3 @@
-import imageUpload from "@/components/imageUpload";
 
 export const defaultValue = {
     // "createTime": "2019-04-16T05:20:04.324Z",
@@ -64,7 +63,6 @@ export default {
                             key: "Url",
                             name: "跳转URL",
                             type: "text",
-                            component: imageUpload,
                             itemProps: {
                                 rules: [
                                 ],
@@ -75,8 +73,7 @@ export default {
                         {
                             key: "Image",
                             name: "图片上传",
-                            type: "upload",
-                            component: imageUpload,
+                            type: "image-upload",
                             itemProps: {
                                 rules: [
                                 ],

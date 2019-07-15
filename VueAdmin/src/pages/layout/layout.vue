@@ -82,7 +82,7 @@ export default {
     ...mapState({
       cache_pages(state) {
         let list = state.global.open_windows.map(x => x.component_name);
-        list.push("admin-home");
+        // list.push("admin-home");
         return list;
       }
     })

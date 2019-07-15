@@ -221,6 +221,7 @@ export default {
       return false;
     },
     onChange(ev) {
+      this.value[ev.key,ev.value];
       this.$emit("change", ev);
     },
     getControl(key) {

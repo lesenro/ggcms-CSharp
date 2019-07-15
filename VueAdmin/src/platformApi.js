@@ -613,3 +613,39 @@ export async function runNow(id) {
         method: 'Get'
     });
 }
+
+//保存站内关键词
+export async function keysSave(params) {
+    let action = params.Id > 0 ? "Edit" : "Add";
+    const data = Object.assign({}, params);
+    return request(`${apiUrl}/GgcmsKeywords/${action}`, {
+        method: 'POST',
+        body: {
+            ...data,
+        },
+    });
+}
+
+//删除站内关键词
+export async function keysDel(params) {
+    return request(`${apiUrl}/GgcmsKeywords/MultDelete`, {
+        method: 'POST',
+        body: params,
+    });
+}
+
+//获取站内关键词详情
+export async function keysGetById(id) {
+    return request(`${apiUrl}/GgcmsKeywords/GetInfo/${id}`, {
+        method: 'Get'
+    });
+}
+
+
+//获取站内关键词列表
+export async function keysGetList(params) {
+    const query = JSON.stringify(params);
+    return request(`${apiUrl}/GgcmsKeywords/GetList?query=${query}`, {
+        method: 'Get'
+    });
+}

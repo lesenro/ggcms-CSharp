@@ -70,6 +70,10 @@ namespace GgcmsCSharp.Controllers
             {
                 return HttpNotFound();
             }
+            if (!string.IsNullOrWhiteSpace(category.Content))
+            {
+                category.Content = ContentKeys(category.Content);
+            }
             Pagination pagination = new Pagination();
             pagination.page = page;
             pagination.baseLink = dataHelper.Prefix + "/Category/" + id + "/{page}";
@@ -112,7 +116,7 @@ namespace GgcmsCSharp.Controllers
             pagination.pageSize = 1;
             pagination.setMaxSize(article.pagesCount);
             ViewBag.pagination = pagination;
-
+            article.Content = ContentKeys(article.Content);
             GgcmsCategories category = dataHelper.Categories(article.Category_Id);
             ViewBag.Title = article.Title;
             ViewBag.article = article;
@@ -227,6 +231,33 @@ namespace GgcmsCSharp.Controllers
             }
             Regex reg = new Regex("(?:" + sysConfigs["cfg_mob_flag"] + ")", RegexOptions.Singleline | RegexOptions.IgnoreCase);
             return reg.IsMatch(Request.UserAgent);
+        }
+
+        private string ContentKeys(string content)
+        {
+            var keys = CacheHelper.GetKeywords();
+            string tmpl = sysConfigs["cfg_link_template"];
+            bool keyEnable = Convert.ToBoolean(sysConfigs["cfg_artkey_enable"]);
+            if (!keyEnable)
+            {
+                return content;
+            }
+            int keyNumber = Convert.ToInt32(sysConfigs["cfg_artkey_rn"]);
+            int start = 1;
+            foreach (var k in keys)
+            {
+                if (content.Contains(k.Keyword))
+                {
+                    Regex reg = new Regex(k.Keyword, RegexOptions.Singleline | RegexOptions.Compiled | RegexOptions.IgnoreCase);
+                    string url = tmpl.Replace("{url}", k.Url).Replace("{name}", k.Keyword);
+                    content = reg.Replace(content, url, 1);
+                }
+                if (keyNumber < start++)
+                {
+                    break;
+                }
+            }
+            return content;
         }
     }
 }

@@ -1,5 +1,3 @@
-import imageUpload from "@/components/imageUpload";
-
 export const defaultValue = {
     // "createTime": "2019-04-16T05:20:04.324Z",
     "Id": 0,

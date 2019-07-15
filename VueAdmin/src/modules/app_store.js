@@ -15,6 +15,7 @@ import articleModule from './article'
 import userModule from './users'
 import dataModel from './data_model'
 import taskModel from './tasks'
+import keysModule from './keys'
 const store = new Vuex.Store({
     modules: {
         global: globalModule,
@@ -28,6 +29,7 @@ const store = new Vuex.Store({
         user: userModule,
         extMod: dataModel,
         task: taskModel,
+        keys: keysModule,
     }
 });
 export default store;

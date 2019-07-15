@@ -17,6 +17,9 @@ import 'codemirror/lib/codemirror.css';
 import 'codemirror/theme/monokai.css';
 import 'codemirror/mode/xml/xml.js';
 
+import tinymce from 'vue-tinymce-editor'
+Vue.component('tinymce', tinymce)
+
 Vue.use(VueCodemirror, {
   options: {
     theme: 'monokai',

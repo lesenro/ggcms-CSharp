@@ -15,7 +15,8 @@ import {
   // Single,
   // Review,
   dataModel,
-  Tasks
+  Tasks,
+  Keywords
 } from './pages'
 import CachePages from './components/CachePages'
 import VueRouter from 'vue-router'
@@ -394,11 +395,10 @@ const routes = [
           },
           {
             icon: 'el-icon-price-tag',
-            path: 'tag',
+            path: 'keys',
             iconColor: "#00bcd4",
-            component: Building,
-            name: "全站标签",
-            sideHidden: true,
+            component: Keywords,
+            name: "站内标签",
             powers: [
               {
                 name: "查询",

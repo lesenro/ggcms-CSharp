@@ -10,7 +10,7 @@ namespace GgcmsCSharp.ApiCtrls
 {
     public enum CacheTypeNames
     {
-        SysConfigs, Categorys, PagesCache,Tasks
+        SysConfigs, Categorys, PagesCache, Tasks, Keys
     }
     public class CacheHelper
     {
@@ -90,6 +90,23 @@ namespace GgcmsCSharp.ApiCtrls
                 tasks = obj as List<GgcmsTasks>;
             }
             return tasks;
+        }
+        public static List<GgcmsKeywords> GetKeywords()
+        {
+            string cacheName = CacheTypeNames.Keys.ToString();
+            List<GgcmsKeywords> keys = new List<GgcmsKeywords>();
+            object obj = GetCache(cacheName);
+            if (obj == null)
+            {
+                GgcmsDB db = new GgcmsDB();
+                keys = db.GgcmsKeywords.Where(x => x.Status == 1).ToList();
+                SetCache(cacheName, keys, new TimeSpan(0, 20, 0));
+            }
+            else
+            {
+                keys = obj as List<GgcmsKeywords>;
+            }
+            return keys;
         }
         public static bool SetPages(string path)
         {

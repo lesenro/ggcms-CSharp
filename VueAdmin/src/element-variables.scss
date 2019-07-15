@@ -1076,6 +1076,9 @@ $side-menu-active-color:#ddd;
 .v-align-mid{
   vertical-align: middle;
 }
+.tinymce-editor{
+  margin-right: 4px;
+}
 :export {
   primary_color: $--color-primary;
   side_menu_background: $side-menu-background;

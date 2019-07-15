@@ -43,6 +43,7 @@ namespace GgcmsCSharp.ApiCtrls
             ent.State = EntityState.Modified;
             Dbctx.SaveChanges();
             ClearCache();
+            CacheHelper.RemoveAllCache(CacheTypeNames.Keys);
             return Ok(info);
         }
 
@@ -53,6 +54,7 @@ namespace GgcmsCSharp.ApiCtrls
             UpFileClass.FileSave(info, info.files);
             Dbctx.SaveChanges();
             ClearCache();
+            CacheHelper.RemoveAllCache(CacheTypeNames.Keys);
             return Ok(result);
         }
 
@@ -71,6 +73,7 @@ namespace GgcmsCSharp.ApiCtrls
             Dbctx.GgcmsFriendLinks.Remove(oldinfo);
             Dbctx.SaveChanges();
             ClearCache();
+            CacheHelper.RemoveAllCache(CacheTypeNames.Keys);
             return Ok(oldinfo);
 
         }
@@ -83,6 +86,7 @@ namespace GgcmsCSharp.ApiCtrls
             Dbctx.GgcmsFriendLinks.RemoveRange(query);
             int c = Dbctx.SaveChanges();
             ClearCache();
+            CacheHelper.RemoveAllCache(CacheTypeNames.Keys);
             return Ok(c);
 
         }

@@ -62,7 +62,7 @@
         :total="pageInfo.total"
       ></el-pagination>
     </div>
-    <el-dialog title="文章管理" :visible.sync="dialogFormVisible" @open="dialogOpened">
+    <el-dialog title="文章管理" width="75%" :visible.sync="dialogFormVisible" @open="dialogOpened">
       <form-generator :value="value" @change="onFormCtrlChange" ref="form" :settings="formSettings"></form-generator>
       <div slot="footer" class="dialog-footer">
         <el-button-group class="float-left">
