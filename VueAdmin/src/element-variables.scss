@@ -1076,8 +1076,12 @@ $side-menu-active-color:#ddd;
 .v-align-mid{
   vertical-align: middle;
 }
-.tinymce-editor{
-  margin-right: 4px;
+
+.fr-popup.fr-desktop{
+  z-index: 2100 !important;
+}
+div.fr-wrapper div:first-child{
+  display: none !important;
 }
 :export {
   primary_color: $--color-primary;

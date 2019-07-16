@@ -186,10 +186,11 @@ export default {
       this.editFormVisble = true;
     },
 
-    async editorImageAdded(file,callback) {
+    async editorImageAdded(files,editor,callback) {
+      let file=files[0];
       let result = await this.onFileSelect({ file: file }, "Content", 1);
       if (result.Code == 0) {
-        callback(result.link, { alt: file.name });
+        callback(result.link,file);
       }
     },
     async imageUpload(ev, key) {
@@ -252,7 +253,7 @@ export default {
       let editor = form.getControl("Content");
       if (!editor.finished) {
         editor.finished = true;
-        editor.imageAdded=this.editorImageAdded;
+        editor.$on("imageBeforeUpload",this.editorImageAdded);
       }
       form.setValues(Object.assign({}, this.value));
     },

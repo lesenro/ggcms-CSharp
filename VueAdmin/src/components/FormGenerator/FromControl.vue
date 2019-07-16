@@ -176,16 +176,13 @@
     <el-alert ref="ctrl" v-bind="controlProps"></el-alert>
   </el-form-item>
   <el-form-item :prop="d_settings.key" v-bind="itemProps" v-else-if="d_settings.type=='editor'">
-    <tinymce
-      @editorInit="editorInit"
-      :style="{'margin-right':'4px'}"
-      :other_options="editorOptions"
-      :id="d_settings.key"
+    <froala-editor
+      @initialized="editorInit"
+      @change="onEditorChange"
       ref="ctrl"
-      v-model="value[d_settings.key]"
-      @editorChange="onEditorChange"
       v-bind="controlProps"
-    ></tinymce>
+      v-model="value[d_settings.key]"
+    />
   </el-form-item>
   <el-form-item :prop="d_settings.key" v-bind="itemProps" v-else-if="d_settings.type=='code'">
     <codemirror
@@ -251,32 +248,6 @@ export default {
       d_options: (this.settings.options || []).map(x => x),
       d_itemProps: this.settings.itemProps || {},
       d_controlProps: this.settings.controlProps || {},
-      editorOptions:Object.assign({},{
-        selector: "#"+this.settings.key,
-        file_browser_callback_types: "image",
-        // file_browser_callback_types: "file image media",
-        language_url: "/assets/js/zh_CN.js",
-        plugins:['advlist autolink lists link image charmap print preview hr anchor pagebreak', 'searchreplace visualblocks visualchars code fullscreen', 'insertdatetime media nonbreaking save table contextmenu directionality','template paste textcolor colorpicker textpattern imagetools toc help emoticons hr codesample'],
-        file_picker_callback: function(callback, value, meta) {
-          // Provide image and alt text for the image dialog
-          // if (meta.filetype == "image") {
-          //   callback("myimage.jpg", { alt: "My alt text" });
-          // }
-          let ctrl= self.$refs["ctrl"];
-
-          if (meta.filetype == "image") {
-            let file=document.createElement("input");
-            file.type="file"
-            file.onchange=(ev)=>{
-              if(ctrl.imageAdded){
-                ctrl.imageAdded(file.files[0],callback);
-              }
-            };
-            file.click();
-            // callback("myimage.jpg", { alt: "My alt text" });
-          }
-        }
-      }, (this.settings.controlProps||{}).configs)
     };
   },
   computed: {
@@ -343,8 +314,7 @@ export default {
       });
     },
     editorInit(ev) {
-      this.originalEditor=ev;
-      this.value[this.d_settings.key]=this.value[this.d_settings.key]+" ";
+      this.originalEditor = ev;
     },
     onEditorChange(ev) {
       this.$emit("change", {

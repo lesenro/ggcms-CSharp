@@ -23,6 +23,7 @@
 
 <script>
 import { mapActions, mapState } from "vuex";
+
 export default {
   name: "settings",
   data() {
@@ -32,7 +33,7 @@ export default {
       value: null,
       styles: [],
       configs: [],
-      files: [],
+      files: []
     };
   },
   computed: {
@@ -214,6 +215,11 @@ export default {
           }
         });
         this.$set(this, "value", val);
+        setTimeout(() => {
+          const form = this.$refs["form"];
+          let ctrl = form.getControl("cfg_powerby");
+          ctrl.setValue(val.cfg_powerby);
+        }, 200);
       });
     },
     getCtrls(list, pkey) {
@@ -241,12 +247,44 @@ export default {
             }
             if (item.key == "cfg_powerby") {
               item.controlProps = {
-                style: {
-                  height: "120px",
-                  marginBottom: "30px"
-                },
-                configs: {
-                  menubar: false
+                config: {
+                  height: 100,
+                  toolbarButtons: {
+                    moreText: {
+                      buttons: [
+                        "bold",
+                        "italic",
+                        "underline",
+                        "strikeThrough",
+                        "subscript",
+                        "superscript",
+                        "fontFamily",
+                        "fontSize",
+                        "textColor",
+                        "backgroundColor",
+                        "inlineClass",
+                        "inlineStyle",
+                        "clearFormatting"
+                      ]
+                    },
+                    moreParagraph: {
+                      buttons: [
+                        "alignLeft",
+                        "alignCenter",
+                        "alignRight",
+                        "alignJustify",
+                        "formatOLSimple"
+                      ]
+                    },
+                    moreRich: {
+                      buttons: ["insertLink", "insertHR"]
+                    },
+                    moreMisc: {
+                      buttons: ["undo", "redo", "selectAll", "html"],
+                      align: "right",
+                      buttonsVisible: 2
+                    }
+                  }
                 }
               };
             }

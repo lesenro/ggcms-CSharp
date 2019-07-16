@@ -215,8 +215,7 @@ export default {
                                 labelHidden: true
                             },
                             controlProps: {
-                                class:"tinymce-editor",
-                                configs:{
+                                config:{
                                     height:300
                                 }
                             }
