@@ -211,6 +211,10 @@ namespace GgcmsCSharp.ApiCtrls
                         itemProps= new {
                         rules = new List<dynamic>(){
                         },
+                        controlProps = new
+                        {
+                            mode="simple"
+                        }
                      }})
                 },
                new GgcmsDictionaries()
@@ -548,7 +552,60 @@ namespace GgcmsCSharp.ApiCtrls
                         }
                      }})
                 },
-
+                new GgcmsDictionaries()
+                {
+                     DictName="Description",
+                     DictKey="cfg_description",
+                     DictValue="",
+                     GroupKey="system_configs",
+                     DictDescribe="Description",
+                     OrderId=order++,
+                     DictStatus=1,
+                     DictType=0,
+                     ParentKey="cfg_content",
+                     OtherProperty=Tools.JsonSerialize(new {
+                        type= "text",
+                        itemProps= new {
+                        rules = new List<dynamic>(){
+                            new {
+                                min=1,
+                                max=255,
+                                message="长度在 1 到 255 个字符",
+                                trigger="blur"
+                            }
+                        } ,
+                        controlProps=new List<dynamic>()
+                        {
+                        }
+                     }})
+                },
+                new GgcmsDictionaries()
+                {
+                     DictName="Keywords",
+                     DictKey="cfg_keywords",
+                     DictValue="",
+                     GroupKey="system_configs",
+                     DictDescribe="Keywords",
+                     OrderId=order++,
+                     DictStatus=1,
+                     DictType=0,
+                     ParentKey="cfg_content",
+                     OtherProperty=Tools.JsonSerialize(new {
+                        type= "text",
+                        itemProps= new {
+                        rules = new List<dynamic>(){
+                            new {
+                                min=1,
+                                max=255,
+                                message="长度在 1 到 255 个字符",
+                                trigger="blur"
+                            }
+                        } ,
+                        controlProps=new List<dynamic>()
+                        {
+                        }
+                     }})
+                },
                new GgcmsDictionaries()
                 {
                      DictName="上传空间(bucket)",

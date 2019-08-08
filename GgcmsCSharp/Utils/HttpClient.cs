@@ -11,7 +11,7 @@ namespace GgcmsCSharp.Utils
     {
         none, android, iphone, ipad, chrome, edeg, wp10, ie11, ie10, ie9, ie8, ie7, ie6, firefox, opera
     }
-    public class HttpClient : WebClient
+    public class HttpClient : System.Net.WebClient
     {
         public HttpClient()
            : base()

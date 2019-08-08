@@ -33,7 +33,12 @@
         <el-input v-model="info.Title"></el-input>
       </el-form-item>
       <el-form-item label="内容">
-        <froala-editor ref="editor" v-model="info.Content" :config="editorOptions" @imageBeforeUpload="imageUpload" />
+        <vue-editor
+          ref="editor"
+          v-model="info.Content"
+          :config="editorOptions"
+          @imageBeforeUpload="imageUpload"
+        />
       </el-form-item>
     </el-form>
   </div>
@@ -67,14 +72,14 @@ export default {
     value: Array
   },
   data() {
-    let self=this;
+    let self = this;
     return {
       info: new GgcmsArticlePages(),
       d_value: this.value,
       cur_page: 1,
       articleId: 0,
-      editorOptions:{
-        height:300
+      editorOptions: {
+        height: 300
       }
     };
   },
@@ -86,17 +91,15 @@ export default {
   methods: {
     ...mapActions("article", ["getPageInfoById"]),
     ...mapActions("global", ["fileUpload"]),
-    editorInit(ev){
-
-    },
+    editorInit(ev) {},
     setValues(val, aid) {
       this.articleId = aid;
       this.$set(this, "d_value", val);
       // this.d_value = val;
       this.currentChange(1);
     },
-    async imageUpload(files, editor,callback) {
-      let file=files[0];
+    async imageUpload(files, editor, callback) {
+      let file = files[0];
       if (!file.type.startsWith("image")) {
         this.$message({
           type: "error",
@@ -112,7 +115,7 @@ export default {
       if (result.Code != 0) {
         return;
       }
-      callback(result.link,file);
+      callback(result.link, file);
       if (!this.info.files) {
         this.info.files = [];
       }
@@ -145,6 +148,7 @@ export default {
       } else {
         this.info = info;
       }
+      // this.$set(this.info,"Content",info.Content);
     },
     addPage() {
       let info = new GgcmsArticlePages();
@@ -212,7 +216,7 @@ export default {
       this.cur_page = target;
       this.currentChange(target);
     }
-  },
+  }
 };
 </script>
 
@@ -223,5 +227,4 @@ export default {
     line-height: 25px;
   }
 }
-
 </style>

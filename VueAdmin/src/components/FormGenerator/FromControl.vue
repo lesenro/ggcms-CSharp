@@ -176,9 +176,9 @@
     <el-alert ref="ctrl" v-bind="controlProps"></el-alert>
   </el-form-item>
   <el-form-item :prop="d_settings.key" v-bind="itemProps" v-else-if="d_settings.type=='editor'">
-    <froala-editor
-      @initialized="editorInit"
-      @change="onEditorChange"
+    <vue-editor
+      @onInit="editorInit"
+      @change="onChange"
       ref="ctrl"
       v-bind="controlProps"
       v-model="value[d_settings.key]"

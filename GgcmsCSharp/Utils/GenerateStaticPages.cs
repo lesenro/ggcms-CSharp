@@ -18,10 +18,15 @@ namespace GgcmsCSharp.Utils
         private HttpContext context;
         public GenerateStaticPages(StaticTaskInfo sinfo, HttpContext ctx)
         {
+            
             taskInfo = sinfo;
             dhlp = new DataHelper();
             webclient = new HttpClient();
             prefix = ConfigurationManager.AppSettings["ServerBaseUrl"].ToString();
+            if(string.IsNullOrWhiteSpace(prefix))
+            {
+                prefix = ctx.Request.Url.ToString();
+            }
             context = ctx;
         }
         public void Run()
@@ -45,22 +50,23 @@ namespace GgcmsCSharp.Utils
         private void GeneratePage(string fn,string url)
         {
             string dir = Path.GetDirectoryName(fn);
-            if (!Directory.Exists(dir))
-            {
-                Directory.CreateDirectory(dir);
-            }
             if (File.Exists(fn))
             {
                 File.Delete(fn);
             }
             string html = webclient.DownloadString(url);
+            if (!Directory.Exists(dir))
+            {
+                Directory.CreateDirectory(dir);
+            }
+
             File.WriteAllText(fn, html, Encoding.UTF8);
         }
         private void GenerateHome()
         {
             string svrpath = context.Server.MapPath("~");
             string fn = Path.GetFullPath(svrpath + "\\index.html");
-            GeneratePage(fn, prefix);
+            GeneratePage(fn,string.IsNullOrWhiteSpace( prefix)?"/":prefix);
         }
 
         private void GenerateCategories(List<GgcmsCategories> list)

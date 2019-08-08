@@ -17,13 +17,9 @@ import 'codemirror/lib/codemirror.css';
 import 'codemirror/theme/monokai.css';
 import 'codemirror/mode/xml/xml.js';
 
+import vueEditor from "./components/vue-editor";
 
-// Import Froala Editor css files.
-import 'froala-editor/css/froala_editor.pkgd.min.css';
-import "froala-editor/js/languages/zh_cn";
-import froalaEditor from "./components/froala-editor";
-
-
+Vue.component('vue-editor', vueEditor);
 
 Vue.use(VueCodemirror, {
   options: {
@@ -46,7 +42,7 @@ Vue.use(ElementUI, {
 });
 // globally (in your main .js file)
 Vue.component('form-generator', FormGenerator);
-Vue.component('froala-editor', froalaEditor);
+
 
 Vue.use(VueRouter);
 let myVueApp = new Vue({

@@ -44,7 +44,10 @@ namespace GgcmsCSharp.Controllers
         [OutputCache(CacheProfile = "IndexCache")]
         public ActionResult Index()
         {
-            ViewBag.Title = sysConfigs["cfg_indexname"];
+            HttpClient client = new HttpClient();
+            ViewBag.Title = sysConfigs.ContainsKey("cfg_indexname")?sysConfigs["cfg_indexname"] :"";
+            ViewBag.Description = sysConfigs.ContainsKey("cfg_description") ? sysConfigs["cfg_description"] : ""; 
+            ViewBag.Keywords = sysConfigs.ContainsKey("cfg_keywords") ? sysConfigs["cfg_keywords"] : ""; 
             var pt = getTemplate();
             ViewBag.pageTmpl = pt;
             ViewBag.topId = 0;
@@ -74,6 +77,9 @@ namespace GgcmsCSharp.Controllers
             {
                 category.Content = ContentKeys(category.Content);
             }
+            ViewBag.Description = category.Description;
+            ViewBag.Keywords = category.Keywords;
+
             Pagination pagination = new Pagination();
             pagination.page = page;
             pagination.baseLink = dataHelper.Prefix + "/Category/" + id + "/{page}";
@@ -118,6 +124,8 @@ namespace GgcmsCSharp.Controllers
             ViewBag.pagination = pagination;
             article.Content = ContentKeys(article.Content);
             GgcmsCategories category = dataHelper.Categories(article.Category_Id);
+            ViewBag.Description = article.Description;
+            ViewBag.Keywords = article.Keywords;
             ViewBag.Title = article.Title;
             ViewBag.article = article;
             ViewBag.category = category;

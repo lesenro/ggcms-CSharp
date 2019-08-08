@@ -23,8 +23,6 @@ namespace GgcmsCSharp
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             scheduleTask = new ScheduleTask(this.Context);
             scheduleTask.Start();
-
-
         }
 
         protected void Application_End(object sender, EventArgs e)
