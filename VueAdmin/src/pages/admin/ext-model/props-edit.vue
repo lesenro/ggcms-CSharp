@@ -11,11 +11,11 @@
         <el-divider>操作</el-divider>
         <div class="float-right">
           <el-button type="primary" @click="propsAdd" size="mini">添加</el-button>
-          <el-button type="danger" @click="prop_code='{}'" size="mini">清空</el-button>
+          <el-button type="danger" @click="codeClear" size="mini">清空</el-button>
         </div>
       </el-col>
       <el-col :span="12">
-        <codemirror name="prop_code" v-model="prop_code"></codemirror>
+        <codemirror name="prop_code" @input="codeInput" v-model="prop_code"></codemirror>
       </el-col>
     </el-row>
   </div>
@@ -45,6 +45,13 @@ export default {
         key: "propType",
         value: "size"
       });
+    },
+    codeInput(ev){
+      this.$emit("change", this.prop_code);
+    },
+    codeClear(){
+      this.prop_code="{}";
+      this.$emit("change", this.prop_code);
     },
     onPropsFormChange(ev) {
       if (ev.key == "propType") {

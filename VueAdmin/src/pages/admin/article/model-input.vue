@@ -49,8 +49,9 @@ export default {
           }
         ]
       };
-      this.$set(this, "formSettings", sets);
-
+      if (!this.formSettings.props) {
+        this.$set(this, "formSettings", sets);
+      }
       let form = this.$refs["form"];
       form.resetForm();
       form.setValues(val);

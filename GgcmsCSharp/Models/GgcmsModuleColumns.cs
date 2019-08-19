@@ -14,6 +14,9 @@ namespace GgcmsCSharp.Models
         public string ColName { get; set; }
 
         [StringLength(50)]
+        public string ColKey { get; set; }
+
+        [StringLength(50)]
         public string ColTitle { get; set; }
 
         [StringLength(50)]

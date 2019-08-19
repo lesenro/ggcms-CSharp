@@ -193,6 +193,10 @@
     <Compile Include="Migrations\201906280132483_article-pagesCount.Designer.cs">
       <DependentUpon>201906280132483_article-pagesCount.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201908160040427_add-modeule-col-key.cs" />
+    <Compile Include="Migrations\201908160040427_add-modeule-col-key.Designer.cs">
+      <DependentUpon>201908160040427_add-modeule-col-key.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\DataHelper.cs" />
     <Compile Include="Models\ExtendModule.cs" />
@@ -276,6 +280,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201906280132483_article-pagesCount.resx">
       <DependentUpon>201906280132483_article-pagesCount.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201908160040427_add-modeule-col-key.resx">
+      <DependentUpon>201908160040427_add-modeule-col-key.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

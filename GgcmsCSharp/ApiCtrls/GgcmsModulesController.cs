@@ -42,7 +42,10 @@ namespace GgcmsCSharp.ApiCtrls
         // PUT: api/GgcmsCategories/5
         public IHttpActionResult Edit(GgcmsModules module)
         {
-
+            if (!ExtendModule.ColumnsCheck(module))
+            {
+                return BadRequest("字段关键字重复");
+            }
             if (module.Columns != null)
             {
                 GgcmsModules oldModule = ExtendModule.GetGgcmsModule(module.Id);
@@ -58,6 +61,10 @@ namespace GgcmsCSharp.ApiCtrls
         // POST: api/GgcmsCategories
         public IHttpActionResult Add(GgcmsModules module)
         {
+            if (!ExtendModule.ColumnsCheck(module))
+            {
+                return BadRequest("字段关键字重复");
+            }
             var result = Dbctx.GgcmsModules.Add(module);
             Dbctx.SaveChanges();
             result.TableName = "moduleTab_" + result.Id.ToString();

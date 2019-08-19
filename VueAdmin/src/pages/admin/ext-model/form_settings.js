@@ -56,6 +56,7 @@ export default {
 export class moduleColumns {
     Id = 0;
     ColName = "";
+    ColKey = "";
     ColTitle = "";
     ColType = "";
     Options = "";
@@ -168,7 +169,7 @@ export class moduleForm {
                     itemProps: {
                         rules: [
                             { required: true, message: "请输入字段名称", trigger: "blur" },
-                            { min: 1, max: 100, message: "长度在 1 到 100 个字符", trigger: "blur" }
+                            { min: 1, max: 100, message: "长度在 1 到 50 个字符", trigger: "blur" }
                         ],
 
                     },
@@ -176,6 +177,21 @@ export class moduleForm {
 
                     }
                 },
+                {
+                    key: "ColKey",
+                    name: "字段关键字",
+                    type: "text",
+                    itemProps: {
+                        rules: [
+                            { required: true, message: "请输入字段关键字", trigger: "blur" },
+                            { min: 1, max: 100, message: "长度在 1 到 50 个字符", trigger: "blur" }
+                        ],
+
+                    },
+                    controlProps: {
+
+                    }
+                },                
                 {
                     key: "ColType",
                     name: "字段类型",

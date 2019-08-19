@@ -11,29 +11,25 @@
         <el-divider>操作</el-divider>
         <div class="float-right">
           <el-button type="primary" @click="ruleAdd" size="mini">添加</el-button>
-          <el-button type="danger" @click="rule_code='[]'" size="mini">清空</el-button>
+          <el-button type="danger" @click="codeClear" size="mini">清空</el-button>
         </div>
       </el-col>
       <el-col :span="12">
-        <codemirror name="rule_code" v-model="rule_code"></codemirror>
+        <codemirror name="rule_code" @input="codeInput" v-model="rule_code"></codemirror>
       </el-col>
     </el-row>
   </div>
 </template>
 
 <script>
-import  {
-  controlForm,
-  validataOptions,
-  controlValue,
-} from "./form_settings";
+import { controlForm, validataOptions, controlValue } from "./form_settings";
 export default {
   name: "rules-edit",
   data() {
     return {
       controlForm: new controlForm(),
       rule_value: new controlValue(),
-      rule_code: "[]",
+      rule_code: "[]"
     };
   },
   computed: {},
@@ -45,7 +41,13 @@ export default {
         value: "required"
       });
     },
-
+    codeInput(ev) {
+      this.$emit("change", this.rule_code);
+    },
+    codeClear() {
+      this.rule_code = "[]";
+      this.$emit("change", this.rule_code);
+    },
     onRuleFormChange(ev) {
       if (ev.key == "validata") {
         let all = validataOptions.find(x => x.value == "all");
@@ -121,8 +123,7 @@ export default {
       rules.push(r);
       this.rule_code = JSON.stringify(rules, null, "\t");
       this.$emit("change", this.rule_code);
-    },
-
+    }
   }
 };
 </script>

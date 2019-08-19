@@ -74,7 +74,8 @@ export default {
       tinymce: null,
       editor: null,
       lastInput: (new Date()).getTime()-5000,
-      content: this.value
+      content: this.value,
+      d_config:this.config||{}
     };
   },
   methods: {
@@ -117,9 +118,9 @@ export default {
         }
       };
       if (this.mode == "simple") {
-        this.tinymce.init(Object.assign({}, cfg, simpleConfig));
+        this.tinymce.init(Object.assign({}, cfg, simpleConfig,this.d_config));
       } else {
-        this.tinymce.init(Object.assign({}, cfg, fullConfig));
+        this.tinymce.init(Object.assign({}, cfg, fullConfig,this.d_config));
       }
 
       // this.editor.on("change", this.onEditorInput);

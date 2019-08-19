@@ -55,7 +55,7 @@ namespace GgcmsCSharp.Models
             }
             return GetModuleToDict(aid, module);
         }
-        public static Dictionary<string, dynamic> GetModuleToDict(int aid , GgcmsModules module){
+        public static Dictionary<string, dynamic> GetModuleToDict(int aid , GgcmsModules module,bool isColName=true){
             
             Dictionary<string, dynamic> result = new Dictionary<string, dynamic>();
             result.Add("Id", aid);
@@ -82,7 +82,14 @@ namespace GgcmsCSharp.Models
                     {
                         foreach (var col in module.Columns)
                         {
-                            result.Add(col.ColName, reader[col.ColName]);
+                            if (isColName)
+                            {
+                                result.Add(col.ColName, reader[col.ColName]);
+                            }
+                            else
+                            {
+                                result.Add(col.ColKey, reader[col.ColName]);
+                            }
                         }
                     }
                     reader.Close();
@@ -229,6 +236,19 @@ namespace GgcmsCSharp.Models
                 
             }
             
+        }
+        /// <summary>
+        /// 判断是否有重复的colkey
+        /// </summary>
+        /// <param name="module"></param>
+        /// <returns></returns>
+        public static bool ColumnsCheck(GgcmsModules module)
+        {
+            var cols = from c in module.Columns
+                       group c by c.ColKey
+                       into g
+                       select  g.Count();
+            return cols.Where(x => x > 1).Count() == 0;
         }
         public static void TableChange(GgcmsModules module, GgcmsModules oldModule)
         {

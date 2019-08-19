@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -20,8 +20,12 @@
   <script>
 
     window.AppConfigs = {
-      WebRoot: "/",
-      ServerUrl:"http://localhost:57814",
+      <% if(process.env.NODE_ENV === 'production'){ %>
+      WebRoot: "/admin",
+      <% } else {%>
+      WebRoot: "",
+      <% } %>
+       ServerUrl:"http://localhost:57814",
       ApiPath: "api",
     };
   </script>

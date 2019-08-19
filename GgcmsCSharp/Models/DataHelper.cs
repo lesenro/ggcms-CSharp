@@ -75,7 +75,7 @@ namespace GgcmsCSharp.Models
             if (article.ExtModelId > 0)
             {
                 article.ModuleInfo = ExtendModule.GetGgcmsModule(article.ExtModelId);
-                article.ModuleData = ExtendModule.GetModuleToDict(article.Id, article.ModuleInfo);
+                article.ModuleData = ExtendModule.GetModuleToDict(article.Id, article.ModuleInfo,false);
             }
             return article;
         }
@@ -155,6 +155,10 @@ namespace GgcmsCSharp.Models
         }
         public SearchResult<GgcmsArticles> Articles(SearchParams rparams)
         {
+            if (string.IsNullOrWhiteSpace(rparams.Columns))
+            {
+                rparams.Columns = "Author,Category_Id,CreateTime,Description,ExtModelId,Hits,Id,Keywords,MobileTmplName,PageTitle,RedirectUrl,Source,SourceUrl,StyleName,Title,TitleImg,TitleThumbnail,TmplName,ShowLevel,ShowType";
+            }
             var result = GetRecords<GgcmsArticles>(rparams);
             List<GgcmsArticles> list = result.GetList();
             result.Records = new List<dynamic>();
@@ -183,7 +187,6 @@ namespace GgcmsCSharp.Models
 
             SearchParams rparams = new SearchParams
             {
-                Columns = "Author,Category_Id,CreateTime,Description,ExtModelId,Hits,Id,Keywords,MobileTmplName,PageTitle,RedirectUrl,Source,SourceUrl,StyleName,Title,TitleImg,TitleThumbnail,TmplName,ShowLevel,ShowType",
                 QueryString = "@0.Contains(outerIt.Category_Id)",
                 PageNum = pagination.page,
                 PageSize = pagination.pageSize,

@@ -98,13 +98,14 @@
       append-to-body
       :visible.sync="modelInputVisible"
       @open="modelInputOpened"
+      width="70%"
     >
       <el-scrollbar ref="scrollbar">
-        <div class="attr-list">
+        <div class="attr-list" v-if="modelInputVisible">
           <model-input
             @onSubmit="modelDataSubmit"
             @onCancel="modelInputVisible=false"
-            ref="model-input"
+            ref="modelInput"
           />
         </div>
       </el-scrollbar>
@@ -587,7 +588,7 @@ export default {
       }
     },
     modelInputOpened() {
-      let editor = this.$refs["model-input"];
+      let editor = this.$refs["modelInput"];
       if (!editor) {
         setTimeout(() => {
           this.modelInputOpened();

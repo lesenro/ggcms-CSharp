@@ -144,6 +144,13 @@ export default {
       editor.setValues(Object.assign({}, this.value));
     },
     onInfoSubmit(vals) {
+      if(vals.Columns.groupBy(x=>x.ColKey).where(x=>x.length>1).length>0){
+        this.$message({
+          type: "error",
+          message: "字段关键字重复!"
+        });
+        return;
+      }
       this.save(vals).then(x => {
         if (x.Id > 0) {
           this.dialogFormVisible = false;
